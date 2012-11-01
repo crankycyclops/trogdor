@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "trogdor.h"
+#include "state.h"
 #include "shell.h"
 
 #define NORTH 1
@@ -49,7 +50,7 @@ void executeCommand() {
    }
 
    else {
-      printf("Sorry, I don't understand you.");
+      printf("Sorry, I don't understand you.\n");
    }
 
    return;
@@ -61,19 +62,55 @@ static void move(int direction) {
    switch (direction) {
 
       case NORTH:
-         printf("NORTH!\n");
+
+         if (NULL != location->north) {
+            location = location->north;
+            printf("%s\n", location->description);
+         }
+
+         else {
+            printf("You can't go that way!\n");
+         }
+
          break;
 
       case SOUTH:
-         printf("SOUTH!\n");
+
+         if (NULL != location->south) {
+            location = location->south;
+            printf("%s\n", location->description);
+         }
+
+         else {
+            printf("You can't go that way!\n");
+         }
+
          break;
 
       case EAST:
-         printf("EAST!\n");
+
+         if (NULL != location->east) {
+            location = location->east;
+            printf("%s\n", location->description);
+         }
+
+         else {
+            printf("You can't go that way!\n");
+         }
+
          break;
 
       case WEST:
-         printf("WEST!\n");
+
+         if (NULL != location->west) {
+            location = location->west;
+            printf("%s\n", location->description);
+         }
+
+         else {
+            printf("You can't go that way!\n");
+         }
+
          break;
 
       default:

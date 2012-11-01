@@ -3,11 +3,8 @@
 
 #include "trogdor.h"
 #include "data.h"
+#include "state.h"
 #include "command.h"
-
-
-/* our current location in the game */
-Room *location;
 
 
 void init() {

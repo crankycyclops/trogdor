@@ -30,6 +30,18 @@ void initData() {
 
    rooms = start;
 
+   Room *next;
+   next = (Room *)malloc(sizeof(Room));
+
+   next->description = "Ok, now you're in a dead end.  So you lose :)";
+   next->north = NULL;
+   next->south = start;
+   next->east = NULL;
+   next->west = NULL;
+
+   // connect room "next" to room "start"
+   start->north = next;
+
    return;
 }
 

@@ -10,7 +10,7 @@ char *readCommand() {
    /* declared static because we return a pointer to it */
    static char command[MAX_COMMAND_LENGTH] = "";
 
-   printf("Trogdor> ");
+   printf("> ");
    fgets(command, MAX_COMMAND_LENGTH, stdin);
 
    // trim surrounding whitespace and convert to all lower case
