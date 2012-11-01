@@ -6,19 +6,11 @@
 #include "trogdor.h"
 #include "state.h"
 #include "shell.h"
-
-#define NORTH 1
-#define SOUTH 2
-#define EAST  3
-#define WEST  4
-
 #include "string.h"
+#include "action.h"
 
 /* executes a user input command */
 void executeCommand();
-
-/* moves the user in the specified direction */
-static void move(int direction);
 
 
 void executeCommand() {
@@ -57,66 +49,5 @@ void executeCommand() {
 }
 
 
-static void move(int direction) {
 
-   switch (direction) {
-
-      case NORTH:
-
-         if (NULL != location->north) {
-            location = location->north;
-            printf("%s\n", location->description);
-         }
-
-         else {
-            printf("You can't go that way!\n");
-         }
-
-         break;
-
-      case SOUTH:
-
-         if (NULL != location->south) {
-            location = location->south;
-            printf("%s\n", location->description);
-         }
-
-         else {
-            printf("You can't go that way!\n");
-         }
-
-         break;
-
-      case EAST:
-
-         if (NULL != location->east) {
-            location = location->east;
-            printf("%s\n", location->description);
-         }
-
-         else {
-            printf("You can't go that way!\n");
-         }
-
-         break;
-
-      case WEST:
-
-         if (NULL != location->west) {
-            location = location->west;
-            printf("%s\n", location->description);
-         }
-
-         else {
-            printf("You can't go that way!\n");
-         }
-
-         break;
-
-      default:
-         break;
-   }
-
-   return;
-}
 
