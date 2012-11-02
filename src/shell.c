@@ -1,22 +1,24 @@
 
 #include <stdio.h>
-#include "include/string.h"
+#include <stdlib.h>
+#include <dstring.h>
 
-#define MAX_COMMAND_LENGTH 250
 
+dstring_t readCommand() {
 
-char *readCommand() {
+   dstring_t command;
 
-   /* declared static because we return a pointer to it */
-   static char command[MAX_COMMAND_LENGTH] = "";
+   if (DSTR_SUCCESS != dstrnalloc(&command, 250)) {
+      fprintf(stderr, "out of memory\n");
+      exit(EXIT_FAILURE);
+   }
 
    printf("> ");
-   fgets(command, MAX_COMMAND_LENGTH, stdin);
+   dstreadl(command);
 
    // trim surrounding whitespace and convert to all lower case
-   ltrim(command);
-   rtrim(command);
-   strtolower(command);
+   dstrtrim(command);
+   dstrtolower(command, 0);
 
    return command;
 }
