@@ -3,11 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "trogdor.h"
-#include "state.h"
-#include "shell.h"
-#include "string.h"
-#include "action.h"
+#include "include/trogdor.h"
+#include "include/state.h"
+#include "include/shell.h"
+#include "include/token.h"
+#include "include/string.h"
+#include "include/action.h"
 
 /* All commands are parsed down to a required verb and an optional direct
    object and preposition + indirect object */

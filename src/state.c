@@ -1,5 +1,5 @@
 
-#include "trogdor.h"
+#include "include/trogdor.h"
 
 
 /* our current location in the game */

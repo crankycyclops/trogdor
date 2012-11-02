@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "trogdor.h"
+#include "include/trogdor.h"
 
 
 /* initializes game data/assets such as rooms */

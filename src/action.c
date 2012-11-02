@@ -1,8 +1,8 @@
 
 #include <stdio.h>
 
-#include "trogdor.h"
-#include "state.h"
+#include "include/trogdor.h"
+#include "include/state.h"
 
 #define NORTH 1
 #define SOUTH 2

@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "trogdor.h"
-#include "data.h"
-#include "state.h"
-#include "command.h"
+#include "include/trogdor.h"
+#include "include/data.h"
+#include "include/state.h"
+#include "include/command.h"
 
 
 void init() {

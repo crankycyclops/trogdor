@@ -1,6 +1,6 @@
 
 #include <stdio.h>
-#include "string.h"
+#include "include/string.h"
 
 #define MAX_COMMAND_LENGTH 250
 
