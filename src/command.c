@@ -11,15 +11,9 @@
 #include "include/action.h"
 #include "include/vocabulary.h"
 
-/* All commands are parsed down to a required verb and an optional direct
-   object and preposition + indirect object */
-typedef struct command {
-   dstring_t  verb;
-   dstring_t  directObject;
-   dstring_t  preposition;
-   dstring_t  indirectObject;
-   int        error; 
-} Command;
+#define COMMAND_C
+
+#include "include/command.h"
 
 /* initializes the dstring_t objects inside of the command struct */
 static void initCommand(Command *command);
@@ -97,38 +91,12 @@ void executeCommand() {
 
    command = parseCommand(readCommand());
 
-   /* the user didn't actually type anything, so do nothing */
-   if (NULL == command.verb) {
-      return;
-   }
-
-   else if (0 == strcmp(dstrview(command.verb), "north")) {
-      move(NORTH);
-   }
-
-   else if (0 == strcmp(dstrview(command.verb), "south")) {
-      move(SOUTH);
-   }
-
-   else if (0 == strcmp(dstrview(command.verb), "east")) {
-      move(EAST);
-   }
-
-   else if (0 == strcmp(dstrview(command.verb), "west")) {
-      move(WEST);
-   }
-
-   // TODO: add support for synonyms and add exit as synonym
-   else if (0 == strcmp(dstrview(command.verb), "quit")) {
-      printf("Goodbye!\n");
-      exit(EXIT_SUCCESS);
-   }
-
-   else {
+   if (!callAction(command)) {
       printf("Sorry, I don't understand you.\n");
    }
 
    destroyCommand(&command);
+
    return;
 }
 

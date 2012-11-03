@@ -3,8 +3,11 @@
 #define ACTION_H
 
 
-/* moves the user in the specified direction */
-extern void move(int direction);
+#include "trogdor.h"
+#include "command.h"
+
+/* executes an action corresponding to the command's verb */
+extern int callAction(Command command);
 
 
 #endif
