@@ -9,15 +9,23 @@
 #include "include/shell.h"
 #include "include/token.h"
 #include "include/action.h"
+#include "include/vocabulary.h"
 
 /* All commands are parsed down to a required verb and an optional direct
    object and preposition + indirect object */
 typedef struct command {
-   dstring_t verb;
-   dstring_t directObject;
-   dstring_t preposition;
-   dstring_t indirectObject;
+   dstring_t  verb;
+   dstring_t  directObject;
+   dstring_t  preposition;
+   dstring_t  indirectObject;
+   int        error; 
 } Command;
+
+/* initializes the dstring_t objects inside of the command struct */
+static void initCommand(Command *command);
+
+/* frees memory used by the command object */
+static void destroyCommand(Command *command);
 
 /* executes a user input command */
 void executeCommand();
@@ -25,11 +33,14 @@ void executeCommand();
 /* main parse function that breaks a sentence down into its command parts */
 static Command parseCommand(dstring_t sentence);
 
-/* initializes the dstring_t objects inside of the command struct */
-static void initCommand(Command *command);
+/* extracts a direct object from a sentence */
+static int parseDirectObject(Command *command);
 
-/* frees memory used by the command object */
-static void destroyCommand(Command *command);
+/* extracts an indirect object from a sentence */
+static int parseIndirectObject(Command *command);
+
+/* returns true if the specified word is a recognized preposition */
+static int isPreposition(const char *word);
 
 
 static void initCommand(Command *command) {
@@ -38,26 +49,7 @@ static void initCommand(Command *command) {
       command->directObject = NULL;
       command->preposition = NULL;
       command->indirectObject = NULL;
-
-      if (DSTR_SUCCESS != dstralloc(&command->verb)) {
-         fprintf(stderr, "out of memory\n");
-         exit(EXIT_FAILURE);
-      }
-
-      if (DSTR_SUCCESS != dstralloc(&command->directObject)) {
-         fprintf(stderr, "out of memory\n");
-         exit(EXIT_FAILURE);
-      }
-
-      if (DSTR_SUCCESS != dstralloc(&command->preposition)) {
-         fprintf(stderr, "out of memory\n");
-         exit(EXIT_FAILURE);
-      }
-
-      if (DSTR_SUCCESS != dstralloc(&command->indirectObject)) {
-         fprintf(stderr, "out of memory\n");
-         exit(EXIT_FAILURE);
-      }
+      command->error = 0;
 
       return;
 }
@@ -65,24 +57,28 @@ static void initCommand(Command *command) {
 
 static void destroyCommand(Command *command) {
 
-      if (DSTR_SUCCESS != dstrfree(&command->verb)) {
-         fprintf(stderr, "error freeing memory\n");
-         exit(EXIT_FAILURE);
+      if (NULL != command->verb) {
+         if (DSTR_SUCCESS != dstrfree(&command->verb)) {
+            PRINT_OUT_OF_MEMORY_ERROR;
+         }
       }
 
-      if (DSTR_SUCCESS != dstrfree(&command->directObject)) {
-         fprintf(stderr, "error freeing memory\n");
-         exit(EXIT_FAILURE);
+      if (NULL != command->directObject) {
+         if (DSTR_SUCCESS != dstrfree(&command->directObject)) {
+            PRINT_OUT_OF_MEMORY_ERROR;
+         }
       }
 
-      if (DSTR_SUCCESS != dstrfree(&command->preposition)) {
-         fprintf(stderr, "error freeing memory\n");
-         exit(EXIT_FAILURE);
+      if (NULL != command->preposition) {
+         if (DSTR_SUCCESS != dstrfree(&command->preposition)) {
+            PRINT_OUT_OF_MEMORY_ERROR;
+         }
       }
 
-      if (DSTR_SUCCESS != dstrfree(&command->indirectObject)) {
-         fprintf(stderr, "error freeing memory\n");
-         exit(EXIT_FAILURE);
+      if (NULL != command->indirectObject) {
+         if (DSTR_SUCCESS != dstrfree(&command->indirectObject)) {
+            PRINT_OUT_OF_MEMORY_ERROR;
+         }
       }
 
       return;
@@ -95,7 +91,12 @@ void executeCommand() {
 
    command = parseCommand(readCommand());
 
-   if (0 == strcmp(dstrview(command.verb), "north")) {
+   /* the user didn't actually type anything, so do nothing */
+   if (NULL == command.verb) {
+      return;
+   }
+
+   else if (0 == strcmp(dstrview(command.verb), "north")) {
       move(NORTH);
    }
 
@@ -128,14 +129,98 @@ void executeCommand() {
 
 static Command parseCommand(dstring_t sentence) {
 
-   Command command;
+   Command  command;
+   char     *token;
+
    initCommand(&command);
 
-   // TODO
-   command.verb = sentence;
+   initTokenizer(dstrview(sentence));
+   token = getNextToken();
 
-   // TODO: enable this again when we're sure we're done with it
-   //dstrfree(&sentence);
+   // the user pressed enter without issuing a command, so ignore it
+   if (!token) {
+      return command;
+   }
+
+   /* the first token will always be considered the "verb" */
+   if (DSTR_SUCCESS != dstralloc(&command.verb)) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+   
+   cstrtodstr(command.verb, token);
+
+   /* read ahead */
+   token = getNextToken();
+   pushBackToken(token);
+
+   /* we may have a direct and/or indirect object to look at */
+   if (NULL != token) {
+
+      int status;
+
+      status  = parseDirectObject(&command);
+      status += parseIndirectObject(&command);
+
+      /* if we detected additional characters, but don't have a direct object
+         or indirect object, then we have a syntax error */
+      if (!status) {
+         command.error = 1;
+         return command;
+      }
+   }
+
+   /* we're done parsing! */
+   command.error = 0;
    return command;
+}
+
+
+static int parseDirectObject(Command *command) {
+
+   char *token = getNextToken();
+
+   while (NULL != token && !isPreposition(token)) {
+
+      /* initialize the string if we haven't done so yet */
+      if (NULL == command->directObject) {
+         if (DSTR_SUCCESS != dstralloc(&command->directObject)) {
+            PRINT_OUT_OF_MEMORY_ERROR;
+         }
+      }
+
+      dstrcatcs(command->directObject, " ");
+      dstrcatcs(command->directObject, token);
+
+      token = getNextToken();
+   }
+
+   /* we have a preposition to push back onto the token stream */
+   if (NULL != token) {
+      pushBackToken(token);
+   }
+
+   /* return true if a direct object was found */
+   return dstrlen(command->directObject) > 0 ? 1 : 0;
+}
+
+
+static int parseIndirectObject(Command *command) {
+
+   // TODO
+   return 0;
+}
+
+
+static int isPreposition(const char *word) {
+
+   int i;
+
+   for (i = 0; prepositions[i] != NULL; i++) {
+      if (0 == strcmp(word, prepositions[i])) {
+         return 1;
+      }
+   }
+
+   return 0;
 }
 
