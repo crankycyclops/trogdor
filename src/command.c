@@ -45,6 +45,9 @@ static int parseIndirectObject(Command *command);
 /* returns true if the specified word is a recognized preposition */
 static int isPreposition(const char *word);
 
+/* returns true if the specified word is a filler word */
+static int isFillerWord(const char *word);
+
 
 static void initCommand(Command *command) {
 
@@ -93,6 +96,8 @@ void executeCommand() {
    Command command;
 
    command = parseCommand(readCommand());
+
+   printCommand(command);
 
    /* the user didn't actually type anything, so do nothing */
    if (NULL == command.verb) {
@@ -183,6 +188,12 @@ static int parseDirectObject(Command *command) {
 
    while (NULL != token && !isPreposition(token)) {
 
+      // ignore filler words such as "the"
+      if (isFillerWord(token)) {
+         token = getNextToken();
+         continue;
+      }
+
       /* initialize the string if we haven't done so yet */
       if (NULL == command->directObject) {
          if (DSTR_SUCCESS != dstralloc(&command->directObject)) {
@@ -214,7 +225,7 @@ static int parseIndirectObject(Command *command) {
    char *token = getNextToken();
 
    /* an indirect object must be preceded by a preposition */
-   if (!isPreposition(token)) {
+   if (NULL == token || !isPreposition(token)) {
       pushBackToken(token);
       return 0;
    }
@@ -229,6 +240,12 @@ static int parseIndirectObject(Command *command) {
    token = getNextToken();
 
    while (NULL != token) {
+
+      // ignore filler words such as "the"
+      if (isFillerWord(token)) {
+         token = getNextToken();
+         continue;
+      }
 
       /* initialize the string if we haven't done so yet */
       if (NULL == command->indirectObject) {
@@ -261,6 +278,20 @@ static int parseIndirectObject(Command *command) {
    else {
       return 1;
    }
+}
+
+
+static int isFillerWord(const char *word) {
+
+   int i;
+
+   for (i = 0; fillerWords[i] != NULL; i++) {
+      if (0 == strcmp(word, fillerWords[i])) {
+         return 1;
+      }
+   }
+
+   return 0;
 }
 
 

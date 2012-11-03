@@ -1,6 +1,11 @@
 
 #include <stdlib.h>
 
+const char *fillerWords[] = {
+   "the",
+   NULL
+};
+
 const char *prepositions[] = {
    "about",
    "after",
