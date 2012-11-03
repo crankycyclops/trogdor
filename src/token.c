@@ -21,6 +21,7 @@ static char *curToken;
 
 void initTokenizer(const char *string) {
 
+   undeleted = NULL;
    curToken = strtok(string, " \t");
 }
 
