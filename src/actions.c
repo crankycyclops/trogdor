@@ -24,7 +24,37 @@ int quitGame(Command command) {
 
 int move(Command command) {
 
-   if (0 == strcmp("north", dstrview(command.verb))) {
+   dstring_t direction;
+
+   /* user entered navigation command in the verb + direction format */
+   if (
+      0 != strcmp("north", dstrview(command.verb)) &&
+      0 != strcmp("south", dstrview(command.verb)) &&
+      0 != strcmp("east",  dstrview(command.verb)) &&
+      0 != strcmp("west",  dstrview(command.verb))
+   ) {
+
+      if (NULL != command.directObject) {
+         direction = command.directObject;
+      }
+
+      else if (NULL != command.indirectObject) {
+         direction = command.indirectObject;
+      }
+
+      /* syntax error: no direction was given */
+      else {
+         printf("\n\nFUCK YOU\n\n");
+         return 0;
+      }
+   }
+
+   /* command was given as just a simple direction (e.g. "north") */
+   else {
+      direction = command.verb;
+   }
+
+   if (0 == strcmp("north", dstrview(direction))) {
 
          if (NULL != location->north) {
             location = location->north;
@@ -38,7 +68,7 @@ int move(Command command) {
          return 1;
    }
 
-   else if (0 == strcmp("south", dstrview(command.verb))) {
+   else if (0 == strcmp("south", dstrview(direction))) {
 
          if (NULL != location->south) {
             location = location->south;
@@ -52,7 +82,7 @@ int move(Command command) {
          return 1;
    }
 
-   else if (0 == strcmp("east", dstrview(command.verb))) {
+   else if (0 == strcmp("east", dstrview(direction))) {
 
          if (NULL != location->east) {
             location = location->east;
@@ -66,7 +96,7 @@ int move(Command command) {
          return 1;
    }
 
-   else if (0 == strcmp("west", dstrview(command.verb))) {
+   else if (0 == strcmp("west", dstrview(direction))) {
 
          if (NULL != location->west) {
             location = location->west;

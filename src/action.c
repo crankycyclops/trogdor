@@ -26,7 +26,9 @@ int callAction(Command command) {
 
    int i;
 
+   /* initialize our list of verb => function maps */
    static Verb verbs[] = {
+      {"go", &move},
       {"north", &move},
       {"south", &move},
       {"east",  &move},
