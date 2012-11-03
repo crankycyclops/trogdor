@@ -42,10 +42,9 @@ int move(Command command) {
          direction = command.indirectObject;
       }
 
-      /* syntax error: no direction was given */
       else {
-         printf("\n\nFUCK YOU\n\n");
-         return 0;
+         printf("Where would you like to go?\n");
+         return 1;
       }
    }
 
