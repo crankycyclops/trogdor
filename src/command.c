@@ -121,7 +121,6 @@ void executeCommand() {
       printf("Sorry, I don't understand you.\n");
    }
 
-   // TODO: this causes segfault the 2nd time; debug this!
    destroyCommand(&command);
    return;
 }
@@ -135,7 +134,8 @@ static Command parseCommand(dstring_t sentence) {
    // TODO
    command.verb = sentence;
 
-   dstrfree(&sentence);
+   // TODO: enable this again when we're sure we're done with it
+   //dstrfree(&sentence);
    return command;
 }
 
