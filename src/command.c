@@ -97,8 +97,6 @@ void executeCommand() {
 
    command = parseCommand(readCommand());
 
-   printCommand(command);
-
    /* the user didn't actually type anything, so do nothing */
    if (NULL == command.verb) {
       return;
