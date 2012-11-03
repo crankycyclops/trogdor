@@ -30,6 +30,9 @@ static void destroyCommand(Command *command);
 /* executes a user input command */
 void executeCommand();
 
+/* debugging function */
+static void printCommand(Command command);
+
 /* main parse function that breaks a sentence down into its command parts */
 static Command parseCommand(dstring_t sentence);
 
@@ -170,7 +173,6 @@ static Command parseCommand(dstring_t sentence) {
    }
 
    /* we're done parsing! */
-   command.error = 0;
    return command;
 }
 
@@ -188,7 +190,10 @@ static int parseDirectObject(Command *command) {
          }
       }
 
-      dstrcatcs(command->directObject, " ");
+      if (dstrlen(command->directObject) > 0) {
+         dstrcatcs(command->directObject, " ");
+      }
+
       dstrcatcs(command->directObject, token);
 
       token = getNextToken();
@@ -206,8 +211,56 @@ static int parseDirectObject(Command *command) {
 
 static int parseIndirectObject(Command *command) {
 
-   // TODO
-   return 0;
+   char *token = getNextToken();
+
+   /* an indirect object must be preceded by a preposition */
+   if (!isPreposition(token)) {
+      pushBackToken(token);
+      return 0;
+   }
+
+   if (DSTR_SUCCESS != dstralloc(&command->preposition)) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   dstrcatcs(command->preposition, token);
+
+   /* anything after the preposition will be counted as part of the IDO */
+   token = getNextToken();
+
+   while (NULL != token) {
+
+      /* initialize the string if we haven't done so yet */
+      if (NULL == command->indirectObject) {
+         if (DSTR_SUCCESS != dstralloc(&command->indirectObject)) {
+            PRINT_OUT_OF_MEMORY_ERROR;
+         }
+      }
+
+      if (dstrlen(command->indirectObject) > 0) {
+         dstrcatcs(command->indirectObject, " ");
+      }
+
+      dstrcatcs(command->indirectObject, token);
+
+      token = getNextToken();
+   }
+
+   /* no indirect object was parsed */
+   if (0 == dstrlen(command->indirectObject)) {
+
+      /* a dangling preposition is considered a syntax error */
+      if (dstrlen(command->preposition) > 0) {
+         command->error = 1;
+      }
+
+      return 0;
+   }
+
+   // we found a preposition + indirect object
+   else {
+      return 1;
+   }
 }
 
 
@@ -222,5 +275,17 @@ static int isPreposition(const char *word) {
    }
 
    return 0;
+}
+
+
+static void printCommand(Command command) {
+
+   printf("\n\nVerb: %s\n", NULL == command.verb ? "NULL" : dstrview(command.verb));
+   printf("DO: %s\n", NULL == command.directObject ? "NULL" : dstrview(command.directObject));
+   printf("Prep: %s\n", NULL == command.preposition ? "NULL" : dstrview(command.preposition));
+   printf("IDO: %s\n", NULL == command.indirectObject ? "NULL" : dstrview(command.indirectObject));
+   printf("Error: %d\n\n", command.error);
+
+   return;
 }
 
