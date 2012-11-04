@@ -37,6 +37,7 @@ void initData() {
    }
 
    // TODO
+   printParsedRooms();
 
    initRooms();
 }
@@ -68,6 +69,16 @@ static void initRooms() {
    start->north = next;
 
    return;
+}
+
+
+void printParsedRooms() {
+
+   int i;
+
+   for (i = 0; parsedRooms[i] != NULL; i++) {
+      printf("\nROOM!\n");
+   }
 }
 
 
