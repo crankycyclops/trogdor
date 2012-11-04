@@ -19,10 +19,10 @@ void destroyData();
 
 
 /* rooms that have been parsed from the XML game file */
-RoomParsed **parsedRooms;
+RoomParsed **parsedRooms = NULL;
 
 /* game objects that have been parsed from the XML game file */
-ObjectParsed **parsedObjects;
+ObjectParsed **parsedObjects = NULL;
 
 /* all rooms in the game, with the pointer itself referencing "start" */
 Room *rooms = NULL;
