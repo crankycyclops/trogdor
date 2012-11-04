@@ -26,7 +26,10 @@ static void parseObjectSection(xmlTextReaderPtr reader);
 /* parse the rooms section */
 static void parseRoomSection(xmlTextReaderPtr reader);
 
-/* parses a room object */
+/* parses an object */
+static void parseObject(xmlTextReaderPtr reader);
+
+/* parses a room */
 static void parseRoom(xmlTextReaderPtr reader);
 
 
@@ -51,7 +54,8 @@ int parseGameFile(const char *filename) {
          const xmlChar *value;
 
          name = xmlTextReaderConstName(reader);
-/*
+
+/* START DEBUG CODE
          value = xmlTextReaderValue(reader);
 
 
@@ -61,7 +65,8 @@ int parseGameFile(const char *filename) {
          printf("Value: %s\n\n", value);
 
          continue;
-*/
+
+END DEBUG CODE */
 
          if (NULL == name) {
             fprintf(stderr, "error parsing XML\n");
@@ -104,19 +109,151 @@ static void parseObjectSection(xmlTextReaderPtr reader) {
 
    int parseStatus;
 
-   printf("OBJECTS!\n");
-
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
    xmlTextReaderDepth(reader) > 1
    ) {
-      continue;
+
+      /* ignore XML comments */
+      if (XML_COMMENT_NODE == xmlTextReaderNodeType(reader)) {
+         continue;
+      }
+
+      else if (0 == strcmp("object", xmlTextReaderConstName(reader))) {
+         parseObject(reader);
+      }
+
+      else {
+         fprintf(stderr, "error: only <object> tags are allowed in <objects>\n");
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   if (parseStatus < 0) {
+      fprintf(stderr, "There was an error parsing game XML file\n");
+      exit(EXIT_FAILURE);
    }
 
    return;
 }
 
 
-// TODO: parser for an object
+static void parseObject(xmlTextReaderPtr reader) {
+
+   int parseStatus;        /* whether or not the parser could extract another node */
+   int synonymCount = 0;   /* number of synonyms for an object */
+
+   const char *objectName; /* name of the object */
+   ObjectParsed *object;   /* struct to represent what we've parsed for the room */
+
+   object = malloc(sizeof(ObjectParsed));
+   if (NULL == object) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   object->name = NULL;
+   object->description = NULL;
+   object->synonyms = NULL;
+
+   /* record the object's name */
+   objectName = xmlTextReaderGetAttribute(reader, "name");
+
+   if (NULL == objectName || 0 == strlen(objectName)) {
+      fprintf(stderr, "Error: objects must be assigned a name\n");
+      exit(EXIT_FAILURE);
+   }
+
+   if (DSTR_SUCCESS != dstralloc(&object->name)) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   cstrtodstr(object->name, objectName);
+
+   /* parse all of the object's elements */
+   while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
+   xmlTextReaderDepth(reader) > 2
+   ) {
+      int        tagtype  = xmlTextReaderNodeType(reader);
+      const char *tagname = xmlTextReaderConstName(reader);
+
+      /* ignore XML comment */
+      if (XML_COMMENT_NODE == tagtype) {
+         continue;
+      }
+
+      /* we're parsing the object's description */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("description", tagname)) {
+         GET_XML_TAG(description, object)
+      }
+
+      /* we're parsing a synonym */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("synonym", tagname)) {
+
+         dstring_t synonym = NULL;
+         dstring_t *newSynonyms;
+
+         if (DSTR_SUCCESS != dstralloc(&synonym)) {
+            PRINT_OUT_OF_MEMORY_ERROR;
+         }
+
+         cstrtodstr(synonym, getNodeValue(reader));
+
+         /* add the synonym to the array */
+         synonymCount++;
+
+         /* first synonym in the array */
+         if (1 == synonymCount) {
+
+            object->synonyms = malloc(sizeof(dstring_t *));
+
+            if (NULL == object->synonyms) {
+               PRINT_OUT_OF_MEMORY_ERROR;
+            }
+         }
+
+         /* adding more synonyms to the array */
+         else {
+
+            newSynonyms = realloc(object->synonyms, synonymCount * sizeof(dstring_t *));
+
+            if (NULL == newSynonyms) {
+               PRINT_OUT_OF_MEMORY_ERROR;
+            }
+
+            object->synonyms = newSynonyms;
+         }
+
+         object->synonyms[synonymCount - 1] = synonym;
+
+         /* make sure we have a valid closing tag */
+         checkClosingTag("synonym", reader);
+      }
+
+      /* an unknown tag was found */
+      else {
+         fprintf(stderr, "Illegal tag <%s> found in object definition",
+            xmlTextReaderConstName(reader));
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   if (parseStatus < 0) {
+      fprintf(stderr, "There was an error parsing game XML file\n");
+      exit(EXIT_FAILURE);
+   }
+
+   /* make sure to NULL terminate our array of synonyms */
+   if (synonymCount > 0) {
+
+      dstring_t *synonymsObjects =
+         realloc(object->synonyms, synonymCount * sizeof(dstring_t *));
+
+      if (NULL == synonymsObjects) {
+         PRINT_OUT_OF_MEMORY_ERROR;
+      }
+
+      object->synonyms = synonymsObjects;
+   }
+}
 
 
 static void parseRoomSection(xmlTextReaderPtr reader) {
@@ -137,7 +274,6 @@ static void parseRoomSection(xmlTextReaderPtr reader) {
       }
 
       else {
-         // TODO: catch error and return properly
          fprintf(stderr, "error: only <room> tags are allowed in <rooms>\n");
          exit(EXIT_FAILURE);
       }
@@ -201,27 +337,27 @@ static void parseRoom(xmlTextReaderPtr reader) {
 
       /* we're parsing the room's description */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("description", tagname)) {
-         GET_XML_TAG(description)
+         GET_XML_TAG(description, room)
       }
 
       /* get the room north of this one */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("north", tagname)) {
-         GET_XML_TAG(north)
+         GET_XML_TAG(north, room)
       }
 
       /* get the room south of this one */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("south", tagname)) {
-         GET_XML_TAG(south)
+         GET_XML_TAG(south, room)
       }
 
       /* get the room east of this one */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("east", tagname)) {
-         GET_XML_TAG(east)
+         GET_XML_TAG(east, room)
       }
 
       /* get the room west of this one */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("west", tagname)) {
-         GET_XML_TAG(west)
+         GET_XML_TAG(west, room)
       }
 
       /* an object gets placed in this room */
@@ -273,8 +409,6 @@ static void parseRoom(xmlTextReaderPtr reader) {
             xmlTextReaderConstName(reader));
          exit(EXIT_FAILURE);
       }
-
-      continue;
    }
 
    if (parseStatus < 0) {

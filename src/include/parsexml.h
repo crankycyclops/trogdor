@@ -17,24 +17,33 @@ typedef struct roomParsed {
    
 } RoomParsed;
 
+typedef struct objectParsed {
+
+   dstring_t name;
+   dstring_t description;
+
+   /* an array of synonyms */
+   dstring_t *synonyms;
+} ObjectParsed;
+
 
 #ifdef PARSEXML_C
 
 
 /* this macro relies on a dstring_t object being defined with name X */
-#define GET_XML_TAG(X) \
+#define GET_XML_TAG(X, Y) \
 \
-   if (NULL != room->X) { \
+   if (NULL != Y->X) { \
       fprintf(stderr, "Warning: \""#X"\" declared twice. Overwriting the first.\n"); \
    } \
 \
    else { \
-      if (DSTR_SUCCESS != dstrnalloc(&room->X, 250)) { \
+      if (DSTR_SUCCESS != dstrnalloc(&Y->X, 250)) { \
          PRINT_OUT_OF_MEMORY_ERROR; \
       } \
    } \
 \
-   cstrtodstr(room->X, getNodeValue(reader)); \
+   cstrtodstr(Y->X, getNodeValue(reader)); \
    checkClosingTag(#X, reader);
 
 
