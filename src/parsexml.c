@@ -386,6 +386,12 @@ static void parseRoom(xmlTextReaderPtr reader) {
       exit(EXIT_FAILURE);
    }
 
+   /* make sure the room doesn't already exist */
+   if (g_hash_table_contains(roomParsedTable, roomName)) {
+      fprintf(stderr, "room '%s' must be unique\n", roomName);
+      exit(EXIT_FAILURE);
+   }
+
    if (DSTR_SUCCESS != dstralloc(&room->name)) {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
@@ -532,6 +538,9 @@ static void parseRoom(xmlTextReaderPtr reader) {
    }
 
    parsedRooms[parsedRoomCount - 1] = room;
+
+   /* add the room to the rooms parsed table for lookup later */
+   g_hash_table_insert(roomParsedTable, roomName, room);
 
    return;
 }

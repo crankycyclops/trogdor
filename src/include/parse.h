@@ -38,12 +38,12 @@ extern ObjectParsed **parsedObjects;
 /* a lookup table for game objects being parsed */
 extern GHashTable *objectParsedTable;
 
+/* a lookup table for rooms being parsed */
+extern GHashTable *roomParsedTable;
 
-/* initializes the game file parser */
-extern void initParser();
 
-/* frees memory associated with the game file parser */
-extern void destroyParser();
+/* entry point for parsing the game file */
+extern int parseGame(const char *filename);
 
 
 #endif

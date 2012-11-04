@@ -4,6 +4,22 @@
 #include "include/parse.h"
 
 
+/* entry point for parsing the game file */
+int parseGame();
+
+/* prints parsed data for all rooms */
+static void printParsedRooms();
+
+/* prints parsed data for all objects */
+static void printParsedObjects();
+
+/* initializes the parser */
+static void initParser();
+
+/* frees memory associated with the parser */
+static void destroyParser();
+
+
 /* rooms that have been parsed from the XML game file */
 RoomParsed **parsedRooms = NULL;
 
@@ -13,17 +29,42 @@ ObjectParsed **parsedObjects = NULL;
 /* a lookup table for game objects being parsed */
 GHashTable *objectParsedTable = NULL;
 
+/* a lookup table for rooms being parsed */
+GHashTable *roomParsedTable = NULL;
 
-void initParser() {
 
-   objectParsedTable = g_hash_table_new(g_str_hash, g_str_equal);
+int parseGame(const char *filename) {
+
+   initParser();
+
+   if (!parseGameFile(filename)) {
+      fprintf(stderr, "failed to parse game file %s\n", filename);
+      return 0;
+   }
+
+   /* make sure a room named "start" exists */
+   if (!g_hash_table_contains(roomParsedTable, "start")) {
+      fprintf(stderr, "room 'start' must be defined\n");
+      return 0;
+   }
+
+   destroyParser();
+   return 1;
 }
 
 
-void destroyParser() {
+static void initParser() {
+
+   objectParsedTable = g_hash_table_new(g_str_hash, g_str_equal);
+   roomParsedTable   = g_hash_table_new(g_str_hash, g_str_equal);
+}
+
+
+static void destroyParser() {
 
    // TODO: destroy strings inside hash
    g_hash_table_destroy(objectParsedTable);
+   g_hash_table_destroy(roomParsedTable);
 }
 
 

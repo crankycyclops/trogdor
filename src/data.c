@@ -19,12 +19,6 @@ static void initRooms();
 /* frees memory used by game data/assets */
 void destroyData();
 
-/* prints parsed data for all rooms */
-static void printParsedRooms();
-
-/* prints parsed data for all objects */
-static void printParsedObjects();
-
 
 /* all rooms in the game, with the pointer itself referencing "start" */
 Room *rooms = NULL;
@@ -32,14 +26,10 @@ Room *rooms = NULL;
 
 void initData() {
 
-   initParser();
-
-   if (!parseGameFile(GAME_FILE)) {
-      fprintf(stderr, "failed to parse game file %s\n", GAME_FILE);
+   if (!parseGame(GAME_FILE)) {
       exit(EXIT_FAILURE);
    }
 
-   destroyParser();
    initRooms();
 }
 
