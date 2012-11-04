@@ -433,6 +433,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
       /* an object gets placed in this room */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("object", tagname)) {
 
+         const char *objectName = getNodeValue(reader);
          dstring_t object = NULL;
          dstring_t *newObjects;
 
@@ -440,7 +441,14 @@ static void parseRoom(xmlTextReaderPtr reader) {
             PRINT_OUT_OF_MEMORY_ERROR;
          }
 
-         cstrtodstr(object, getNodeValue(reader));
+         /* make sure the object exists */
+         if (!g_hash_table_contains(objectParsedTable, objectName)) {
+            fprintf(stderr, "object '%s' in room '%s' doesn't exist\n",
+               objectName, roomName);
+            exit(EXIT_FAILURE);
+         }
+         
+         cstrtodstr(object, objectName);
          dstrtrim(object);
 
          /* add the object to the array */
