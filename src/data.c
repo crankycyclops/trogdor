@@ -17,6 +17,12 @@ static void initRooms();
 /* frees memory used by game data/assets */
 void destroyData();
 
+/* prints parsed data for all rooms */
+static void printParsedRooms();
+
+/* prints parsed data for all objects */
+static void printParsedObjects();
+
 
 /* rooms that have been parsed from the XML game file */
 RoomParsed **parsedRooms = NULL;
@@ -35,10 +41,6 @@ void initData() {
       fprintf(stderr, "failed to parse game file %s\n", GAME_FILE);
       exit(EXIT_FAILURE);
    }
-
-   // TODO
-   printParsedRooms();
-   printParsedObjects();
 
    initRooms();
 }
@@ -73,7 +75,7 @@ static void initRooms() {
 }
 
 
-void printParsedObjects() {
+static void printParsedObjects() {
 
    int i;
 
@@ -86,7 +88,7 @@ void printParsedObjects() {
 }
 
 
-void printParsedRooms() {
+static void printParsedRooms() {
 
    int i;
 
