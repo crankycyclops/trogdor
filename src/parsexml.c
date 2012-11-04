@@ -33,13 +33,6 @@ static void parseObject(xmlTextReaderPtr reader);
 static void parseRoom(xmlTextReaderPtr reader);
 
 
-int main(int argc, char **argv) {
-
-   parseGameFile("sample.xml");
-   return 0;
-}
-
-
 int parseGameFile(const char *filename) {
 
    int parseStatus;
