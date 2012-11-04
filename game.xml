@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+
+<game>
+
+   <!-- Section I. Objects -->
+   <objects>
+
+      <!-- every object MUST HAVE a UNIQUE name -->
+      <object name="candle">
+         <!-- The user will see this description the first time they encounter the
+              object, or everytime they issue the command "look at candle."
+         -->
+         <description>
+            You see a firey cylinder of wax burning with the passion of a thousand suns.
+         </description>
+         <synonym>fire</synonym>
+         <synonym>flame</synonym>
+      </object>
+
+   </objects>
+
+   <!-- Section II. Creatures -->
+   <!-- TODO -->
+
+   <!-- Section III. Rooms -->
+
+   <rooms>
+
+      <!-- every room MUST HAVE a UNIQUE name.  One room MUST have the name
+           "start," which is where the player will start when the game begins.
+       -->
+      <room name="start">
+
+         <!-- user will see the room's description when they enter -->
+         <description>
+            You're standing in the midst of a marble castle, the walls lined with
+            portraits of long deceased ancestors of some forgotten king.
+
+            You see a dark hole in the wall to the north
+         </description>
+
+         <!-- name of the room north of this one -->
+         <north>cave</north>
+         <!-- we place the object "candle" in this room.  Note that an object cannot
+              be in more than one room.
+         -->
+         <object>candle</object>
+
+      </room>
+
+      <room name="cave">
+
+         <description>
+            You're in a dark musty cave.  You see a light some ways off to the south.
+         </description>
+
+         <!-- Since this room is north of "start," start is south of here.  You
+              can specify one way movements by not placing this line here (maybe,
+              for example, the user got shut behind a trap door?)
+         -->
+         <south>start</south>
+
+      </room>
+
+   </rooms>
+
+</game>
+
