@@ -97,6 +97,8 @@ END DEBUG CODE */
          fprintf(stderr, "failed to parse XML\n");
          return 0;
       }
+
+      return 1;
    }
 
    else {
