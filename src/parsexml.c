@@ -183,6 +183,7 @@ static void parseObject(xmlTextReaderPtr reader) {
    }
 
    cstrtodstr(object->name, objectName);
+   dstrtrim(object->name);
 
    /* parse all of the object's elements */
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
@@ -212,6 +213,7 @@ static void parseObject(xmlTextReaderPtr reader) {
          }
 
          cstrtodstr(synonym, getNodeValue(reader));
+         dstrtrim(synonym);
 
          /* add the synonym to the array */
          synonymCount++;
@@ -379,6 +381,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
    }
 
    cstrtodstr(room->name, roomName);
+   dstrtrim(room->name);
 
    /* parse all of the room's elements */
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
@@ -428,6 +431,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
          }
 
          cstrtodstr(object, getNodeValue(reader));
+         dstrtrim(object);
 
          /* add the object to the array */
          objectCount++;

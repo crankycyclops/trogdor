@@ -46,6 +46,7 @@ typedef struct objectParsed {
    } \
 \
    cstrtodstr(Y->X, getNodeValue(reader)); \
+   dstrtrim(Y->X); \
    checkClosingTag(#X, reader);
 
 
