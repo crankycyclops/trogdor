@@ -5,30 +5,6 @@
 
 #include "dstring.h"
 
-typedef struct roomParsed {
-
-   dstring_t name;
-   dstring_t description;
-   dstring_t north;
-   dstring_t south;
-   dstring_t east;
-   dstring_t west;
-
-   /* an array of object identifiers */
-   dstring_t *objects;
-   
-} RoomParsed;
-
-typedef struct objectParsed {
-
-   dstring_t name;
-   dstring_t description;
-
-   /* an array of synonyms */
-   dstring_t *synonyms;
-} ObjectParsed;
-
-
 #ifdef PARSEXML_C
 
 

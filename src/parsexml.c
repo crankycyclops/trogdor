@@ -6,6 +6,7 @@
 #define PARSEXML_C
 
 #include "include/trogdor.h"
+#include "include/parse.h"
 #include "include/parsexml.h"
 #include "include/data.h"
 
@@ -178,6 +179,12 @@ static void parseObject(xmlTextReaderPtr reader) {
       exit(EXIT_FAILURE);
    }
 
+   /* make sure the object doesn't already exist */
+   if (g_hash_table_contains(objectParsedTable, objectName)) {
+      fprintf(stderr, "object '%s' must be unique\n", objectName);
+      exit(EXIT_FAILURE);
+   }
+
    if (DSTR_SUCCESS != dstralloc(&object->name)) {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
@@ -296,6 +303,9 @@ static void parseObject(xmlTextReaderPtr reader) {
    }
 
    parsedObjects[parsedObjectCount - 1] = object;
+
+   /* add the object to the objects parsed table for lookup later */
+   g_hash_table_insert(objectParsedTable, objectName, object);
 
    return;
 }
