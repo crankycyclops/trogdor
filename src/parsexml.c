@@ -1,7 +1,7 @@
 
 #include <string.h>
 #include <dstring.h>
-#include <libxml2/libxml/xmlreader.h>
+#include <libxml/xmlreader.h>
 
 #define PARSEXML_C
 
