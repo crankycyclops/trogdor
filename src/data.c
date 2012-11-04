@@ -3,20 +3,45 @@
 #include <stdlib.h>
 
 #include "include/trogdor.h"
+#include "include/parsexml.h"
+
+#define GAME_FILE "game.xml"
 
 
 /* initializes game data/assets such as rooms */
 void initData();
 
+/* initializes the rooms */
+static void initRooms();
+
 /* frees memory used by game data/assets */
 void destroyData();
 
 
+/* rooms that have been parsed from the XML game file */
+RoomParsed **parsedRooms;
+
+/* game objects that have been parsed from the XML game file */
+ObjectParsed **parsedObjects;
+
+/* all rooms in the game, with the pointer itself referencing "start" */
 Room *rooms = NULL;
 
 
 /* TODO: we should eventually add a parser to do custom room definitions */
 void initData() {
+
+   if (!parseGameFile(GAME_FILE)) {
+      fprintf(stderr, "failed to parse game file %s\n", GAME_FILE);
+      exit(EXIT_FAILURE);
+   }
+
+   // TODO
+
+   initRooms();
+}
+
+static void initRooms() {
 
    Room *start;
 
@@ -48,6 +73,7 @@ void initData() {
 
 void destroyData() {
 
+   // TODO: this doesn't work; only frees "start" room...
    free(rooms);
 }
 

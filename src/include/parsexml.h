@@ -3,6 +3,8 @@
 #define PARSEXML_H
 
 
+#include "dstring.h"
+
 typedef struct roomParsed {
 
    dstring_t name;
@@ -52,7 +54,8 @@ typedef struct objectParsed {
 
 #ifndef PARSEXML_C
 
-// TODO
+/* returns true if the document was parsed successfully and false otherwise */
+extern int parseGameFile(const char *filename);
 
 #endif
 
