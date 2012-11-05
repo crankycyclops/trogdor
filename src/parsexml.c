@@ -36,11 +36,6 @@ static void parseObject(xmlTextReaderPtr reader);
 static void parseRoom(xmlTextReaderPtr reader);
 
 
-/* number of objects and rooms that have been parsed */
-int parsedObjectCount = 0;
-int parsedRoomCount = 0;
-
-
 int parseGameFile(const char *filename) {
 
    int parseStatus;
@@ -134,20 +129,6 @@ static void parseObjectSection(xmlTextReaderPtr reader) {
    if (parseStatus < 0) {
       fprintf(stderr, "There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
-   }
-
-   /* NULL terminate our array of parsed objects */
-   if (parsedObjectCount > 0) {
-
-      ObjectParsed **newObjects =
-         realloc(parsedObjects, (parsedObjectCount + 1) * sizeof(ObjectParsed *));
-
-      if (NULL == newObjects) {
-         PRINT_OUT_OF_MEMORY_ERROR;
-      }
-
-      parsedObjects = newObjects;
-      parsedObjects[parsedObjectCount] = NULL;
    }
 
    return;
@@ -280,30 +261,6 @@ static void parseObject(xmlTextReaderPtr reader) {
       object->synonyms[synonymCount] = NULL;
    }
 
-   /* add the object to our global array of parsed objects */
-   parsedObjectCount++;
-
-   if (1 == parsedObjectCount) {
-      parsedObjects = malloc(sizeof(ObjectParsed *));
-      if (NULL == parsedObjects) {
-         PRINT_OUT_OF_MEMORY_ERROR;
-      }
-   }
-
-   else {
-
-      ObjectParsed **newObjects =
-         realloc(parsedObjects, parsedObjectCount * sizeof(ObjectParsed *));
-
-      if (NULL == newObjects) {
-         PRINT_OUT_OF_MEMORY_ERROR;
-      }
-
-      parsedObjects = newObjects;
-   }
-
-   parsedObjects[parsedObjectCount - 1] = object;
-
    /* add the object to the objects parsed table for lookup later */
    g_hash_table_insert(objectParsedTable, objectName, object);
 
@@ -337,20 +294,6 @@ static void parseRoomSection(xmlTextReaderPtr reader) {
    if (parseStatus < 0) {
       fprintf(stderr, "There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
-   }
-
-   /* NULL terminate our array of parsed rooms */
-   if (parsedRoomCount > 0) {
-
-      RoomParsed **newRooms =
-         realloc(parsedRooms, (parsedRoomCount + 1) * sizeof(RoomParsed *));
-
-      if (NULL == newRooms) {
-         PRINT_OUT_OF_MEMORY_ERROR;
-      }
-
-      parsedRooms = newRooms;
-      parsedRooms[parsedRoomCount] = NULL;
    }
 
    return;
@@ -515,31 +458,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
       room->objects[objectCount] = NULL;
    }
 
-   /* add the room to our global array of parsed rooms */
-   parsedRoomCount++;
-
-   if (1 == parsedRoomCount) {
-      parsedRooms = malloc(sizeof(RoomParsed *));
-      if (NULL == parsedRooms) {
-         PRINT_OUT_OF_MEMORY_ERROR;
-      }
-   }
-
-   else {
-
-      RoomParsed **newRooms =
-         realloc(parsedRooms, parsedRoomCount * sizeof(RoomParsed *));
-
-      if (NULL == newRooms) {
-         PRINT_OUT_OF_MEMORY_ERROR;
-      }
-
-      parsedRooms = newRooms;
-   }
-
-   parsedRooms[parsedRoomCount - 1] = room;
-
-   /* add the room to the rooms parsed table for lookup later */
+   /* add the room to the rooms parsed lookup table */
    g_hash_table_insert(roomParsedTable, roomName, room);
 
    return;

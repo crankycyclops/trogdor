@@ -7,11 +7,11 @@
 /* entry point for parsing the game file */
 int parseGame();
 
-/* prints parsed data for all rooms */
-static void printParsedRooms();
+/* prints parsed data for a room */
+static void printParsedRoom(RoomParsed *room);
 
-/* prints parsed data for all objects */
-static void printParsedObjects();
+/* prints parsed data for an object */
+static void printParsedObject(ObjectParsed *object);
 
 /* initializes the parser */
 static void initParser();
@@ -19,12 +19,6 @@ static void initParser();
 /* frees memory associated with the parser */
 static void destroyParser();
 
-
-/* rooms that have been parsed from the XML game file */
-RoomParsed **parsedRooms = NULL;
-
-/* game objects that have been parsed from the XML game file */
-ObjectParsed **parsedObjects = NULL;
 
 /* a lookup table for game objects being parsed */
 GHashTable *objectParsedTable = NULL;
@@ -68,57 +62,45 @@ static void destroyParser() {
 }
 
 
-static void printParsedObjects() {
+static void printParsedObject(ObjectParsed *object) {
 
-   int i;
-
-   for (i = 0; parsedObjects[i] != NULL; i++) {
-
-      printf("Object %d:\n", i);
-      printf("Name: %s\n", dstrview(parsedObjects[i]->name));
-      printf("Description: %s\n", dstrview(parsedObjects[i]->description));
-   }
+   printf("Name: %s\n", dstrview(object->name));
+   printf("Description: %s\n", dstrview(object->description));
 }
 
 
-static void printParsedRooms() {
+static void printParsedRoom(RoomParsed *room) {
 
-   int i;
+   int i = 0;
 
-   for (i = 0; parsedRooms[i] != NULL; i++) {
+   printf("Name: %s\n", dstrview(room->name));
+   printf("Description: %s\n", dstrview(room->description));
 
-      int j = 0;
+   if (NULL != room->north) {
+      printf("North: %s\n", dstrview(room->north));
+   }
 
-      printf("Room %d:\n", i);
-      printf("Name: %s\n", dstrview(parsedRooms[i]->name));
-      printf("Description: %s\n", dstrview(parsedRooms[i]->description));
+   if (NULL != room->south) {
+      printf("South: %s\n", dstrview(room->south));
+   }
 
-      if (NULL != parsedRooms[i]->north) {
-         printf("North: %s\n", dstrview(parsedRooms[i]->north));
-      }
+   if (NULL != room->east) {
+      printf("East: %s\n", dstrview(room->east));
+   }
 
-      if (NULL != parsedRooms[i]->south) {
-         printf("South: %s\n", dstrview(parsedRooms[i]->south));
-      }
+   if (NULL != room->west) {
+      printf("West: %s\n", dstrview(room->west));
+   }
 
-      if (NULL != parsedRooms[i]->east) {
-         printf("East: %s\n", dstrview(parsedRooms[i]->east));
-      }
-
-      if (NULL != parsedRooms[i]->west) {
-         printf("West: %s\n", dstrview(parsedRooms[i]->west));
-      }
-
-      if (NULL != parsedRooms[i]->objects) {
-         printf("Objects: ");
-         for (j = 0; parsedRooms[i]->objects[j] != NULL; j++) {
-            printf("%s, ", dstrview(parsedRooms[i]->objects[j]));
-         }
-
-         printf("\n");
+   if (NULL != room->objects) {
+      printf("Objects: ");
+      for (i = 0; room->objects[i] != NULL; i++) {
+         printf("%s, ", dstrview(room->objects[i]));
       }
 
       printf("\n");
    }
+
+   printf("\n");
 }
 

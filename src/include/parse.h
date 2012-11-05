@@ -29,12 +29,6 @@ typedef struct objectParsed {
 } ObjectParsed;
 
 
-/* rooms that have been parsed from the XML game file */
-extern RoomParsed **parsedRooms;
-
-/* game objects that have been parsed from the XML game file */
-extern ObjectParsed **parsedObjects;
-
 /* a lookup table for game objects being parsed */
 extern GHashTable *objectParsedTable;
 
