@@ -37,7 +37,7 @@ int parseGame(const char *filename) {
    }
 
    /* make sure a room named "start" exists */
-   if (!g_hash_table_contains(roomParsedTable, "start")) {
+   if (NULL == g_hash_table_lookup(roomParsedTable, "start")) {
       fprintf(stderr, "room 'start' must be defined\n");
       return 0;
    }

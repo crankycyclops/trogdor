@@ -161,7 +161,7 @@ static void parseObject(xmlTextReaderPtr reader) {
    }
 
    /* make sure the object doesn't already exist */
-   if (g_hash_table_contains(objectParsedTable, objectName)) {
+   if (NULL != g_hash_table_lookup(objectParsedTable, objectName)) {
       fprintf(stderr, "object '%s' must be unique\n", objectName);
       exit(EXIT_FAILURE);
    }
@@ -330,7 +330,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
    }
 
    /* make sure the room doesn't already exist */
-   if (g_hash_table_contains(roomParsedTable, roomName)) {
+   if (NULL != g_hash_table_lookup(roomParsedTable, roomName)) {
       fprintf(stderr, "room '%s' must be unique\n", roomName);
       exit(EXIT_FAILURE);
    }
@@ -391,7 +391,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
          }
 
          /* make sure the object exists */
-         if (!g_hash_table_contains(objectParsedTable, objectName)) {
+         if (NULL == g_hash_table_lookup(objectParsedTable, objectName)) {
             fprintf(stderr, "object '%s' in room '%s' doesn't exist\n",
                objectName, roomName);
             exit(EXIT_FAILURE);
