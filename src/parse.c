@@ -1,11 +1,22 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <dstring.h>
+#include <glib.h>
 
+#include "include/trogdor.h"
+#include "include/data.h"
+#include "include/state.h"
 #include "include/parse.h"
 
 
 /* entry point for parsing the game file */
 int parseGame();
+
+/* initialize game objects from parsed data */
+static void initObjects();
+
+/* initializes the rooms */
+static void initRooms();
 
 /* prints parsed data for a room */
 static void printParsedRoom(RoomParsed *room);
@@ -42,6 +53,9 @@ int parseGame(const char *filename) {
       return 0;
    }
 
+   initObjects();
+   initRooms();
+
    destroyParser();
    return 1;
 }
@@ -59,6 +73,46 @@ static void destroyParser() {
    // TODO: destroy strings inside hash
    g_hash_table_destroy(objectParsedTable);
    g_hash_table_destroy(roomParsedTable);
+}
+
+
+static void initObjects() {
+
+   objects = g_hash_table_new(g_str_hash, g_str_equal);
+
+   // TODO
+
+   return;
+}
+
+
+static void initRooms() {
+
+   Room *start;
+
+   start = (Room *)malloc(sizeof(Room));
+
+   start->description = "This is such a cool room!";
+   start->north = NULL;
+   start->south = NULL;
+   start->east  = NULL;
+   start->west  = NULL;
+
+   rooms = start;
+
+   Room *next;
+   next = (Room *)malloc(sizeof(Room));
+
+   next->description = "Ok, now you're in a dead end.  So you lose :)";
+   next->north = NULL;
+   next->south = start;
+   next->east = NULL;
+   next->west = NULL;
+
+   // connect room "next" to room "start"
+   start->north = next;
+
+   return;
 }
 
 
