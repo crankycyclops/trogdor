@@ -148,8 +148,8 @@ static void printParsedRoom(RoomParsed *room) {
 
    if (NULL != room->objects) {
       printf("Objects: ");
-      for (i = 0; room->objects[i] != NULL; i++) {
-         printf("%s, ", dstrview(room->objects[i]));
+      for (i = 0; i < room->objects->len; i++) {
+         printf("%s, ", dstrview(g_array_index(room->objects, dstring_t, i)));
       }
 
       printf("\n");

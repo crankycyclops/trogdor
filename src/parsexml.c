@@ -150,7 +150,7 @@ static void parseObject(xmlTextReaderPtr reader) {
 
    object->name = NULL;
    object->description = NULL;
-   object->synonyms = NULL;
+   object->synonyms = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 5);
 
    /* record the object's name */
    objectName = xmlTextReaderGetAttribute(reader, "name");
@@ -194,41 +194,15 @@ static void parseObject(xmlTextReaderPtr reader) {
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("synonym", tagname)) {
 
          dstring_t synonym = NULL;
-         dstring_t *newSynonyms;
 
          if (DSTR_SUCCESS != dstralloc(&synonym)) {
             PRINT_OUT_OF_MEMORY_ERROR;
          }
 
+         /* add to the object's list of synonyms */
          cstrtodstr(synonym, getNodeValue(reader));
          dstrtrim(synonym);
-
-         /* add the synonym to the array */
-         synonymCount++;
-
-         /* first synonym in the array */
-         if (1 == synonymCount) {
-
-            object->synonyms = malloc(sizeof(dstring_t *));
-
-            if (NULL == object->synonyms) {
-               PRINT_OUT_OF_MEMORY_ERROR;
-            }
-         }
-
-         /* adding more synonyms to the array */
-         else {
-
-            newSynonyms = realloc(object->synonyms, synonymCount * sizeof(dstring_t *));
-
-            if (NULL == newSynonyms) {
-               PRINT_OUT_OF_MEMORY_ERROR;
-            }
-
-            object->synonyms = newSynonyms;
-         }
-
-         object->synonyms[synonymCount - 1] = synonym;
+         g_array_append_val(object->synonyms, synonym);
 
          /* make sure we have a valid closing tag */
          checkClosingTag("synonym", reader);
@@ -245,20 +219,6 @@ static void parseObject(xmlTextReaderPtr reader) {
    if (parseStatus < 0) {
       fprintf(stderr, "There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
-   }
-
-   /* make sure to NULL terminate our array of synonyms */
-   if (synonymCount > 0) {
-
-      dstring_t *synonymsObjects =
-         realloc(object->synonyms, (synonymCount + 1) * sizeof(dstring_t *));
-
-      if (NULL == synonymsObjects) {
-         PRINT_OUT_OF_MEMORY_ERROR;
-      }
-
-      object->synonyms = synonymsObjects;
-      object->synonyms[synonymCount] = NULL;
    }
 
    /* add the object to the objects parsed table for lookup later */
@@ -303,7 +263,6 @@ static void parseRoomSection(xmlTextReaderPtr reader) {
 static void parseRoom(xmlTextReaderPtr reader) {
 
    int parseStatus;      /* whether or not the parser could extract another node */
-   int objectCount = 0;  /* number of objects belonging to a room */
 
    const char *roomName; /* name of the room */
    RoomParsed *room;     /* struct to represent what we've parsed for the room */
@@ -319,7 +278,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
    room->south = NULL;
    room->east = NULL;
    room->west = NULL;
-   room->objects = NULL;
+   room->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t *), 5);
 
    /* record the room's name */
    roomName = xmlTextReaderGetAttribute(reader, "name");
@@ -384,7 +343,6 @@ static void parseRoom(xmlTextReaderPtr reader) {
 
          const char *objectName = getNodeValue(reader);
          dstring_t object = NULL;
-         dstring_t *newObjects;
 
          if (DSTR_SUCCESS != dstralloc(&object)) {
             PRINT_OUT_OF_MEMORY_ERROR;
@@ -396,36 +354,11 @@ static void parseRoom(xmlTextReaderPtr reader) {
                objectName, roomName);
             exit(EXIT_FAILURE);
          }
-         
+
+         /* add object to the room */
          cstrtodstr(object, objectName);
          dstrtrim(object);
-
-         /* add the object to the array */
-         objectCount++;
-
-         /* first object in the array */
-         if (1 == objectCount) {
-
-            room->objects = malloc(sizeof(dstring_t *));
-
-            if (NULL == room->objects) {
-               PRINT_OUT_OF_MEMORY_ERROR;
-            }
-         }
-
-         /* adding more objects to the array */
-         else {
-
-            newObjects = realloc(room->objects, objectCount * sizeof(dstring_t *));
-
-            if (NULL == newObjects) {
-               PRINT_OUT_OF_MEMORY_ERROR;
-            }
-
-            room->objects = newObjects;
-         }
-
-         room->objects[objectCount - 1] = object;
+         g_array_append_val(room->objects, object);
 
          /* make sure we have a valid closing tag */
          checkClosingTag("object", reader);
@@ -442,20 +375,6 @@ static void parseRoom(xmlTextReaderPtr reader) {
    if (parseStatus < 0) {
       fprintf(stderr, "There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
-   }
-
-   /* make sure to NULL terminate our array of objects */
-   if (objectCount > 0) {
-
-      dstring_t *newObjects =
-         realloc(room->objects, (objectCount + 1) * sizeof(dstring_t *));
-
-      if (NULL == newObjects) {
-         PRINT_OUT_OF_MEMORY_ERROR;
-      }
-
-      room->objects = newObjects;
-      room->objects[objectCount] = NULL;
    }
 
    /* add the room to the rooms parsed lookup table */

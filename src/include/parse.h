@@ -15,7 +15,7 @@ typedef struct roomParsed {
    dstring_t west;
 
    /* an array of object identifiers */
-   dstring_t *objects;
+   GArray *objects;
    
 } RoomParsed;
 
@@ -25,7 +25,7 @@ typedef struct objectParsed {
    dstring_t description;
 
    /* an array of synonyms */
-   dstring_t *synonyms;
+   GArray *synonyms;
 } ObjectParsed;
 
 
