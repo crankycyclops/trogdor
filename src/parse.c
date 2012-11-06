@@ -78,15 +78,15 @@ static void destroyParser() {
 
 static void initObjects() {
 
-   objects = g_hash_table_new(g_str_hash, g_str_equal);
-
    // TODO
-
+   objects = g_array_sized_new(FALSE, FALSE, sizeof(Object *), 10);
    return;
 }
 
 
 static void initRooms() {
+
+   rooms = g_hash_table_new(g_str_hash, g_str_equal);
 
    Room *start;
 
@@ -97,8 +97,11 @@ static void initRooms() {
    start->south = NULL;
    start->east  = NULL;
    start->west  = NULL;
+   start->objects = NULL;
 
-   rooms = start;
+   // add to array of rooms and set current location to start
+   location = start;
+   g_array_append_val(rooms, start);
 
    Room *next;
    next = (Room *)malloc(sizeof(Room));
@@ -108,9 +111,13 @@ static void initRooms() {
    next->south = start;
    next->east = NULL;
    next->west = NULL;
+   next->objects = NULL;
 
    // connect room "next" to room "start"
    start->north = next;
+
+   // add to array
+   g_array_append_val(rooms, next);
 
    return;
 }

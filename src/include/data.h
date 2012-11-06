@@ -7,7 +7,7 @@
 #include "parsexml.h"
 
 /* objects in the game */
-extern GHashTable *objects;
+extern GArray *objects;
 
 /* all rooms in the game, with the pointer itself referencing "start" */
 extern Room *rooms;

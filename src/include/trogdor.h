@@ -3,6 +3,7 @@
 #define TROGDOR_H
 
 
+#include <glib.h>
 #include <dstring.h>
 
 /* out of memory errors happen often enough to write a macro */
@@ -18,6 +19,15 @@ typedef struct room {
    struct room *south;
    struct room *east;
    struct room *west;
+
+   /* Array of all objects in the game, indexed by name.  Note that we index
+      by both synonym and name, which means there may be ambiguities.  We
+      therefore set as the value for each key a GArray.  If there is only one
+      object associated with a given word (name or synonym), we know which
+      object the name resolves to.  If we get more than one in the array, we
+      have an ambiguity that must be resolved through further clarification from
+      the user. */
+   GHashTable *objects;
 } Room;
 
 /* Synonyms will be keys in the objects hash table */

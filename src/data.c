@@ -17,11 +17,11 @@ void initData();
 void destroyData();
 
 
-/* game objects, indexed by name */
-GHashTable *objects = NULL;
+/* global array of all game objects */
+GArray *objects = NULL;
 
-/* all rooms in the game, with the pointer itself referencing "start" */
-Room *rooms = NULL;
+/* all rooms in the game, indexed by name */
+GHashTable *rooms = NULL;
 
 
 void initData() {
@@ -36,5 +36,19 @@ void destroyData() {
 
    // TODO: this doesn't work; only frees "start" room...
    free(rooms);
+}
+
+
+void freeRoom(Room *room) {
+
+   // TODO
+   return;
+}
+
+
+void freeObject(Object *object) {
+
+   // TODO
+   return;
 }
 

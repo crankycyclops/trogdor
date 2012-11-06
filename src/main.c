@@ -7,19 +7,10 @@
 #include "include/command.h"
 
 
-void init() {
-
-   /* load assets and game related data */
-   initData();
-
-   /* begin in the starting position */
-   location = rooms;
-}
-
-
 int main(int argc, char *argv[]) {
 
-   init();
+   /* load assets and game related data, and initialize the game's state */
+   initData();
 
    /* output description of the first room before starting */
    printf("%s\n", location->description);
