@@ -77,7 +77,7 @@ static void destroyParser() {
 
 static void initRooms() {
 
-   rooms = g_array_sized_new(FALSE, FALSE, 50, sizeof(Room *));
+   rooms = g_array_sized_new(FALSE, FALSE, sizeof(Room *), 20);
 
    Room *start;
 
@@ -111,7 +111,6 @@ static void initRooms() {
 
    // add to array
    g_array_append_val(rooms, next);
-   g_array_append_val(rooms, start);
 
    return;
 }
