@@ -6,11 +6,9 @@
 #include <glib.h>
 #include "parsexml.h"
 
-/* objects in the game */
-extern GArray *objects;
 
-/* all rooms in the game, with the pointer itself referencing "start" */
-extern Room *rooms;
+/* all rooms in the game */
+GArray *rooms;
 
 /* initializes game data/assets such as rooms */
 extern void initData();

@@ -222,7 +222,7 @@ static void parseObject(xmlTextReaderPtr reader) {
    }
 
    /* add the object to the objects parsed table for lookup later */
-   g_hash_table_insert(objectParsedTable, objectName, object);
+   g_hash_table_insert(objectParsedTable, (gpointer)objectName, object);
 
    return;
 }
@@ -378,7 +378,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
    }
 
    /* add the room to the rooms parsed lookup table */
-   g_hash_table_insert(roomParsedTable, roomName, room);
+   g_hash_table_insert(roomParsedTable, (gpointer)roomName, room);
 
    return;
 }

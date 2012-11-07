@@ -9,7 +9,7 @@ char *getNextToken();
 
 /* Push back a token so we can get it again.  Can only push back one at a
    time. */
-void pushBackToken(const char *token);
+void pushBackToken(char *token);
 
 
 /* This is where tokens go when they are "pushed back."  We can only push back
@@ -22,7 +22,7 @@ static char *curToken;
 void initTokenizer(const char *string) {
 
    undeleted = NULL;
-   curToken = strtok(string, " \t");
+   curToken = strtok((char *)string, " \t");
 }
 
 
@@ -43,7 +43,7 @@ char *getNextToken() {
 }
 
 
-void pushBackToken(const char *token) {
+void pushBackToken(char *token) {
 
    undeleted = token;
    return;

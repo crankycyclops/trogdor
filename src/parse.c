@@ -12,11 +12,11 @@
 /* entry point for parsing the game file */
 int parseGame();
 
-/* initialize game objects from parsed data */
-static void initObjects();
-
 /* initializes the rooms */
 static void initRooms();
+
+/* initialize game objects in a room from parsed data */
+static void initObjects(Room *room, GArray objectNames);
 
 /* prints parsed data for a room */
 static void printParsedRoom(RoomParsed *room);
@@ -53,7 +53,6 @@ int parseGame(const char *filename) {
       return 0;
    }
 
-   initObjects();
    initRooms();
 
    destroyParser();
@@ -76,17 +75,9 @@ static void destroyParser() {
 }
 
 
-static void initObjects() {
-
-   // TODO
-   objects = g_array_sized_new(FALSE, FALSE, sizeof(Object *), 10);
-   return;
-}
-
-
 static void initRooms() {
 
-   rooms = g_hash_table_new(g_str_hash, g_str_equal);
+   rooms = g_array_sized_new(FALSE, FALSE, 50, sizeof(Room *));
 
    Room *start;
 
@@ -119,6 +110,13 @@ static void initRooms() {
    // add to array
    g_array_append_val(rooms, next);
 
+   return;
+}
+
+
+static void initObjects(Room *room, GArray objectNames) {
+
+   // TODO
    return;
 }
 

@@ -17,11 +17,8 @@ void initData();
 void destroyData();
 
 
-/* global array of all game objects */
-GArray *objects = NULL;
-
-/* all rooms in the game, indexed by name */
-GHashTable *rooms = NULL;
+/* all rooms in the game */
+GArray *rooms = NULL;
 
 
 void initData() {
@@ -40,13 +37,6 @@ void destroyData() {
 
 
 void freeRoom(Room *room) {
-
-   // TODO
-   return;
-}
-
-
-void freeObject(Object *object) {
 
    // TODO
    return;
