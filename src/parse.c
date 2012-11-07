@@ -88,7 +88,8 @@ static void initRooms() {
    start->south = NULL;
    start->east  = NULL;
    start->west  = NULL;
-   start->objects = NULL;
+   start->objectList = NULL;
+   start->objectByName = NULL;
 
    // add to array of rooms and set current location to start
    location = start;
@@ -102,13 +103,15 @@ static void initRooms() {
    next->south = start;
    next->east = NULL;
    next->west = NULL;
-   next->objects = NULL;
+   next->objectList = NULL;
+   next->objectByName = NULL;
 
    // connect room "next" to room "start"
    start->north = next;
 
    // add to array
    g_array_append_val(rooms, next);
+   g_array_append_val(rooms, start);
 
    return;
 }

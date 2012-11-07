@@ -16,6 +16,12 @@ void initData();
 /* frees memory used by game data/assets */
 void destroyData();
 
+/* frees memory associated with a room */
+static void destroyRoom(Room *room);
+
+/* frees memory associated with an object */
+static void destroyObject(Object *object);
+
 
 /* all rooms in the game */
 GArray *rooms = NULL;
@@ -31,12 +37,38 @@ void initData() {
 
 void destroyData() {
 
-   // TODO: this doesn't work; only frees "start" room...
-   free(rooms);
+   int i;
+
+   if (NULL != rooms) {
+      for (i = 0; i < rooms->len; i++) {
+         destroyRoom(g_array_index(rooms, Room *, i));
+      }
+   }
+
+   return;
 }
 
 
-void freeRoom(Room *room) {
+static void destroyRoom(Room *room) {
+
+   int i;
+
+   if (NULL != room->objectList) {
+      for (i = 0; i < room->objectList->len; i++) {
+         destroyObject(g_array_index(room->objectList, Object *, i));
+      }
+   }
+
+   if (NULL != room->objectByName) {
+      g_hash_table_destroy(room->objectByName);
+   }
+
+   free(room);
+   return;
+}
+
+
+static void destroyObject(Object *object) {
 
    // TODO
    return;
