@@ -22,7 +22,8 @@ typedef struct object {
    set to null.
 */
 typedef struct room {
-   char *description;
+   dstring_t name;
+   dstring_t description;
    struct room *north;
    struct room *south;
    struct room *east;

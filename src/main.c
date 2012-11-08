@@ -13,7 +13,9 @@ int main(int argc, char *argv[]) {
    initData();
 
    /* output description of the first room before starting */
-   printf("%s\n", location->description);
+   // TODO: should be in its own function, displayRoom()
+   // TODO: should also display room's name
+   printf("%s\n", dstrview(location->description));
 
    /* main game loop */
    while (1) {

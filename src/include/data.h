@@ -7,8 +7,8 @@
 #include "parsexml.h"
 
 
-/* all rooms in the game */
-GArray *rooms;
+/* all rooms in the game, indexed by name */
+GHashTable *rooms;
 
 /* initializes game data/assets such as rooms */
 extern void initData();

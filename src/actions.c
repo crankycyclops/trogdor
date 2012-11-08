@@ -57,7 +57,9 @@ int move(Command command) {
 
          if (NULL != location->north) {
             location = location->north;
-            printf("%s\n", location->description);
+            // TODO: should be in its own function, displayRoom()
+            // TODO: should also display room's name
+            printf("%s\n", dstrview(location->description));
          }
 
          else {

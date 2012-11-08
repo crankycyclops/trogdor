@@ -15,8 +15,14 @@ int parseGame();
 /* initializes the rooms */
 static void initRooms();
 
+/* called by initRooms(); builds the structure for a room */
+static Room *initRoom(RoomParsed *roomParsed);
+
 /* initialize game objects in a room from parsed data */
 static void initObjects(Room *room, GArray objectNames);
+
+/* called by initObjects(); builds the structure for an object */
+static Object *initObject(ObjectParsed *objectParsed);
 
 /* prints parsed data for a room */
 static void printParsedRoom(RoomParsed *room);
@@ -37,6 +43,7 @@ GHashTable *objectParsedTable = NULL;
 /* a lookup table for rooms being parsed */
 GHashTable *roomParsedTable = NULL;
 
+/******************************************************************************/
 
 int parseGame(const char *filename) {
 
@@ -59,6 +66,7 @@ int parseGame(const char *filename) {
    return 1;
 }
 
+/******************************************************************************/
 
 static void initParser() {
 
@@ -66,6 +74,7 @@ static void initParser() {
    roomParsedTable   = g_hash_table_new(g_str_hash, g_str_equal);
 }
 
+/******************************************************************************/
 
 static void destroyParser() {
 
@@ -74,13 +83,58 @@ static void destroyParser() {
    g_hash_table_destroy(roomParsedTable);
 }
 
+/******************************************************************************/
 
 static void initRooms() {
 
-   rooms = g_array_sized_new(FALSE, FALSE, sizeof(Room *), 20);
+   Room *room;  /* actual room object */
+   GList *parsedRoomList = g_hash_table_get_values(roomParsedTable);
+   GList *curParsedRoom = parsedRoomList;
 
-   Room *start;
+   /* iterate through each value in the rooms parsed table */
+   while (NULL != curParsedRoom) {
 
+      /* build the room structure and index it by name */
+      room = initRoom((RoomParsed *)curParsedRoom->data);
+      g_hash_table_insert(rooms, dstrview(room->name), room);
+
+      curParsedRoom = curParsedRoom->next;
+   }
+
+   g_list_free(parsedRoomList);
+   return;
+}
+
+/******************************************************************************/
+
+static Room *initRoom(RoomParsed *roomParsed) {
+
+   Room *room;  /* actual room object */
+
+   /* initialize new room structure */
+   room = malloc(sizeof(Room));
+   if (NULL == room) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   /* don't free these dstring_t objects when we free the parsed rooms table! */
+   room->name = PARSED_ROOM_PTR->name;
+   room->description = PARSED_ROOM_PTR->description;
+
+   /* rooms will be connected in another function */
+   room->north = NULL;
+   room->south = NULL;
+   room->east  = NULL;
+   room->west  = NULL;
+
+   initObjects(PARSED_ROOM_PTR->objects, room);
+
+   return room;
+}
+
+/******************************************************************************/
+
+/*
    start = (Room *)malloc(sizeof(Room));
 
    start->description = "This is such a cool room!";
@@ -111,9 +165,7 @@ static void initRooms() {
 
    // add to array
    g_array_append_val(rooms, next);
-
-   return;
-}
+*/
 
 
 static void initObjects(Room *room, GArray objectNames) {
@@ -122,6 +174,13 @@ static void initObjects(Room *room, GArray objectNames) {
    return;
 }
 
+/******************************************************************************/
+
+static Object *initObject(ObjectParsed *objectParsed) {
+
+}
+
+/******************************************************************************/
 
 static void printParsedObject(ObjectParsed *object) {
 
@@ -129,6 +188,7 @@ static void printParsedObject(ObjectParsed *object) {
    printf("Description: %s\n", dstrview(object->description));
 }
 
+/******************************************************************************/
 
 static void printParsedRoom(RoomParsed *room) {
 

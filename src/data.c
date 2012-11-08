@@ -23,11 +23,13 @@ static void destroyRoom(Room *room);
 static void destroyObject(Object *object);
 
 
-/* all rooms in the game */
-GArray *rooms = NULL;
+/* all rooms in the game, indexed by room name */
+GHashTable *rooms = NULL;
 
 
 void initData() {
+
+   rooms = g_hash_table_new(g_str_hash, g_str_equal);
 
    if (!parseGame(GAME_FILE)) {
       exit(EXIT_FAILURE);
@@ -37,14 +39,9 @@ void initData() {
 
 void destroyData() {
 
-   int i;
+   // TODO: iterate over all rooms in hash table
 
-   if (NULL != rooms) {
-      for (i = 0; i < rooms->len; i++) {
-         destroyRoom(g_array_index(rooms, Room *, i));
-      }
-   }
-
+   // TODO: free hash table itself
    return;
 }
 
