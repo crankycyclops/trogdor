@@ -78,7 +78,6 @@ static void initParser() {
 
 static void destroyParser() {
 
-   // TODO: destroy strings inside hash
    g_hash_table_destroy(objectParsedTable);
    g_hash_table_destroy(roomParsedTable);
 }
