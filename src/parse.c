@@ -118,16 +118,16 @@ static Room *initRoom(RoomParsed *roomParsed) {
    }
 
    /* don't free these dstring_t objects when we free the parsed rooms table! */
-   room->name = PARSED_ROOM_PTR->name;
-   room->description = PARSED_ROOM_PTR->description;
+   room->name = roomParsed->name;
+   room->description = roomParsed->description;
 
-   /* rooms will be connected in another function */
+   /* rooms will be connected later by another function */
    room->north = NULL;
    room->south = NULL;
    room->east  = NULL;
    room->west  = NULL;
 
-   initObjects(PARSED_ROOM_PTR->objects, room);
+   initObjects(room, roomParsed->objects);
 
    return room;
 }

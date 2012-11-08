@@ -26,6 +26,7 @@ static void destroyObject(Object *object);
 /* all rooms in the game, indexed by room name */
 GHashTable *rooms = NULL;
 
+/******************************************************************************/
 
 void initData() {
 
@@ -36,6 +37,7 @@ void initData() {
    }
 }
 
+/******************************************************************************/
 
 void destroyData() {
 
@@ -45,6 +47,7 @@ void destroyData() {
    return;
 }
 
+/******************************************************************************/
 
 static void destroyRoom(Room *room) {
 
@@ -64,6 +67,7 @@ static void destroyRoom(Room *room) {
    return;
 }
 
+/******************************************************************************/
 
 static void destroyObject(Object *object) {
 
