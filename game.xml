@@ -33,9 +33,9 @@
 
          <!-- user will see the room's description when they enter -->
          <description>
-            You're standing in the midst of a marble castle, the walls lined with portraits of long deceased ancestors of some forgotten king.
+You're standing in the middle of a sprawling white marble castle, the walls lined with portraits of long deceased ancestors of some forgotten king.  Servants are bustling about, rushing around with steaming plates of meats and cooked vegetables, rushing in and out of rooms to serve princes and heads of state.
 
-            You see a dark hole in the wall to the north
+You peer off into the distance and notice a dark hole in the wall a little ways to the north.
          </description>
 
          <!-- name of the room north of this one -->
@@ -50,7 +50,7 @@
       <room name="cave">
 
          <description>
-            You're in a dark musty cave.  You see a light some ways off to the south.
+You're in a dark musty cave.  You see a light some ways off to the south.
          </description>
 
          <!-- Since this room is north of "start," start is south of here.  You
