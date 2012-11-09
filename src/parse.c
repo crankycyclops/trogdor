@@ -18,6 +18,9 @@ static void initRooms();
 /* called by initRooms(); builds the structure for a room */
 static Room *initRoom(RoomParsed *roomParsed);
 
+/* connect rooms so that users can navigate north, south, etc. */
+static void connectRooms();
+
 /* initialize game objects in a room from parsed data */
 static void initObjects(Room *room, GArray *objectNames);
 
@@ -100,6 +103,8 @@ static void initRooms() {
       curParsedRoom = curParsedRoom->next;
    }
 
+   connectRooms();
+
    g_list_free(parsedRoomList);
    return;
 }
@@ -129,6 +134,42 @@ static Room *initRoom(RoomParsed *roomParsed) {
    initObjects(room, roomParsed->objects);
 
    return room;
+}
+
+/******************************************************************************/
+
+static void connectRooms() {
+
+   GList *roomNames = g_hash_table_get_keys(rooms);
+   GList *currentRoomName = roomNames;
+
+   while (currentRoomName->next != NULL) {
+
+      Room *room = g_hash_table_lookup(rooms, currentRoomName->data);
+      RoomParsed *roomDefinition = g_hash_table_lookup(roomParsedTable,
+         currentRoomName->data);
+
+      if (NULL != roomDefinition->north) {
+         room->north = g_hash_table_lookup(rooms, dstrview(roomDefinition->north));
+      }
+
+      if (NULL != roomDefinition->south) {
+         room->south = g_hash_table_lookup(rooms, dstrview(roomDefinition->south));
+      }
+
+      if (NULL != roomDefinition->east) {
+         room->east = g_hash_table_lookup(rooms, dstrview(roomDefinition->east));
+      }
+
+      if (NULL != roomDefinition->west) {
+         room->west = g_hash_table_lookup(rooms, dstrview(roomDefinition->west));
+      }
+
+      currentRoomName = currentRoomName->next;
+   }
+
+   g_list_free(roomNames);
+   return;
 }
 
 /******************************************************************************/
