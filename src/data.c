@@ -45,7 +45,6 @@ void initData() {
 void destroyData() {
 
    // TODO: iterate over all rooms in hash table
-
    // TODO: free hash table itself
    return;
 }

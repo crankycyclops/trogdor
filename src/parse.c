@@ -143,7 +143,7 @@ static void connectRooms() {
    GList *roomNames = g_hash_table_get_keys(rooms);
    GList *currentRoomName = roomNames;
 
-   while (currentRoomName->next != NULL) {
+   while (currentRoomName != NULL) {
 
       Room *room = g_hash_table_lookup(rooms, currentRoomName->data);
       RoomParsed *roomDefinition = g_hash_table_lookup(roomParsedTable,

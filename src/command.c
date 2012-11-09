@@ -88,13 +88,21 @@ static void destroyCommand(Command *command) {
 void executeCommand() {
 
    Command command;
+   dstring_t commandStr = NULL;
 
-   command = parseCommand(readCommand());
+   /* keep reading from the shell until we get something useful */
+   do {
+      commandStr = readCommand();
+   } while (0 == dstrlen(commandStr));
+
+   command = parseCommand(commandStr);
 
    if (!callAction(command)) {
       printf("Sorry, I don't understand you.\n");
    }
 
+   // TODO: This should work and is a memory leak!
+   // dstrfree(commandStr);
    destroyCommand(&command);
 
    return;

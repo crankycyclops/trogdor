@@ -73,7 +73,7 @@ int move(Command command) {
 
          if (NULL != location->south) {
             location = location->south;
-            printf("%s\n", location->description);
+            printf("%s\n", dstrview(location->description));
          }
 
          else {
@@ -87,7 +87,7 @@ int move(Command command) {
 
          if (NULL != location->east) {
             location = location->east;
-            printf("%s\n", location->description);
+            printf("%s\n", dstrview(location->description));
          }
 
          else {
@@ -101,7 +101,7 @@ int move(Command command) {
 
          if (NULL != location->west) {
             location = location->west;
-            printf("%s\n", location->description);
+            printf("%s\n", dstrview(location->description));
          }
 
          else {
