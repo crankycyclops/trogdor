@@ -5,6 +5,7 @@
 #include "include/data.h"
 #include "include/state.h"
 #include "include/command.h"
+#include "include/utility.h"
 
 
 int main(int argc, char *argv[]) {
@@ -13,9 +14,7 @@ int main(int argc, char *argv[]) {
    initData();
 
    /* output description of the first room before starting */
-   // TODO: should be in its own function, displayRoom()
-   // TODO: should also display room's name
-   printf("%s\n", dstrview(location->description));
+   displayRoom(location);
 
    /* main game loop */
    while (1) {

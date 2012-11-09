@@ -6,6 +6,8 @@
 #include "include/data.h"
 #include "include/state.h"
 #include "include/command.h"
+#include "include/utility.h"
+
 
 /* moves the user in the specified direction */
 int move(Command command);
@@ -57,9 +59,7 @@ int move(Command command) {
 
          if (NULL != location->north) {
             location = location->north;
-            // TODO: should be in its own function, displayRoom()
-            // TODO: should also display room's name
-            printf("%s\n", dstrview(location->description));
+            displayRoom(location);
          }
 
          else {
@@ -73,7 +73,7 @@ int move(Command command) {
 
          if (NULL != location->south) {
             location = location->south;
-            printf("%s\n", dstrview(location->description));
+            displayRoom(location);
          }
 
          else {
@@ -87,7 +87,7 @@ int move(Command command) {
 
          if (NULL != location->east) {
             location = location->east;
-            printf("%s\n", dstrview(location->description));
+            displayRoom(location);
          }
 
          else {
@@ -101,7 +101,7 @@ int move(Command command) {
 
          if (NULL != location->west) {
             location = location->west;
-            printf("%s\n", dstrview(location->description));
+            displayRoom(location);
          }
 
          else {
