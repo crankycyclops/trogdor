@@ -169,7 +169,38 @@ static Room *initRoom(RoomParsed *roomParsed) {
 
 static void initObjects(Room *room, GArray objectNames) {
 
-   // TODO
+   Object *object;  /* actual object structure */
+   GList *parsedObjectList = g_hash_table_get_values(objectParsedTable);
+   GList *curParsedObject = parsedObjectList;
+
+   // TODO: check to make sure these calls succeed
+   room->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
+   room->objectList = g_array_new(FALSE, FALSE, sizeof(Object *));
+
+   /* iterate through each value in the objects parsed table */
+   while (NULL != curParsedObject) {
+
+      #define CUR_PARSED_OBJ ((ObjectParsed *)curParsedObject->data)
+
+      int i;   /* to iterate through the object's synonyms */
+
+      /* build the object and index it */
+      object = initObject((ObjectParsed *)curParsedObject->data);
+      g_hash_table_insert(room->objectByName, dstrview(object->name), object);
+      g_array_append_val(room->objectList, object);
+
+      /* we also want to index the object by its synonyms */
+      for (i = 0; i < CUR_PARSED_OBJ->synonyms->len; i++) {
+         g_hash_table_insert(dstrview(g_array_index(CUR_PARSED_OBJ->synonyms,
+            dstring_t, i)), object);
+      }
+
+      curParsedObject = curParsedObject->next;
+
+      #undef CUR_PARSED_OBJ
+   }
+
+   g_list_free(parsedObjectList);
    return;
 }
 
@@ -177,6 +208,13 @@ static void initObjects(Room *room, GArray objectNames) {
 
 static Object *initObject(ObjectParsed *objectParsed) {
 
+   Object object;
+
+   object->name = objectParsed->name;
+   object->description = objectParsed->description;
+   object->seen = 0;
+
+   return object;
 }
 
 /******************************************************************************/
