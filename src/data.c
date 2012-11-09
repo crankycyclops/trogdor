@@ -35,6 +35,9 @@ void initData() {
    if (!parseGame(GAME_FILE)) {
       exit(EXIT_FAILURE);
    }
+
+   /* initialize the game's state (hence, defined in state.c) */
+   initGame();
 }
 
 /******************************************************************************/

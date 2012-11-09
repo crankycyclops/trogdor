@@ -9,6 +9,9 @@
 /* our current location in the game */
 extern Room *location;
 
+/* initialize the game's state */
+extern void initGame();
+
 
 #endif
 

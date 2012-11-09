@@ -19,7 +19,7 @@ static void initRooms();
 static Room *initRoom(RoomParsed *roomParsed);
 
 /* initialize game objects in a room from parsed data */
-static void initObjects(Room *room, GArray objectNames);
+static void initObjects(Room *room, GArray *objectNames);
 
 /* called by initObjects(); builds the structure for an object */
 static Object *initObject(ObjectParsed *objectParsed);
@@ -95,7 +95,7 @@ static void initRooms() {
 
       /* build the room structure and index it by name */
       room = initRoom((RoomParsed *)curParsedRoom->data);
-      g_hash_table_insert(rooms, dstrview(room->name), room);
+      g_hash_table_insert(rooms, (char *)dstrview(room->name), room);
 
       curParsedRoom = curParsedRoom->next;
    }
@@ -133,41 +133,7 @@ static Room *initRoom(RoomParsed *roomParsed) {
 
 /******************************************************************************/
 
-/*
-   start = (Room *)malloc(sizeof(Room));
-
-   start->description = "This is such a cool room!";
-   start->north = NULL;
-   start->south = NULL;
-   start->east  = NULL;
-   start->west  = NULL;
-   start->objectList = NULL;
-   start->objectByName = NULL;
-
-   // add to array of rooms and set current location to start
-   location = start;
-   g_array_append_val(rooms, start);
-
-   Room *next;
-   next = (Room *)malloc(sizeof(Room));
-
-   next->description = "Ok, now you're in a dead end.  So you lose :)";
-   next->north = NULL;
-   next->south = start;
-   next->east = NULL;
-   next->west = NULL;
-   next->objectList = NULL;
-   next->objectByName = NULL;
-
-   // connect room "next" to room "start"
-   start->north = next;
-
-   // add to array
-   g_array_append_val(rooms, next);
-*/
-
-
-static void initObjects(Room *room, GArray objectNames) {
+static void initObjects(Room *room, GArray *objectNames) {
 
    Object *object;  /* actual object structure */
    GList *parsedObjectList = g_hash_table_get_values(objectParsedTable);
@@ -186,13 +152,14 @@ static void initObjects(Room *room, GArray objectNames) {
 
       /* build the object and index it */
       object = initObject((ObjectParsed *)curParsedObject->data);
-      g_hash_table_insert(room->objectByName, dstrview(object->name), object);
+      g_hash_table_insert(room->objectByName, (char *)dstrview(object->name), object);
       g_array_append_val(room->objectList, object);
 
       /* we also want to index the object by its synonyms */
       for (i = 0; i < CUR_PARSED_OBJ->synonyms->len; i++) {
-         g_hash_table_insert(dstrview(g_array_index(CUR_PARSED_OBJ->synonyms,
-            dstring_t, i)), object);
+         g_hash_table_insert(room->objectByName,
+            (char *)dstrview(g_array_index(CUR_PARSED_OBJ->synonyms, dstring_t,
+            i)), object);
       }
 
       curParsedObject = curParsedObject->next;
@@ -208,7 +175,13 @@ static void initObjects(Room *room, GArray objectNames) {
 
 static Object *initObject(ObjectParsed *objectParsed) {
 
-   Object object;
+   Object *object;
+
+   /* initialize new object structure */
+   object = malloc(sizeof(Object));
+   if (NULL == object) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
 
    object->name = objectParsed->name;
    object->description = objectParsed->description;
