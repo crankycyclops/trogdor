@@ -55,10 +55,11 @@ static void destroyRoom(Room *room) {
 
    int i;
 
-   if (NULL != room->objectList) {
-      for (i = 0; i < room->objectList->len; i++) {
-         destroyObject(g_array_index(room->objectList, Object *, i));
-      }
+   GList *curObject = room->objectList;
+
+   while (curObject != NULL) {
+      destroyObject((Object *)curObject->data);
+      curObject = g_list_next(curObject);
    }
 
    if (NULL != room->objectByName) {
