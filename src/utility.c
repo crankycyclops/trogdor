@@ -16,7 +16,7 @@ void displayRoom(Room *room) {
 
    GList *objectList = room->objectList;
 
-   printf("%s\n", dstrview(room->description));
+   printf("\n%s\n", dstrview(room->description));
 
    /* display objects in the room if they haven't already been seen */
    while (objectList != NULL) {
@@ -27,7 +27,7 @@ void displayRoom(Room *room) {
       }
 
       else {
-         printf("You see a %s.\n",
+         printf("\nYou see a %s.\n",
             dstrview(((Object *)objectList->data)->name));
       }
 
@@ -38,7 +38,7 @@ void displayRoom(Room *room) {
 
 void displayObject(Object *object) {
 
-   printf("You see a %s.  %s\n", dstrview(object->name),
+   printf("\nYou see a %s.  %s\n", dstrview(object->name),
       dstrview(object->description));
 }
 

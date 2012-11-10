@@ -18,14 +18,14 @@ static void initRooms();
 /* called by initRooms(); builds the structure for a room */
 static Room *initRoom(RoomParsed *roomParsed);
 
-/* connect rooms so that users can navigate north, south, etc. */
-static void connectRooms();
-
 /* initialize game objects in a room from parsed data */
 static void initObjects(Room *room, GArray *objectNames);
 
 /* called by initObjects(); builds the structure for an object */
 static Object *initObject(ObjectParsed *objectParsed);
+
+/* connect rooms so that users can navigate north, south, etc. */
+static void connectRooms();
 
 /* prints parsed data for a room */
 static void printParsedRoom(RoomParsed *room);
@@ -138,6 +138,72 @@ static Room *initRoom(RoomParsed *roomParsed) {
 
 /******************************************************************************/
 
+static void initObjects(Room *room, GArray *objectNames) {
+
+   int    i;
+   Object *object;  /* actual object structure */
+
+   // TODO: check to make sure these calls succeed
+   room->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
+   room->objectList = NULL;
+
+   /* instantiate each object in the room */
+   for (i = 0; i < objectNames->len; i++) {
+
+      int   j;
+      GList *synonymList;
+
+      dstring_t name = g_array_index(objectNames, dstring_t, i);
+      ObjectParsed *curParsedObject = g_hash_table_lookup(objectParsedTable,
+         dstrview(name));
+
+      /* build the object and index it */
+      object = initObject(curParsedObject);
+      room->objectList = g_list_append(room->objectList, object);
+
+      /* add object to list of objects with same name / synonym */
+      synonymList = g_hash_table_lookup(room->objectByName,
+         (char *)dstrview(object->name));
+      synonymList = g_list_append(synonymList, object);
+      g_hash_table_insert(room->objectByName, (char *)dstrview(object->name),
+         synonymList);
+
+      /* we also want to index the object by its synonyms */
+      for (j = 0; j < curParsedObject->synonyms->len; j++) {
+         synonymList = g_hash_table_lookup(room->objectByName,
+            (char *)dstrview(g_array_index(curParsedObject->synonyms, dstring_t,
+            j)));
+         synonymList = g_list_append(synonymList, object);
+         g_hash_table_insert(room->objectByName,
+            (char *)dstrview(g_array_index(curParsedObject->synonyms, dstring_t,
+            j)), synonymList);
+      }
+   }
+
+   return;
+}
+
+/******************************************************************************/
+
+static Object *initObject(ObjectParsed *objectParsed) {
+
+   Object *object;
+
+   /* initialize new object structure */
+   object = malloc(sizeof(Object));
+   if (NULL == object) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   object->name = objectParsed->name;
+   object->description = objectParsed->description;
+   object->seen = 0;
+
+   return object;
+}
+
+/******************************************************************************/
+
 static void connectRooms() {
 
    GList *roomNames = g_hash_table_get_keys(rooms);
@@ -170,77 +236,6 @@ static void connectRooms() {
 
    g_list_free(roomNames);
    return;
-}
-
-/******************************************************************************/
-
-static void initObjects(Room *room, GArray *objectNames) {
-
-   Object *object;  /* actual object structure */
-   GList *parsedObjectList = g_hash_table_get_values(objectParsedTable);
-   GList *curParsedObject = parsedObjectList;
-
-   // TODO: check to make sure these calls succeed
-   room->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
-   room->objectList = NULL;
-
-   /* iterate through each value in the objects parsed table */
-   while (NULL != curParsedObject) {
-
-      #define CUR_PARSED_OBJ ((ObjectParsed *)curParsedObject->data)
-
-      int   i;             /* to iterate through the object's synonyms */
-      GList *synonymList;
-
-      /* build the object and index it */
-      object = initObject((ObjectParsed *)curParsedObject->data);
-      room->objectList = g_list_append(room->objectList, object);
-
-      /* add object to list of objects with same name / synonym */
-      synonymList = g_hash_table_lookup(room->objectByName,
-         (char *)dstrview(object->name));
-      synonymList = g_list_append(synonymList, object);
-      g_hash_table_insert(room->objectByName, (char *)dstrview(object->name),
-         synonymList);
-
-      /* we also want to index the object by its synonyms */
-      for (i = 0; i < CUR_PARSED_OBJ->synonyms->len; i++) {
-
-         synonymList = g_hash_table_lookup(room->objectByName,
-            (char *)dstrview(g_array_index(CUR_PARSED_OBJ->synonyms, dstring_t,
-            i)));
-         synonymList = g_list_append(synonymList, object);
-         g_hash_table_insert(room->objectByName,
-            (char *)dstrview(g_array_index(CUR_PARSED_OBJ->synonyms, dstring_t,
-            i)), synonymList);
-      }
-
-      curParsedObject = curParsedObject->next;
-
-      #undef CUR_PARSED_OBJ
-   }
-
-   g_list_free(parsedObjectList);
-   return;
-}
-
-/******************************************************************************/
-
-static Object *initObject(ObjectParsed *objectParsed) {
-
-   Object *object;
-
-   /* initialize new object structure */
-   object = malloc(sizeof(Object));
-   if (NULL == object) {
-      PRINT_OUT_OF_MEMORY_ERROR;
-   }
-
-   object->name = objectParsed->name;
-   object->description = objectParsed->description;
-   object->seen = 0;
-
-   return object;
 }
 
 /******************************************************************************/
