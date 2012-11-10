@@ -38,8 +38,9 @@ typedef struct room {
       the user. */
    GHashTable *objectByName;
 
-   /* We also need an iterable list of all objects in the room. */
-   GList *objectList;
+   /* We also need an iterable array of all objects in a room so that we can
+      quickly operate on all objects when we enter a room. */
+   GArray *objectList;
 } Room;
 
 
