@@ -28,11 +28,21 @@ int callAction(Command command) {
 
    /* initialize our list of verb => function maps */
    static Verb verbs[] = {
+
+      /* all synonyms for moving in a given direction (go requires direction) */
       {"go", &move},
       {"north", &move},
       {"south", &move},
       {"east",  &move},
       {"west",  &move},
+
+      /* verbs for picking up an object (requires a direct object) */
+      {"take",  &pickupObject},
+      {"grab",  &pickupObject},
+      {"own",   &pickupObject},
+      {"claim", &pickupObject},
+      {"carry", &pickupObject},
+
       {"quit",  &quitGame},
       {NULL, NULL}
    };

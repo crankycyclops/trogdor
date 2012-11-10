@@ -12,6 +12,12 @@
 /* moves the user in the specified direction */
 int move(Command command);
 
+/* allows the user to pick up an object (requires direct object) */
+int pickupObject(Command command);
+
+/* claims an object for the user */
+static int claimObject(dstring_t name);
+
 /* psuedo action that frees allocated memory and quits the game */
 int quitGame(Command command);
 
@@ -21,6 +27,46 @@ int quitGame(Command command) {
    destroyData();
    printf("Goodbye!\n");
    exit(EXIT_SUCCESS);
+}
+
+
+int pickupObject(Command command) {
+
+   if (NULL == command.directObject) {
+      // TODO: add support for prompting the user for clarification
+      // (e.g. "What would you like to take?")
+      printf("Tell me what you want to %s!\n", dstrview(command.verb));
+      return 1;
+   }
+
+   if (claimObject(command.directObject)) {
+      printf("You take the %s.\n", dstrview(command.directObject));
+   }
+
+   else {
+      printf("There is no %s here!\n", dstrview(command.directObject));
+   }
+
+   return 1;
+}
+
+
+// TODO: other return codes if object exists but is "untakeable," etc.
+static int claimObject(dstring_t name) {
+
+   GList *objectsByName = g_hash_table_lookup(location->objectByName,
+      dstrview(name));
+
+   /* the object(s) exists */
+   if (objectsByName) {
+      // TODO: disambiguate synonyms
+      // TODO: remove from hash table value's list and from room's list
+      // TODO: add to inventory's hash table's list and to inventory list
+      return 1;
+   }
+
+   /* the object does not exist */
+   return 0;
 }
 
 
