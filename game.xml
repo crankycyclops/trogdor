@@ -11,10 +11,17 @@
               object, or everytime they issue the command "look at candle."
          -->
          <description>
-            You see a firey cylinder of wax burning with the passion of a thousand suns.
+It appears to be a firey cylinder of wax burning with the passion of a thousand suns.
          </description>
          <synonym>fire</synonym>
          <synonym>flame</synonym>
+      </object>
+
+      <object name="rock">
+         <description>
+It's nothing special.  It's gray, bumpy and a little lopsided.
+         </description>
+         <synonym>stone</synonym>
       </object>
 
    </objects>
@@ -70,6 +77,8 @@ things waiting for you here!
          </description>
 
          <east>cave</east>
+
+         <object>rock</object>
 
       </room>
 
