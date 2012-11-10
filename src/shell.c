@@ -13,7 +13,7 @@ dstring_t readCommand() {
       exit(EXIT_FAILURE);
    }
 
-   printf("> ");
+   printf("\n> ");
    dstreadl(command);
 
    // trim surrounding whitespace and convert to all lower case
