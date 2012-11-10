@@ -189,18 +189,30 @@ static void initObjects(Room *room, GArray *objectNames) {
 
       #define CUR_PARSED_OBJ ((ObjectParsed *)curParsedObject->data)
 
-      int i;   /* to iterate through the object's synonyms */
+      int   i;             /* to iterate through the object's synonyms */
+      GList *synonymList;
 
       /* build the object and index it */
       object = initObject((ObjectParsed *)curParsedObject->data);
-      g_hash_table_insert(room->objectByName, (char *)dstrview(object->name), object);
       g_array_append_val(room->objectList, object);
+
+      /* add object to list of objects with same name / synonym */
+      synonymList = g_hash_table_lookup(room->objectByName,
+         (char *)dstrview(object->name));
+      synonymList = g_list_append(synonymList, object);
+      g_hash_table_insert(room->objectByName, (char *)dstrview(object->name),
+         synonymList);
 
       /* we also want to index the object by its synonyms */
       for (i = 0; i < CUR_PARSED_OBJ->synonyms->len; i++) {
+
+         synonymList = g_hash_table_lookup(room->objectByName,
+            (char *)dstrview(g_array_index(CUR_PARSED_OBJ->synonyms, dstring_t,
+            i)));
+         synonymList = g_list_append(synonymList, object);
          g_hash_table_insert(room->objectByName,
             (char *)dstrview(g_array_index(CUR_PARSED_OBJ->synonyms, dstring_t,
-            i)), object);
+            i)), synonymList);
       }
 
       curParsedObject = curParsedObject->next;
