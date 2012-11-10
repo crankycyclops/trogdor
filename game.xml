@@ -50,13 +50,26 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
       <room name="cave">
 
          <description>
-You're in a dark musty cave.  You see a light some ways off to the south.
+You're in a dark musty cave.  You see a light some ways off to the south.  To the west, you spy a large dark chamber of some sort.
          </description>
 
          <!-- Since this room is north of "start," start is south of here.  You
               can specify one way movements by not placing this line here (maybe,
               for example, the user got shut behind a trap door?)
          -->
+         <west>chamber</west>
+         <south>start</south>
+
+      </room>
+
+      <room name="chamber">
+
+         <description>
+You find yourself in a dark secluded chamber.  Be careful.  There may be nasty
+things waiting for you here!
+         </description>
+
+         <east>cave</east>
          <south>start</south>
 
       </room>

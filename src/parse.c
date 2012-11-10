@@ -182,7 +182,7 @@ static void initObjects(Room *room, GArray *objectNames) {
 
    // TODO: check to make sure these calls succeed
    room->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
-   room->objectList = g_array_new(FALSE, FALSE, sizeof(Object *));
+   room->objectList = NULL;
 
    /* iterate through each value in the objects parsed table */
    while (NULL != curParsedObject) {
@@ -194,7 +194,7 @@ static void initObjects(Room *room, GArray *objectNames) {
 
       /* build the object and index it */
       object = initObject((ObjectParsed *)curParsedObject->data);
-      g_array_append_val(room->objectList, object);
+      room->objectList = g_list_append(room->objectList, object);
 
       /* add object to list of objects with same name / synonym */
       synonymList = g_hash_table_lookup(room->objectByName,

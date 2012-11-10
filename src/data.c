@@ -56,9 +56,18 @@ static void destroyRoom(Room *room) {
    int i;
 
    if (NULL != room->objectList) {
-      for (i = 0; i < room->objectList->len; i++) {
-         destroyObject(g_array_index(room->objectList, Object *, i));
+
+      GList *curObject = room->objectList;
+
+      while (curObject != NULL) {
+         destroyObject((Object *)curObject->data);
+         curObject = g_list_next(curObject);
       }
+
+      g_list_free(room->objectList);
+      room->objectList = NULL;
+
+      // TODO: destroy room's object hash table
    }
 
    if (NULL != room->objectByName) {
@@ -73,7 +82,7 @@ static void destroyRoom(Room *room) {
 
 static void destroyObject(Object *object) {
 
-   // TODO
+   // TODO: don't free object here, just dstring_t's inside it!
    return;
 }
 

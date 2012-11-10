@@ -40,7 +40,7 @@ typedef struct room {
 
    /* We also need an iterable array of all objects in a room so that we can
       quickly operate on all objects when we enter a room. */
-   GArray *objectList;
+   GList *objectList;
 } Room;
 
 
