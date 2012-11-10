@@ -3,6 +3,15 @@ trogdor
 
 A text adventure engine written in C
 
+Dependencies:
+LibXML2
+GLib
+My dstring library (http://www.github.com/crankycyclops/dstring)
+
 Compile like so:
-cd src
-gcc -Wall *.c -o trogdor
+`make`
+
+Or, if you're on FreeBSD:
+`gcc -L/usr/local/lib -I/usr/local/include -I/usr/local/include/libxml2 \
+-ldstring -lxml2 \`pkg-config -cflags -libs glib-2.0\` src/*.c`
+
