@@ -44,6 +44,11 @@ int callAction(Command command) {
       {"claim", &pickupObject},
       {"carry", &pickupObject},
 
+      /* verbs for displaying things */
+      {"show",     &look},
+      {"describe", &look},
+      {"look",     &look},
+
       {"quit",  &quitGame},
       {NULL, NULL}
    };

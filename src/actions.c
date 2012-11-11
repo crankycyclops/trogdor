@@ -13,6 +13,9 @@
 /* psuedo action that frees allocated memory and quits the game */
 int quitGame(Command command);
 
+/* look at objects or describe the room again */
+int look(Command command);
+
 /* moves the user in the specified direction */
 int move(Command command);
 
@@ -32,6 +35,15 @@ int quitGame(Command command) {
    destroyData();
    printf("Goodbye!\n");
    exit(EXIT_SUCCESS);
+}
+
+/******************************************************************************/
+
+int look(Command command) {
+
+   // TODO: add support for looking at things other than the room
+   displayRoom(location);
+   return 1;
 }
 
 /******************************************************************************/
