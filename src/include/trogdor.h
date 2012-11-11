@@ -27,8 +27,9 @@ typedef struct object {
 */
 typedef struct room {
 
-   dstring_t name;
-   dstring_t description;
+   dstring_t name;         /* room's unique identifier */
+   dstring_t title;        /* what we display to tell the user where we are */
+   dstring_t description;  /* room's long description */
    struct room *north;
    struct room *south;
    struct room *east;

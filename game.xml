@@ -46,6 +46,9 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
        -->
       <room name="start">
 
+         <!-- user will see the room's title above its description -->
+         <title>The Palace</title>
+
          <!-- user will see the room's description when they enter -->
          <description>
 You're standing in the middle of a sprawling white marble castle, the walls lined with portraits of long deceased ancestors of some forgotten king.  Servants are bustling about, rushing around with steaming plates of meats and cooked vegetables, rushing in and out of rooms to serve princes and heads of state.
@@ -64,6 +67,8 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
 
       <room name="cave">
 
+         <title>The Cave</title>
+
          <description>
 You're in a dark musty cave.  You see a light some ways off to the south.  To the west, you spy a large dark chamber of some sort.
          </description>
@@ -78,6 +83,8 @@ You're in a dark musty cave.  You see a light some ways off to the south.  To th
       </room>
 
       <room name="chamber">
+
+         <title>Dark Chamber</title>
 
          <description>
 You find yourself in a dark secluded chamber.  Be careful.  There may be nasty

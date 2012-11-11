@@ -123,6 +123,7 @@ static Room *initRoom(RoomParsed *roomParsed) {
 
    /* don't free these dstring_t objects when we free the parsed rooms table! */
    room->name = roomParsed->name;
+   room->title = roomParsed->title;
    room->description = roomParsed->description;
 
    /* rooms will be connected later by another function */

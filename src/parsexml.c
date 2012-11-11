@@ -265,6 +265,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
    }
 
    room->name = NULL;
+   room->title = NULL;
    room->description = NULL;
    room->north = NULL;
    room->south = NULL;
@@ -303,6 +304,11 @@ static void parseRoom(xmlTextReaderPtr reader) {
       /* ignore XML comment */
       if (XML_COMMENT_NODE == tagtype) {
          continue;
+      }
+
+      /* we're parsing the room's title */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("title", tagname)) {
+         GET_XML_TAG(title, room)
       }
 
       /* we're parsing the room's description */
@@ -366,6 +372,20 @@ static void parseRoom(xmlTextReaderPtr reader) {
 
    if (parseStatus < 0) {
       fprintf(stderr, "There was an error parsing game XML file\n");
+      exit(EXIT_FAILURE);
+   }
+
+   /* title element is required */
+   else if (NULL == room->title) {
+      fprintf(stderr, "Room \"%s\" is missing required <title> element\n",
+         dstrview(room->name));
+      exit(EXIT_FAILURE);
+   }
+
+   /* description element is required */
+   else if (NULL == room->description) {
+      fprintf(stderr, "Room \"%s\" is missing required <description> element\n",
+         dstrview(room->name));
       exit(EXIT_FAILURE);
    }
 

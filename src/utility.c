@@ -17,6 +17,7 @@ void displayRoom(Room *room) {
 
    GList *objectList = room->objectList;
 
+   printf("\n%s\n", dstrview(room->title));
    printf("\n%s\n", dstrview(room->description));
 
    /* display objects in the room if they haven't already been seen */

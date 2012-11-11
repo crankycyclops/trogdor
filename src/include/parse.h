@@ -8,6 +8,7 @@
 typedef struct roomParsed {
 
    dstring_t name;
+   dstring_t title;
    dstring_t description;
    dstring_t north;
    dstring_t south;
