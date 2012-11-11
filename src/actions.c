@@ -178,8 +178,8 @@ static void takeObject(Object *object) {
 
    int i;
 
-   GList *invHashList;
-   GList *roomHashList;
+   GList *invHashList = NULL;
+   GList *roomHashList = NULL;
 
    inventory = g_list_append(inventory, object);
    location->objectList = g_list_remove(location->objectList, object);
@@ -204,15 +204,13 @@ static void takeObject(Object *object) {
       dstring_t synonym = g_array_index(object->synonyms, dstring_t, i);
 
       invHashList = g_hash_table_lookup(inventoryByName, dstrview(synonym));
-      roomHashList = g_hash_table_lookup(location->objectByName,
-         dstrview(synonym));
+      roomHashList = g_hash_table_lookup(location->objectByName, dstrview(synonym));
 
       invHashList = g_list_append(invHashList, object);
-      g_hash_table_insert(inventoryByName, (char *)dstrview(synonym), object);
+      g_hash_table_insert(inventoryByName, (char *)dstrview(synonym), invHashList);
 
       roomHashList = g_list_remove(roomHashList, object);
-      g_hash_table_insert(location->objectByName, (char *)dstrview(synonym),
-         object);
+      g_hash_table_insert(location->objectByName, (char *)dstrview(synonym), roomHashList);
    }
 
    return;
