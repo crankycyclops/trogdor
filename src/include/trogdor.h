@@ -12,9 +12,13 @@
 
 /* Synonyms will be stored as keys in a hash table */
 typedef struct object {
+
    dstring_t name;         /* name of the object */
    dstring_t description;  /* the user reads this when seen the first time */
    int seen;               /* whether or not the object has been seen */
+
+   /* an array of synonyms (dstring_t's) */
+   GArray *synonyms;
 } Object;
 
 /* Represents a single room. Each direction is a pointer to whatever room is
@@ -22,6 +26,7 @@ typedef struct object {
    set to null.
 */
 typedef struct room {
+
    dstring_t name;
    dstring_t description;
    struct room *north;

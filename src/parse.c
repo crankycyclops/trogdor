@@ -198,6 +198,7 @@ static Object *initObject(ObjectParsed *objectParsed) {
    object->name = objectParsed->name;
    object->description = objectParsed->description;
    object->seen = 0;
+   object->synonyms = objectParsed->synonyms;
 
    return object;
 }

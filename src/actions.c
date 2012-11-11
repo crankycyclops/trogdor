@@ -176,8 +176,45 @@ int pickupObject(Command command) {
 
 static void takeObject(Object *object) {
 
-   // TODO
-   printf("STUB: pretending to take object \"%s\" ;)\n", dstrview(object->name));
+   int i;
+
+   GList *invHashList;
+   GList *roomHashList;
+
+   inventory = g_list_append(inventory, object);
+   location->objectList = g_list_remove(location->objectList, object);
+
+   /* we have to append our object to the list of objects hashed with that
+      name's value */
+   invHashList = g_hash_table_lookup(inventoryByName, dstrview(object->name));
+   roomHashList = g_hash_table_lookup(location->objectByName,
+      dstrview(object->name));
+
+   invHashList = g_list_append(invHashList, object);
+   g_hash_table_insert(inventoryByName, (char *)dstrview(object->name),
+      invHashList);
+
+   roomHashList = g_list_remove(roomHashList, object);
+   g_hash_table_insert(location->objectByName, (char *)dstrview(object->name),
+      roomHashList);
+
+   /* do the same by name hashing for synonyms */
+   for (i = 0; i < object->synonyms->len; i++) {
+
+      dstring_t synonym = g_array_index(object->synonyms, dstring_t, i);
+
+      invHashList = g_hash_table_lookup(inventoryByName, dstrview(synonym));
+      roomHashList = g_hash_table_lookup(location->objectByName,
+         dstrview(synonym));
+
+      invHashList = g_list_append(invHashList, object);
+      g_hash_table_insert(inventoryByName, (char *)dstrview(synonym), object);
+
+      roomHashList = g_list_remove(roomHashList, object);
+      g_hash_table_insert(location->objectByName, (char *)dstrview(synonym),
+         object);
+   }
+
    return;
 }
 

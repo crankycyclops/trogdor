@@ -22,6 +22,6 @@ void initGame();
 void initGame() {
 
    location = g_hash_table_lookup(rooms, "start");
-   //inventoryByName = g_hash_table_new();
+   inventoryByName = g_hash_table_new(g_str_hash, g_str_equal);
 }
 
