@@ -7,6 +7,7 @@
 #include "include/state.h"
 #include "include/command.h"
 #include "include/utility.h"
+#include "include/shell.h"
 
 
 /* moves the user in the specified direction */
@@ -15,12 +16,16 @@ int move(Command command);
 /* allows the user to pick up an object (requires direct object) */
 int pickupObject(Command command);
 
-/* claims an object for the user */
-static int claimObject(dstring_t name);
+/* processes the posession of an object from the current room */
+static void takeObject(Object *object);
+
+/* disambiguates in the case where a name refers to more than one object */
+static Object *clarifyObject(GList *objects, int objectCount);
 
 /* psuedo action that frees allocated memory and quits the game */
 int quitGame(Command command);
 
+/******************************************************************************/
 
 int quitGame(Command command) {
 
@@ -29,9 +34,16 @@ int quitGame(Command command) {
    exit(EXIT_SUCCESS);
 }
 
+/******************************************************************************/
 
 int pickupObject(Command command) {
 
+   GList *objectsByName;
+   GList *curObject;
+
+   int listCount;
+
+   /* make sure the user actually specified what they want to take */
    if (NULL == command.directObject) {
       // TODO: add support for prompting the user for clarification
       // (e.g. "What would you like to take?")
@@ -39,36 +51,102 @@ int pickupObject(Command command) {
       return 1;
    }
 
-   if (claimObject(command.directObject)) {
-      printf("You take the %s.\n", dstrview(command.directObject));
-   }
+   objectsByName = g_hash_table_lookup(location->objectByName,
+      dstrview(command.directObject));
+   curObject = objectsByName;
+   listCount = g_list_length(objectsByName);
 
-   else {
+   /* the object doesn't exist */
+   if (NULL == objectsByName) {
       printf("There is no %s here!\n", dstrview(command.directObject));
    }
 
-   return 1;
-}
-
-
-// TODO: other return codes if object exists but is "untakeable," etc.
-static int claimObject(dstring_t name) {
-
-   GList *objectsByName = g_hash_table_lookup(location->objectByName,
-      dstrview(name));
-
-   /* the object(s) exists */
-   if (objectsByName) {
-      // TODO: disambiguate synonyms
-      // TODO: remove from hash table value's list and from room's list
-      // TODO: add to inventory's hash table's list and to inventory list
-      return 1;
+   /* there's only one object, so there's no ambiguity */
+   else if (1 == listCount) {
+      takeObject((Object *)objectsByName->data);
+      printf("You take the %s.\n", dstrview(command.directObject));
    }
 
-   /* the object does not exist */
-   return 0;
+   /* we have to disambiguate between multiple objects */
+   else {
+      Object *object = clarifyObject(objectsByName, listCount);
+      takeObject(object);
+      printf("You take the %s.\n", dstrview(object->name));
+      return 1;
+   }
 }
 
+/******************************************************************************/
+
+static void takeObject(Object *object) {
+
+   // TODO
+   printf("STUB: pretending to take object \"%s\" ;)\n", dstrview(object->name));
+   return;
+}
+
+/******************************************************************************/
+
+static Object *clarifyObject(GList *objects, int objectCount) {
+
+   int        i;
+   int        objectFound;
+   dstring_t  name;
+
+   Object     *object;
+   GList      *curObject = objects;
+
+   printf ("Do you mean the ");
+
+   for (i = 0; curObject != NULL; i++) {
+
+      printf("%s", dstrview(((Object *)curObject->data)->name));
+
+      if (i < objectCount - 2) {
+         printf(", ");
+      }
+
+      else if (i < objectCount - 1) {
+         printf(" or the ");
+      }
+
+      curObject = g_list_next(curObject);
+   }
+
+   printf("?\n");
+
+   /* get an object name from the shell */
+   do {
+      name = readCommand();
+   } while (0 == dstrlen(name));
+
+   /* locate the correct object */
+   curObject = objects;
+   object = NULL;
+   objectFound = 0;
+
+   while (curObject != NULL) {
+
+      object = (Object *)curObject->data;
+
+      if (0 == strcmp(dstrview(object->name), dstrview(name))) {
+         objectFound = 1;
+         break;
+      }
+
+      curObject = g_list_next(curObject);
+   }
+
+   /* if user entered a non-existent value, try again until we succeed */
+   if (!objectFound) {
+      printf("There is no %s here!\n", dstrview(name));
+      return clarifyObject(objects, objectCount);
+   }
+
+   return object;
+}
+
+/******************************************************************************/
 
 int move(Command command) {
 
