@@ -11,6 +11,7 @@ void displayRoom(Room *room);
 /* prints description of an object */
 void displayObject(Object *object);
 
+/******************************************************************************/
 
 void displayRoom(Room *room) {
 
@@ -35,6 +36,7 @@ void displayRoom(Room *room) {
    }
 }
 
+/******************************************************************************/
 
 void displayObject(Object *object) {
 

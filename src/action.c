@@ -21,6 +21,7 @@
 */
 int callAction(Command command);
 
+/******************************************************************************/
 
 int callAction(Command command) {
 

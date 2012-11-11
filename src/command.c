@@ -42,6 +42,7 @@ static int isPreposition(const char *word);
 /* returns true if the specified word is a filler word */
 static int isFillerWord(const char *word);
 
+/******************************************************************************/
 
 static void initCommand(Command *command) {
 
@@ -54,6 +55,7 @@ static void initCommand(Command *command) {
       return;
 }
 
+/******************************************************************************/
 
 static void destroyCommand(Command *command) {
 
@@ -84,6 +86,7 @@ static void destroyCommand(Command *command) {
       return;
 }
 
+/******************************************************************************/
 
 void executeCommand() {
 
@@ -108,6 +111,7 @@ void executeCommand() {
    return;
 }
 
+/******************************************************************************/
 
 static Command parseCommand(dstring_t sentence) {
 
@@ -155,6 +159,7 @@ static Command parseCommand(dstring_t sentence) {
    return command;
 }
 
+/******************************************************************************/
 
 static int parseDirectObject(Command *command) {
 
@@ -193,6 +198,7 @@ static int parseDirectObject(Command *command) {
    return dstrlen(command->directObject) > 0 ? 1 : 0;
 }
 
+/******************************************************************************/
 
 static int parseIndirectObject(Command *command) {
 
@@ -254,6 +260,7 @@ static int parseIndirectObject(Command *command) {
    }
 }
 
+/******************************************************************************/
 
 static int isFillerWord(const char *word) {
 
@@ -268,6 +275,7 @@ static int isFillerWord(const char *word) {
    return 0;
 }
 
+/******************************************************************************/
 
 static int isPreposition(const char *word) {
 
@@ -282,6 +290,7 @@ static int isPreposition(const char *word) {
    return 0;
 }
 
+/******************************************************************************/
 
 static void printCommand(Command command) {
 

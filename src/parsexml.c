@@ -35,6 +35,7 @@ static void parseObject(xmlTextReaderPtr reader);
 /* parses a room */
 static void parseRoom(xmlTextReaderPtr reader);
 
+/******************************************************************************/
 
 int parseGameFile(const char *filename) {
 
@@ -50,19 +51,6 @@ int parseGameFile(const char *filename) {
          const xmlChar *value;
 
          name = xmlTextReaderConstName(reader);
-
-/* START DEBUG CODE
-         value = xmlTextReaderValue(reader);
-
-
-         printf("\n\n%d %d %s %d\n", xmlTextReaderDepth(reader),
-            xmlTextReaderNodeType(reader), name,
-            xmlTextReaderIsEmptyElement(reader));
-         printf("Value: %s\n\n", value);
-
-         continue;
-
-END DEBUG CODE */
 
          if (NULL == name) {
             fprintf(stderr, "error parsing XML\n");
@@ -102,6 +90,7 @@ END DEBUG CODE */
    }
 }
 
+/******************************************************************************/
 
 static void parseObjectSection(xmlTextReaderPtr reader) {
 
@@ -134,6 +123,7 @@ static void parseObjectSection(xmlTextReaderPtr reader) {
    return;
 }
 
+/******************************************************************************/
 
 static void parseObject(xmlTextReaderPtr reader) {
 
@@ -227,6 +217,7 @@ static void parseObject(xmlTextReaderPtr reader) {
    return;
 }
 
+/******************************************************************************/
 
 static void parseRoomSection(xmlTextReaderPtr reader) {
 
@@ -259,6 +250,7 @@ static void parseRoomSection(xmlTextReaderPtr reader) {
    return;
 }
 
+/******************************************************************************/
 
 static void parseRoom(xmlTextReaderPtr reader) {
 
@@ -383,6 +375,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
    return;
 }
 
+/******************************************************************************/
 
 static void checkClosingTag(const char *tag, xmlTextReaderPtr reader) {
 
@@ -401,6 +394,7 @@ static void checkClosingTag(const char *tag, xmlTextReaderPtr reader) {
    }
 }
 
+/******************************************************************************/
 
 static const char *getNodeValue(xmlTextReaderPtr reader) {
 
@@ -420,6 +414,7 @@ static const char *getNodeValue(xmlTextReaderPtr reader) {
    return xmlTextReaderValue(reader);
 }
 
+/******************************************************************************/
 
 static xmlTextReaderPtr readXML(const char *filename) {
 

@@ -18,6 +18,7 @@ static char *undeleted;
 
 static char *curToken;
 
+/******************************************************************************/
 
 void initTokenizer(const char *string) {
 
@@ -25,6 +26,7 @@ void initTokenizer(const char *string) {
    curToken = strtok((char *)string, " \t");
 }
 
+/******************************************************************************/
 
 char *getNextToken() {
 
@@ -42,6 +44,7 @@ char *getNextToken() {
    return token;
 }
 
+/******************************************************************************/
 
 void pushBackToken(char *token) {
 
