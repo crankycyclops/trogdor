@@ -132,6 +132,8 @@ static Room *initRoom(RoomParsed *roomParsed) {
    room->east  = NULL;
    room->west  = NULL;
 
+   room->objectList = NULL;
+   room->objectByName = NULL;
    initObjects(room, roomParsed->objects);
 
    return room;
@@ -158,8 +160,13 @@ static void initObjects(Room *room, GArray *objectNames) {
       ObjectParsed *curParsedObject = g_hash_table_lookup(objectParsedTable,
          dstrview(name));
 
-      /* build the object and index it */
+      /* build the object */
       object = initObject(curParsedObject);
+
+      /* add object to our global list */
+      g_hash_table_insert(objects, (char *)dstrview(object->name), object);
+
+      /* add object to whatever room it belongs in */
       room->objectList = g_list_append(room->objectList, object);
 
       /* add object to list of objects with same name / synonym */

@@ -8,7 +8,10 @@
 
 
 /* all rooms in the game, indexed by name */
-GHashTable *rooms;
+extern GHashTable *rooms;
+
+/* all objects in the game, indexed by name ONLY (no synonyms) */
+extern GHashTable *objects;
 
 /* initializes game data/assets such as rooms */
 extern void initData();

@@ -16,21 +16,31 @@ void initData();
 /* frees memory used by game data/assets */
 void destroyData();
 
+/* iterates over all rooms, calling destroyRoom() on each */
+static void destroyRooms();
+
 /* frees memory associated with a room */
 static void destroyRoom(Room *room);
+
+/* iterates over all objects, calling destroyObject() on each */
+static void destroyObjects();
 
 /* frees memory associated with an object */
 static void destroyObject(Object *object);
 
 
-/* all rooms in the game, indexed by room name */
+/* all rooms in the game, indexed by name */
 GHashTable *rooms = NULL;
+
+/* all objects in the game, indexed by name ONLY (no synonyms) */
+GHashTable *objects = NULL;
 
 /******************************************************************************/
 
 void initData() {
 
    rooms = g_hash_table_new(g_str_hash, g_str_equal);
+   objects = g_hash_table_new(g_str_hash, g_str_equal);
 
    if (!parseGame(GAME_FILE)) {
       exit(EXIT_FAILURE);
@@ -44,9 +54,38 @@ void initData() {
 
 void destroyData() {
 
-   // TODO: iterate over all rooms in hash table
-   // TODO: free hash table itself
-   return;
+   destroyRooms();
+   destroyObjects();
+}
+
+/******************************************************************************/
+
+static void destroyRooms() {
+
+   GList *gRoomList = g_hash_table_get_values(rooms);
+   GList *curRoom = gRoomList;
+
+   /* free all rooms */
+   while (NULL != curRoom) {
+      destroyRoom((Room *)curRoom->data);
+   }
+
+   g_list_free(gRoomList);
+}
+
+/******************************************************************************/
+
+static void destroyObjects() {
+
+   GList *gObjectList = g_hash_table_get_values(objects);
+   GList *curObject = gObjectList;
+
+   /* free all game objects */
+   while (NULL != curObject) {
+      destroyObject((Object *)curObject->data);
+   }
+
+   g_list_free(gObjectList);
 }
 
 /******************************************************************************/
@@ -56,26 +95,19 @@ static void destroyRoom(Room *room) {
    int i;
 
    if (NULL != room->objectList) {
-
-      GList *curObject = room->objectList;
-
-      while (curObject != NULL) {
-         destroyObject((Object *)curObject->data);
-         curObject = g_list_next(curObject);
-      }
-
       g_list_free(room->objectList);
-      room->objectList = NULL;
-
-      // TODO: destroy room's object hash table
    }
 
    if (NULL != room->objectByName) {
+      // TODO: we have to destroy each GList inside objectByName first!
       g_hash_table_destroy(room->objectByName);
    }
 
+   dstrfree(&room->name);
+   dstrfree(&room->title);
+   dstrfree(&room->description);
+
    free(room);
-   return;
 }
 
 /******************************************************************************/
