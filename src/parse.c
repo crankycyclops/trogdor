@@ -221,23 +221,65 @@ static void connectRooms() {
    while (currentRoomName != NULL) {
 
       Room *room = g_hash_table_lookup(rooms, currentRoomName->data);
+      Room *connected = NULL;
       RoomParsed *roomDefinition = g_hash_table_lookup(roomParsedTable,
          currentRoomName->data);
 
       if (NULL != roomDefinition->north) {
-         room->north = g_hash_table_lookup(rooms, dstrview(roomDefinition->north));
+
+         connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->north));
+
+         /* game file specified a room that wasn't defined! */ 
+         if (NULL == connected) {
+            fprintf(stderr, "error: room '%s' connects to room '%s', but "
+               "room '%s' doesn't exist!\n", dstrview(room->name),
+               dstrview(roomDefinition->north), dstrview(roomDefinition->north));
+            exit(EXIT_FAILURE);
+         }
+
+         room->north = connected;
       }
 
       if (NULL != roomDefinition->south) {
-         room->south = g_hash_table_lookup(rooms, dstrview(roomDefinition->south));
+
+         connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->south));
+
+         if (NULL == connected) {
+            fprintf(stderr, "error: room '%s' connects to room '%s', but "
+               "room '%s' doesn't exist!\n", dstrview(room->name),
+               dstrview(roomDefinition->south), dstrview(roomDefinition->south));
+            exit(EXIT_FAILURE);
+         }
+
+         room->south = connected;
       }
 
       if (NULL != roomDefinition->east) {
-         room->east = g_hash_table_lookup(rooms, dstrview(roomDefinition->east));
+
+         connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->east));
+
+         if (NULL == connected) {
+            fprintf(stderr, "error: room '%s' connects to room '%s', but "
+               "room '%s' doesn't exist!\n", dstrview(room->name),
+               dstrview(roomDefinition->east), dstrview(roomDefinition->east));
+            exit(EXIT_FAILURE);
+         }
+
+         room->east = connected;
       }
 
       if (NULL != roomDefinition->west) {
-         room->west = g_hash_table_lookup(rooms, dstrview(roomDefinition->west));
+
+         connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->west));
+
+         if (NULL == connected) {
+            fprintf(stderr, "error: room '%s' connects to room '%s', but "
+               "room '%s' doesn't exist!\n", dstrview(room->name),
+               dstrview(roomDefinition->west), dstrview(roomDefinition->west));
+            exit(EXIT_FAILURE);
+         }
+
+         room->west = connected;
       }
 
       currentRoomName = currentRoomName->next;

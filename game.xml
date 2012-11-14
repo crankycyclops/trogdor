@@ -61,6 +61,7 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
          <!-- we place the object "candle" in this room.  Note that an object cannot
               be in more than one room.
          -->
+
          <object>candle</object>
 
       </room>
