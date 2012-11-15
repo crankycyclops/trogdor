@@ -6,8 +6,8 @@
 #include "include/state.h"
 #include "include/data.h"
 #include "include/command.h"
-#include "include/vocabulary.h"
 #include "include/actions.h"
+#include "include/vocabulary.h"
 
 /*
    Calls whatever action corresponds to the given command.
