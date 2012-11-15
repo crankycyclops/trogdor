@@ -27,6 +27,10 @@ int actionPickupObject(Command command);
 /* allows the user to drop an object */
 int actionDropObject(Command command);
 
+/* returns object referenced by name, and disambiguates between synonyms if 
+   necessary */
+static Object *getObject(dstring_t name);
+
 /******************************************************************************/
 
 int actionQuit(Command command) {
@@ -136,15 +140,41 @@ int actionMove(Command command) {
    }
 }
 
-
 /******************************************************************************/
 
-int actionPickupObject(Command command) {
+static Object *getObject(dstring_t name) {
 
    GList *objectsByName;
    GList *curObject;
 
    int listCount;
+
+   objectsByName = g_hash_table_lookup(location->objectByName, dstrview(name));
+   curObject = objectsByName;
+   listCount = g_list_length(objectsByName);
+
+   /* the object doesn't exist */
+   if (NULL == objectsByName) {
+      return NULL;
+   }
+
+   /* there's only one object, so there's no ambiguity */
+   else if (1 == listCount) {
+      return (Object *)objectsByName->data;
+   }
+
+   /* we have to disambiguate between multiple objects */
+   else {
+      Object *object = clarifyObject(objectsByName, listCount);
+      return object;
+   }   
+}
+
+/******************************************************************************/
+
+int actionPickupObject(Command command) {
+
+   Object *object;
 
    /* make sure the user actually specified what they want to take */
    if (NULL == command.directObject) {
@@ -153,24 +183,13 @@ int actionPickupObject(Command command) {
       printf("Tell me what you want to %s!\n", dstrview(command.verb));
    }
 
-   objectsByName = g_hash_table_lookup(location->objectByName,
-      dstrview(command.directObject));
-   curObject = objectsByName;
-   listCount = g_list_length(objectsByName);
+   object = getObject(command.directObject);
 
-   /* the object doesn't exist */
-   if (NULL == objectsByName) {
+   if (NULL == object) {
       printf("There is no %s here!\n", dstrview(command.directObject));
    }
 
-   /* there's only one object, so there's no ambiguity */
-   else if (1 == listCount) {
-      takeObject((Object *)objectsByName->data);
-   }
-
-   /* we have to disambiguate between multiple objects */
    else {
-      Object *object = clarifyObject(objectsByName, listCount);
       takeObject(object);
    }
 
