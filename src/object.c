@@ -13,6 +13,9 @@ void displayObject(Object *object);
 /* processes the posession of an object from the current room */
 void takeObject(Object *object);
 
+/* drops the specified object into the current room */
+void dropObject(Object *object);
+
 /* disambiguates in the case where a name refers to more than one object */
 Object *clarifyObject(GList *objects, int objectCount);
 
@@ -74,6 +77,15 @@ void takeObject(Object *object) {
    printf("You take the %s.\n", dstrview(object->name));
 
    // TODO: fire event "after take object"
+   return;
+}
+
+/******************************************************************************/
+
+void dropObject(Object *object) {
+
+   // TODO
+   printf("STUB: drop object %s\n", dstrview(object->name));
    return;
 }
 

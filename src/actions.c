@@ -11,6 +11,9 @@
 #include "include/object.h"
 #include "include/room.h"
 
+#define OBJ_FROM_ROOM       1
+#define OBJ_FROM_INVENTORY  2
+
 
 /* psuedo action that frees allocated memory and quits the game */
 int actionQuit(Command command);
@@ -29,7 +32,7 @@ int actionDropObject(Command command);
 
 /* returns object referenced by name, and disambiguates between synonyms if 
    necessary */
-static Object *getObject(dstring_t name);
+static Object *getObject(dstring_t name, int objectSource);
 
 /******************************************************************************/
 
@@ -142,14 +145,29 @@ int actionMove(Command command) {
 
 /******************************************************************************/
 
-static Object *getObject(dstring_t name) {
+static Object *getObject(dstring_t name, int objectSource) {
 
    GList *objectsByName;
    GList *curObject;
 
    int listCount;
 
-   objectsByName = g_hash_table_lookup(location->objectByName, dstrview(name));
+   switch (objectSource) {
+
+      case OBJ_FROM_ROOM:
+         objectsByName = g_hash_table_lookup(location->objectByName,
+            dstrview(name));
+         break;
+
+      case OBJ_FROM_INVENTORY:
+         objectsByName = g_hash_table_lookup(inventoryByName, dstrview(name));
+         break;
+
+      default:
+         fprintf(stderr, "called getObject() with an invalid source!\n");
+         exit(EXIT_FAILURE);
+   }
+
    curObject = objectsByName;
    listCount = g_list_length(objectsByName);
 
@@ -183,7 +201,7 @@ int actionPickupObject(Command command) {
       printf("Tell me what you want to %s!\n", dstrview(command.verb));
    }
 
-   object = getObject(command.directObject);
+   object = getObject(command.directObject, OBJ_FROM_ROOM);
 
    if (NULL == object) {
       printf("There is no %s here!\n", dstrview(command.directObject));
@@ -201,8 +219,27 @@ int actionPickupObject(Command command) {
 
 int actionDropObject(Command command) {
 
-   // TODO
-   printf("STUB: drop object\n");
+   Object *object;
+
+   /* make sure the user actually specified what they want to drop */
+   if (NULL == command.directObject) {
+      // TODO: add support for prompting the user for clarification
+      // (e.g. "What would you like to drop?")
+      printf("Tell me what you want to %s!\n", dstrview(command.verb));
+   }
+
+   object = getObject(command.directObject, OBJ_FROM_INVENTORY);
+
+   if (NULL == object) {
+      // TODO: select a/an depending on vowel rules to make it prettier
+      printf("You don't have a %s!\n", dstrview(command.directObject));
+   }
+
+   else {
+      dropObject(object);
+   }
+
+   // always return 1 only because so far, there are no possible syntax errors
    return 1;
 }
 
