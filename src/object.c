@@ -7,11 +7,22 @@
 #include "include/state.h"
 
 
+/* prints description of an object */
+void displayObject(Object *object);
+
 /* processes the posession of an object from the current room */
 void takeObject(Object *object);
 
 /* disambiguates in the case where a name refers to more than one object */
 Object *clarifyObject(GList *objects, int objectCount);
+
+/******************************************************************************/
+
+void displayObject(Object *object) {
+
+   printf("\nYou see a %s.  %s\n", dstrview(object->name),
+      dstrview(object->description));
+}
 
 /******************************************************************************/
 

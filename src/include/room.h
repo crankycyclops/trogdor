@@ -1,8 +1,6 @@
-#ifndef UTILITY_H
-#define UTILITY_H
+#ifndef ROOM_H
+#define ROOM_H
 
-
-#include "trogdor.h"
 
 /* prints out the description of a room */
 extern void displayRoom(Room *room);

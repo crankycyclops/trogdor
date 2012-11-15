@@ -2,6 +2,9 @@
 #define OBJECT_H
 
 
+/* prints description of an object */
+extern void displayObject(Object *object);
+
 /* processes the posession of an object from the current room */
 extern void takeObject(Object *object);
 

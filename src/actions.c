@@ -1,14 +1,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <dstring.h>
 
 #include "include/trogdor.h"
 #include "include/data.h"
 #include "include/state.h"
 #include "include/command.h"
-#include "include/utility.h"
 #include "include/shell.h"
 #include "include/object.h"
+#include "include/room.h"
 
 
 /* psuedo action that frees allocated memory and quits the game */

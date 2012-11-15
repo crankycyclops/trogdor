@@ -5,7 +5,7 @@
 #include "include/data.h"
 #include "include/state.h"
 #include "include/command.h"
-#include "include/utility.h"
+#include "include/room.h"
 
 
 int main(int argc, char *argv[]) {

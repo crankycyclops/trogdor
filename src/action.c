@@ -31,7 +31,8 @@ int callAction(Command command) {
    static Verb verbs[] = {
 
       /* all synonyms for moving in a given direction (go requires direction) */
-      {"go", &move},
+      {"go",    &move},
+      {"move",  &move},
       {"north", &move},
       {"south", &move},
       {"east",  &move},
@@ -48,8 +49,10 @@ int callAction(Command command) {
       {"show",     &look},
       {"describe", &look},
       {"look",     &look},
+      {"examine",  &look},
 
       {"quit",  &quitGame},
+
       {NULL, NULL}
    };
 

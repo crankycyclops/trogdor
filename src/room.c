@@ -4,12 +4,15 @@
 #include <dstring.h>
 
 #include "include/trogdor.h"
+#include "include/data.h"
+#include "include/state.h"
+#include "include/command.h"
+#include "include/shell.h"
+#include "include/object.h"
+
 
 /* prints description of a room */
 void displayRoom(Room *room);
-
-/* prints description of an object */
-void displayObject(Object *object);
 
 /******************************************************************************/
 
@@ -35,13 +38,5 @@ void displayRoom(Room *room) {
 
       objectList = g_list_next(objectList);
    }
-}
-
-/******************************************************************************/
-
-void displayObject(Object *object) {
-
-   printf("\nYou see a %s.  %s\n", dstrview(object->name),
-      dstrview(object->description));
 }
 
