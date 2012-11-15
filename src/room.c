@@ -11,14 +11,28 @@
 #include "include/object.h"
 
 
+/* sets our current location in the game */
+void setLocation(Room *room);
+
 /* prints description of a room */
 void displayRoom(Room *room);
+
+/******************************************************************************/
+
+void setLocation(Room *room) {
+
+   // TODO: trigger event "set location"
+   location = room;
+   displayRoom(room);
+}
 
 /******************************************************************************/
 
 void displayRoom(Room *room) {
 
    GList *objectList = room->objectList;
+
+   // TODO: trigger event "display room"
 
    printf("\n%s\n", dstrview(room->title));
    printf("\n%s\n", dstrview(room->description));

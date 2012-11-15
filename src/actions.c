@@ -78,8 +78,7 @@ int move(Command command) {
    if (0 == strcmp("north", dstrview(direction))) {
 
          if (NULL != location->north) {
-            location = location->north;
-            displayRoom(location);
+            setLocation(location->north);
          }
 
          else {
@@ -92,8 +91,7 @@ int move(Command command) {
    else if (0 == strcmp("south", dstrview(direction))) {
 
          if (NULL != location->south) {
-            location = location->south;
-            displayRoom(location);
+            setLocation(location->south);
          }
 
          else {
@@ -106,8 +104,7 @@ int move(Command command) {
    else if (0 == strcmp("east", dstrview(direction))) {
 
          if (NULL != location->east) {
-            location = location->east;
-            displayRoom(location);
+            setLocation(location->east);
          }
 
          else {
@@ -120,8 +117,7 @@ int move(Command command) {
    else if (0 == strcmp("west", dstrview(direction))) {
 
          if (NULL != location->west) {
-            location = location->west;
-            displayRoom(location);
+            setLocation(location->west);
          }
 
          else {
@@ -152,7 +148,6 @@ int pickupObject(Command command) {
       // TODO: add support for prompting the user for clarification
       // (e.g. "What would you like to take?")
       printf("Tell me what you want to %s!\n", dstrview(command.verb));
-      return 1;
    }
 
    objectsByName = g_hash_table_lookup(location->objectByName,
@@ -168,15 +163,15 @@ int pickupObject(Command command) {
    /* there's only one object, so there's no ambiguity */
    else if (1 == listCount) {
       takeObject((Object *)objectsByName->data);
-      printf("You take the %s.\n", dstrview(command.directObject));
    }
 
    /* we have to disambiguate between multiple objects */
    else {
       Object *object = clarifyObject(objectsByName, listCount);
       takeObject(object);
-      printf("You take the %s.\n", dstrview(object->name));
-      return 1;
    }
+
+   // always return 1 only because so far, there are no possible syntax errors
+   return 1;
 }
 

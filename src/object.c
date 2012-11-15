@@ -20,6 +20,7 @@ Object *clarifyObject(GList *objects, int objectCount);
 
 void displayObject(Object *object) {
 
+   // TODO: fire event "display object"
    printf("\nYou see a %s.  %s\n", dstrview(object->name),
       dstrview(object->description));
 }
@@ -32,6 +33,8 @@ void takeObject(Object *object) {
 
    GList *invHashList = NULL;
    GList *roomHashList = NULL;
+
+   // TODO: fire event "take object"
 
    inventory = g_list_append(inventory, object);
    location->objectList = g_list_remove(location->objectList, object);
@@ -65,6 +68,7 @@ void takeObject(Object *object) {
       g_hash_table_insert(location->objectByName, (char *)dstrview(synonym), roomHashList);
    }
 
+   printf("You take the %s.\n", dstrview(object->name));
    return;
 }
 
