@@ -13,20 +13,23 @@
 
 
 /* psuedo action that frees allocated memory and quits the game */
-int quitGame(Command command);
+int actionQuit(Command command);
 
 /* look at objects or describe the room again */
-int look(Command command);
+int actionLook(Command command);
 
 /* moves the user in the specified direction */
-int move(Command command);
+int actionMove(Command command);
 
 /* allows the user to pick up an object (requires direct object) */
-int pickupObject(Command command);
+int actionPickupObject(Command command);
+
+/* allows the user to drop an object */
+int actionDropObject(Command command);
 
 /******************************************************************************/
 
-int quitGame(Command command) {
+int actionQuit(Command command) {
 
    destroyData();
    printf("Goodbye!\n");
@@ -35,7 +38,7 @@ int quitGame(Command command) {
 
 /******************************************************************************/
 
-int look(Command command) {
+int actionLook(Command command) {
 
    // TODO: add support for looking at things other than the room
    displayRoom(location);
@@ -44,7 +47,7 @@ int look(Command command) {
 
 /******************************************************************************/
 
-int move(Command command) {
+int actionMove(Command command) {
 
    dstring_t direction;
 
@@ -136,7 +139,7 @@ int move(Command command) {
 
 /******************************************************************************/
 
-int pickupObject(Command command) {
+int actionPickupObject(Command command) {
 
    GList *objectsByName;
    GList *curObject;
@@ -172,6 +175,15 @@ int pickupObject(Command command) {
    }
 
    // always return 1 only because so far, there are no possible syntax errors
+   return 1;
+}
+
+/******************************************************************************/
+
+int actionDropObject(Command command) {
+
+   // TODO
+   printf("STUB: drop object\n");
    return 1;
 }
 

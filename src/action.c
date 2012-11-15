@@ -31,27 +31,31 @@ int callAction(Command command) {
    static Verb verbs[] = {
 
       /* all synonyms for moving in a given direction (go requires direction) */
-      {"go",    &move},
-      {"move",  &move},
-      {"north", &move},
-      {"south", &move},
-      {"east",  &move},
-      {"west",  &move},
+      {"go",    &actionMove},
+      {"move",  &actionMove},
+      {"north", &actionMove},
+      {"south", &actionMove},
+      {"east",  &actionMove},
+      {"west",  &actionMove},
 
       /* verbs for picking up an object (requires a direct object) */
-      {"take",  &pickupObject},
-      {"grab",  &pickupObject},
-      {"own",   &pickupObject},
-      {"claim", &pickupObject},
-      {"carry", &pickupObject},
+      {"take",  &actionPickupObject},
+      {"grab",  &actionPickupObject},
+      {"own",   &actionPickupObject},
+      {"claim", &actionPickupObject},
+      {"carry", &actionPickupObject},
+
+      /* verbs for dropping an object (requires direct object) */
+      {"drop",  &actionDropObject},
 
       /* verbs for displaying things */
-      {"show",     &look},
-      {"describe", &look},
-      {"look",     &look},
-      {"examine",  &look},
+      {"show",     &actionLook},
+      {"describe", &actionLook},
+      {"look",     &actionLook},
+      {"examine",  &actionLook},
 
-      {"quit",  &quitGame},
+      /* TODO: lose command = lose game (haha) */
+      {"quit",  &actionQuit},
 
       {NULL, NULL}
    };

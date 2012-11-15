@@ -21,9 +21,12 @@ void displayRoom(Room *room);
 
 void setLocation(Room *room) {
 
-   // TODO: trigger event "set location"
+   // TODO: trigger event "before set location"
+
    location = room;
    displayRoom(room);
+
+   // TODO: trigger event "after set location"
 }
 
 /******************************************************************************/
@@ -32,7 +35,7 @@ void displayRoom(Room *room) {
 
    GList *objectList = room->objectList;
 
-   // TODO: trigger event "display room"
+   // TODO: trigger event "before display room"
 
    printf("\n%s\n", dstrview(room->title));
    printf("\n%s\n", dstrview(room->description));
@@ -52,5 +55,7 @@ void displayRoom(Room *room) {
 
       objectList = g_list_next(objectList);
    }
+
+   // TODO: trigger event "after display room"
 }
 
