@@ -2,14 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ACTION_C
-
 #include "include/trogdor.h"
 #include "include/state.h"
 #include "include/data.h"
 #include "include/command.h"
-
-#include "include/action.h"
+#include "include/vocabulary.h"
 #include "include/actions.h"
 
 /*
@@ -28,37 +25,7 @@ int callAction(Command command) {
    int i;
 
    /* initialize our list of verb => function maps */
-   static Verb verbs[] = {
-
-      /* all synonyms for moving in a given direction (go requires direction) */
-      {"go",    &actionMove},
-      {"move",  &actionMove},
-      {"north", &actionMove},
-      {"south", &actionMove},
-      {"east",  &actionMove},
-      {"west",  &actionMove},
-
-      /* verbs for picking up an object (requires a direct object) */
-      {"take",  &actionPickupObject},
-      {"grab",  &actionPickupObject},
-      {"own",   &actionPickupObject},
-      {"claim", &actionPickupObject},
-      {"carry", &actionPickupObject},
-
-      /* verbs for dropping an object (requires direct object) */
-      {"drop",  &actionDropObject},
-
-      /* verbs for displaying things */
-      {"show",     &actionLook},
-      {"describe", &actionLook},
-      {"look",     &actionLook},
-      {"examine",  &actionLook},
-
-      /* TODO: lose command = lose game (haha) */
-      {"quit",  &actionQuit},
-
-      {NULL, NULL}
-   };
+   Verb *verbs = getVerbs();
 
    for (i = 0; verbs[i].word != NULL; i++) {
       if (0 == strcmp(verbs[i].word, dstrview(command.verb))) {

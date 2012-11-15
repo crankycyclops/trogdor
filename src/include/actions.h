@@ -3,6 +3,8 @@
 #define ACTIONS_H
 
 
+#include "command.h"
+
 /* psuedo action that frees allocated memory and quits the game */
 extern int actionQuit(Command command);
 
