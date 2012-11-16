@@ -199,6 +199,7 @@ int actionPickupObject(Command command) {
       // TODO: add support for prompting the user for clarification
       // (e.g. "What would you like to take?")
       printf("Tell me what you want to %s!\n", dstrview(command.verb));
+      return 1;
    }
 
    object = getObject(command.directObject, OBJ_FROM_ROOM);

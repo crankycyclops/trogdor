@@ -6,9 +6,16 @@
 #include "include/shell.h"
 #include "include/state.h"
 
+#define TAKE_OBJECT  1
+#define DROP_OBJECT  2
+
 
 /* prints description of an object */
 void displayObject(Object *object);
+
+/* called internally by takeObject and dropObject:
+   action can be TAKE_OBJECT or DROP_OBJECT (defined above) */
+static void ownershipOfObject(Object *object, int action);
 
 /* processes the posession of an object from the current room */
 void takeObject(Object *object);
@@ -33,47 +40,107 @@ void displayObject(Object *object) {
 
 /******************************************************************************/
 
-void takeObject(Object *object) {
+static void ownershipOfObject(Object *object, int action) {
 
    int i;
 
-   GList *invHashList = NULL;
-   GList *roomHashList = NULL;
+   /* lists of objects to transfer ownership to and from */
+   GList *srcObjectList  = NULL;
+   GList *destObjectList = NULL;
 
-   // TODO: fire event "before take object"
+   /* name -> object hash tables for src and dest */
+   GHashTable *srcHash  = NULL;
+   GHashTable *destHash = NULL;
 
-   inventory = g_list_append(inventory, object);
-   location->objectList = g_list_remove(location->objectList, object);
+   /* keeps track of lists of objects indexed by a certain name */
+   GList *srcHashList  = NULL;
+   GList *destHashList = NULL;
 
-   /* we have to append our object to the list of objects hashed with that
-      name's value */
-   invHashList = g_hash_table_lookup(inventoryByName, dstrview(object->name));
-   roomHashList = g_hash_table_lookup(location->objectByName,
-      dstrview(object->name));
+   switch (action) {
 
-   invHashList = g_list_append(invHashList, object);
-   g_hash_table_insert(inventoryByName, (char *)dstrview(object->name),
-      invHashList);
+      /* we're removing object from the room and adding it to the inventory */
+      case TAKE_OBJECT:
+         srcObjectList = location->objectList;
+         destObjectList = inventory;
+         srcHash = location->objectByName;
+         destHash = inventoryByName;
+         break;
 
-   roomHashList = g_list_remove(roomHashList, object);
-   g_hash_table_insert(location->objectByName, (char *)dstrview(object->name),
-      roomHashList);
+      /* we're removing object from the inventory and adding it to the room */
+      case DROP_OBJECT:
+         srcObjectList = inventory;
+         destObjectList = location->objectList;
+         srcHash = inventoryByName;
+         destHash = location->objectByName;
+         break;
 
-   /* do the same by name hashing for synonyms */
+      /* WTF? >:( */
+      default:
+         fprintf(stderr, "Unsupported action in ownershipOfObject().  "
+            "This is a bug.\n");
+         exit(EXIT_FAILURE);
+   }
+
+   /* add object to dest and remove it from src */
+   destObjectList = g_list_append(destObjectList, object);
+   srcObjectList = g_list_remove(srcObjectList, object);
+
+   /* update source and destination by-name indices */
+   destHashList = g_hash_table_lookup(destHash, dstrview(object->name));
+   srcHashList = g_hash_table_lookup(srcHash, dstrview(object->name));
+
+   /* index object by name in dest */
+   destHashList = g_list_append(destHashList, object);
+   g_hash_table_insert(destHash, (char *)dstrview(object->name), destHashList);
+
+   /* remove object's index by name from src */
+   srcHashList = g_list_remove(srcHashList, object);
+   g_hash_table_insert(srcHash, (char *)dstrview(object->name), srcHashList);
+
+   /* update index by name for object's synonyms */
    for (i = 0; i < object->synonyms->len; i++) {
 
       dstring_t synonym = g_array_index(object->synonyms, dstring_t, i);
 
-      invHashList = g_hash_table_lookup(inventoryByName, dstrview(synonym));
-      roomHashList = g_hash_table_lookup(location->objectByName, dstrview(synonym));
+      destHashList = g_hash_table_lookup(destHash, dstrview(synonym));
+      srcHashList = g_hash_table_lookup(srcHash, dstrview(synonym));
 
-      invHashList = g_list_append(invHashList, object);
-      g_hash_table_insert(inventoryByName, (char *)dstrview(synonym), invHashList);
+      destHashList = g_list_append(destHashList, object);
+      g_hash_table_insert(destHash, (char *)dstrview(synonym), destHashList);
 
-      roomHashList = g_list_remove(roomHashList, object);
-      g_hash_table_insert(location->objectByName, (char *)dstrview(synonym), roomHashList);
+      srcHashList = g_list_remove(srcHashList, object);
+      g_hash_table_insert(srcHash, (char *)dstrview(synonym), srcHashList);
    }
 
+   /* we have to update our inventory and room GList pointers! */
+   switch (action) {
+
+      /*  */
+      case TAKE_OBJECT:
+         location->objectList = srcObjectList;
+         inventory = destObjectList;
+         break;
+
+      /* we're removing object from the inventory and adding it to the room */
+      case DROP_OBJECT:
+         inventory = srcObjectList;
+         location->objectList = destObjectList;
+         break;
+
+      default:
+         break;
+   }
+
+   return;
+}
+
+/******************************************************************************/
+
+void takeObject(Object *object) {
+
+   // TODO: fire event "before take object"
+
+   ownershipOfObject(object, TAKE_OBJECT);
    printf("You take the %s.\n", dstrview(object->name));
 
    // TODO: fire event "after take object"
