@@ -15,7 +15,7 @@ void displayObject(Object *object);
 
 /* called internally by takeObject and dropObject:
    action can be TAKE_OBJECT or DROP_OBJECT (defined above) */
-static void ownershipOfObject(Object *object, int action);
+static void transferObject(Object *object, int action);
 
 /* processes the posession of an object from the current room */
 void takeObject(Object *object);
@@ -40,7 +40,7 @@ void displayObject(Object *object) {
 
 /******************************************************************************/
 
-static void ownershipOfObject(Object *object, int action) {
+static void transferObject(Object *object, int action) {
 
    int i;
 
@@ -115,13 +115,11 @@ static void ownershipOfObject(Object *object, int action) {
    /* we have to update our inventory and room GList pointers! */
    switch (action) {
 
-      /*  */
       case TAKE_OBJECT:
          location->objectList = srcObjectList;
          inventory = destObjectList;
          break;
 
-      /* we're removing object from the inventory and adding it to the room */
       case DROP_OBJECT:
          inventory = srcObjectList;
          location->objectList = destObjectList;
@@ -140,7 +138,7 @@ void takeObject(Object *object) {
 
    // TODO: fire event "before take object"
 
-   ownershipOfObject(object, TAKE_OBJECT);
+   transferObject(object, TAKE_OBJECT);
    printf("You take the %s.\n", dstrview(object->name));
 
    // TODO: fire event "after take object"
@@ -153,7 +151,7 @@ void dropObject(Object *object) {
 
    // TODO: fire event "before drop object"
 
-   ownershipOfObject(object, DROP_OBJECT);
+   transferObject(object, DROP_OBJECT);
    printf("You drop the %s.\n", dstrview(object->name));
 
    // TODO: fire event "after drop object"
