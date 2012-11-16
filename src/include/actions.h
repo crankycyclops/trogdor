@@ -14,6 +14,9 @@ extern int actionMove(Command command);
 /* look at objects or describe the room again */
 extern int actionLook(Command command);
 
+/* list the items in the user's inventory */
+extern int actionList(Command command);
+
 /* allows the user to pick up an object (requires direct object) */
 extern int actionPickupObject(Command command);
 

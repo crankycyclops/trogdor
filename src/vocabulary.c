@@ -96,6 +96,9 @@ Verb *getVerbs() {
       {"look",     &actionLook},
       {"examine",  &actionLook},
 
+      /* list items in the user's inventory */
+      {"list", &actionList},
+
       /* TODO: lose command = lose game (haha) */
       {"quit",  &actionQuit},
 

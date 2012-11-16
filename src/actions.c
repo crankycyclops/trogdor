@@ -21,6 +21,9 @@ int actionQuit(Command command);
 /* look at objects or describe the room again */
 int actionLook(Command command);
 
+/* list the items in the user's inventory */
+int actionList(Command command);
+
 /* moves the user in the specified direction */
 int actionMove(Command command);
 
@@ -49,6 +52,31 @@ int actionLook(Command command) {
 
    // TODO: add support for looking at things other than the room
    displayRoom(location);
+   return 1;
+}
+
+/******************************************************************************/
+
+int actionList(Command command) {
+
+   GList *item;
+
+   /* list should only be a one word command */
+   if (NULL != command.directObject || NULL != command.indirectObject) {
+      return 0;
+   }
+
+   if (inventory != NULL) {
+      printf("Items in your inventory:\n");
+      for (item = inventory; item != NULL; item = item->next) {
+         printf("%s\n", dstrview(((Object *)item->data)->name));
+      }
+   }
+
+   else {
+      printf("You don't have anything!\n");
+   }
+
    return 1;
 }
 
