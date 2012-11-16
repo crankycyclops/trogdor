@@ -151,8 +151,12 @@ void takeObject(Object *object) {
 
 void dropObject(Object *object) {
 
-   // TODO
-   printf("STUB: drop object %s\n", dstrview(object->name));
+   // TODO: fire event "before drop object"
+
+   ownershipOfObject(object, DROP_OBJECT);
+   printf("You drop the %s.\n", dstrview(object->name));
+
+   // TODO: fire event "after drop object"
    return;
 }
 
