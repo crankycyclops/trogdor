@@ -7,9 +7,13 @@
 #include "include/state.h"
 #include "include/command.h"
 #include "include/room.h"
+#include "include/event.h"
 
 
 int main(int argc, char *argv[]) {
+
+   /* initialize our event handler */
+   initEvent();
 
    /* load assets and game related data, and initialize the game's state */
    initData();

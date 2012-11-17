@@ -2,6 +2,9 @@
 #define ROOM_H
 
 
+#include <dstring.h>
+
+
 /* Represents the state of a single room */
 typedef struct roomState {
 

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <glib.h>
 #include <dstring.h>
 
 #include "include/trogdor.h"
@@ -17,15 +18,15 @@
 /* prints description of an object */
 void displayObject(Object *object);
 
-/* called internally by takeObject and dropObject:
-   action can be TAKE_OBJECT or DROP_OBJECT (defined above) */
-static void transferObject(Object *object, int action);
-
 /* processes the posession of an object from the current room */
 void takeObject(Object *object);
 
 /* drops the specified object into the current room */
 void dropObject(Object *object);
+
+/* called internally by takeObject and dropObject:
+   action can be TAKE_OBJECT or DROP_OBJECT (defined above) */
+static void transferObject(Object *object, int action);
 
 /* disambiguates in the case where a name refers to more than one object */
 Object *clarifyObject(GList *objects, int objectCount);
@@ -34,12 +35,36 @@ Object *clarifyObject(GList *objects, int objectCount);
 
 void displayObject(Object *object) {
 
-   // TODO: fire event "before display object"
+   event("beforeDisplayObject", object);
 
    printf("\nYou see a %s.  %s\n", dstrview(object->name),
       dstrview(object->description));
 
-   // TODO: fire event "after display object"
+   event("afterDisplayObject", object);
+}
+
+/******************************************************************************/
+
+void takeObject(Object *object) {
+
+   event("beforeTakeObject", object);
+
+   transferObject(object, TAKE_OBJECT);
+   printf("You take the %s.\n", dstrview(object->name));
+
+   event("afterTakeObject", object);
+}
+
+/******************************************************************************/
+
+void dropObject(Object *object) {
+
+   event("beforeDropObject", object);
+
+   transferObject(object, DROP_OBJECT);
+   printf("You drop the %s.\n", dstrview(object->name));
+
+   event("afterDropObject", object);
 }
 
 /******************************************************************************/
@@ -133,32 +158,6 @@ static void transferObject(Object *object, int action) {
          break;
    }
 
-   return;
-}
-
-/******************************************************************************/
-
-void takeObject(Object *object) {
-
-   // TODO: fire event "before take object"
-
-   transferObject(object, TAKE_OBJECT);
-   printf("You take the %s.\n", dstrview(object->name));
-
-   // TODO: fire event "after take object"
-   return;
-}
-
-/******************************************************************************/
-
-void dropObject(Object *object) {
-
-   // TODO: fire event "before drop object"
-
-   transferObject(object, DROP_OBJECT);
-   printf("You drop the %s.\n", dstrview(object->name));
-
-   // TODO: fire event "after drop object"
    return;
 }
 

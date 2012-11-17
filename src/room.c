@@ -28,13 +28,13 @@ static void describeRoom(Room *room);
 
 void setLocation(Room *room) {
 
-   // TODO: trigger event "before set location"
+   event("beforeSetLocation", room);
 
    location = room;
    displayRoom(room);
    room->state.visitedByPlayer = 1;
 
-   // TODO: trigger event "after set location"
+   event("afterSetLocation", room);
 }
 
 /******************************************************************************/
@@ -43,7 +43,7 @@ void displayRoom(Room *room) {
 
    GList *objectList = room->objectList;
 
-   // TODO: trigger event "before display room"
+   event("beforeRoomDisplay", room);
 
    printf("\n%s\n", dstrview(room->title));
    if (0 == room->state.visitedByPlayer) {
@@ -66,7 +66,7 @@ void displayRoom(Room *room) {
       objectList = g_list_next(objectList);
    }
 
-   // TODO: trigger event "after display room"
+   event("afterRoomDisplay", room);
 }
 
 /******************************************************************************/

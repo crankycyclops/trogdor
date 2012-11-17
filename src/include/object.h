@@ -2,6 +2,9 @@
 #define OBJECT_H
 
 
+#include <dstring.h>
+
+
 /* represents the state of a game object */
 typedef struct objectState {
    int seenByPlayer;    /* whether object has been seen by the player */
