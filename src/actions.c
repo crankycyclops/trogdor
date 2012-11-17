@@ -50,7 +50,8 @@ int actionQuit(Command command) {
 
 int actionLook(Command command) {
 
-   dstring_t object = NULL;   /* name of the object we want to look at */
+   /* name of the object we want to look at */
+   dstring_t object = NULL;
 
    if (NULL != command.directObject) {
       object = command.directObject;
@@ -89,7 +90,7 @@ int actionLook(Command command) {
       }
 
       else {
-         printf("STUB: looking at object\n");
+         displayObject(thing);
       }
    }
 
