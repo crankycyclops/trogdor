@@ -156,6 +156,11 @@ static void parseObject(xmlTextReaderPtr reader) {
       exit(EXIT_FAILURE);
    }
 
+   if (0 == strcmp("room", objectName)) {
+      fprintf(stderr, "error: 'room' is an invalid object name\n");
+      exit(EXIT_FAILURE);
+   }
+
    if (DSTR_SUCCESS != dstralloc(&object->name)) {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
@@ -193,6 +198,12 @@ static void parseObject(xmlTextReaderPtr reader) {
          cstrtodstr(synonym, getNodeValue(reader));
          dstrtrim(synonym);
          g_array_append_val(object->synonyms, synonym);
+
+         /* 'room' is an invalid synonym */
+         if (0 == strcmp("room", dstrview(synonym))) {
+            fprintf(stderr, "error: 'room' is an invalid synonym\n");
+            exit(EXIT_FAILURE);
+         }
 
          /* make sure we have a valid closing tag */
          checkClosingTag("synonym", reader);
