@@ -5,6 +5,7 @@
 
 #include <glib.h>
 #include "trogdor.h"
+#include "room.h"
 
 /* our current location in the game */
 extern Room *location;

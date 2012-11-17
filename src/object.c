@@ -3,8 +3,12 @@
 #include <dstring.h>
 
 #include "include/trogdor.h"
+#include "include/object.h"
+#include "include/room.h"
 #include "include/shell.h"
 #include "include/state.h"
+
+#define OBJECT_C
 
 #define TAKE_OBJECT  1
 #define DROP_OBJECT  2

@@ -4,6 +4,8 @@
 #include <glib.h>
 
 #include "include/trogdor.h"
+#include "include/object.h"
+#include "include/room.h"
 #include "include/parse.h"
 #include "include/parsexml.h"
 

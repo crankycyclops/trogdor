@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "include/trogdor.h"
+#include "include/room.h"
 #include "include/state.h"
 #include "include/data.h"
 #include "include/command.h"

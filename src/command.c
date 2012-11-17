@@ -5,6 +5,7 @@
 #include <dstring.h>
 
 #include "include/trogdor.h"
+#include "include/room.h"
 #include "include/state.h"
 #include "include/shell.h"
 #include "include/token.h"
