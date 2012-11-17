@@ -12,7 +12,7 @@
 Room *location = NULL;
 
 /* list of player-owned objects */
-Inventory inventory = {NULL, NULL, 0, 1};
+Inventory inventory = {NULL, NULL, 0, 0};
 
 /* initialize the game's state */
 void initGame();
