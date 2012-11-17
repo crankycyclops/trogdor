@@ -207,8 +207,11 @@ static Object *initObject(ObjectParsed *objectParsed) {
 
    object->name = objectParsed->name;
    object->description = objectParsed->description;
-   object->seen = 0;
    object->synonyms = objectParsed->synonyms;
+
+   object->state.seenByPlayer = 0;
+   object->state.takenByPlayer = 0;
+   object->state.droppedByPlayer = 0;
 
    return object;
 }

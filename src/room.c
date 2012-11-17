@@ -45,9 +45,9 @@ void displayRoom(Room *room) {
    /* display objects in the room if they haven't already been seen */
    while (objectList != NULL) {
 
-      if (!((Object *)objectList->data)->seen) {
+      if (!((Object *)objectList->data)->state.seenByPlayer) {
          displayObject((Object *)objectList->data);
-         ((Object *)objectList->data)->seen = 1;
+         ((Object *)objectList->data)->state.seenByPlayer = 1;
       }
 
       else {
