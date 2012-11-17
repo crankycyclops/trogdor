@@ -73,7 +73,24 @@ int actionLook(Command command) {
 
    /* user is looking at an object */
    if (NULL != object) {
-      printf("STUB: looking at object\n");
+
+      Object *thing;
+
+      /* objects in the room have precedence over objects in the inventory
+         -- no good reason to do this, except that it makes the code easier :) */
+      thing = getObject(object, OBJ_FROM_ROOM);
+
+      if (NULL == thing) {
+         thing = getObject(object, OBJ_FROM_INVENTORY);
+      }
+
+      if (NULL == thing) {
+         printf("There is no %s here!\n", dstrview(object));
+      }
+
+      else {
+         printf("STUB: looking at object\n");
+      }
    }
 
    /* user is looking at the current room */
