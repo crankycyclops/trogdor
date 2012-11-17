@@ -50,8 +50,37 @@ int actionQuit(Command command) {
 
 int actionLook(Command command) {
 
-   // TODO: add support for looking at things other than the room
-   displayRoom(location);
+   dstring_t object = NULL;   /* name of the object we want to look at */
+
+   if (NULL != command.directObject) {
+      object = command.directObject;
+   }
+
+   if (NULL != command.indirectObject) {
+
+      /* having both a direct and indirect object is a syntax error */
+      if (NULL != object) {
+         return 0;
+      }
+
+      object = command.indirectObject;
+   }
+
+   /* user can type "look" or "look at room"; both do the same thing */
+   if (NULL != object && 0 == strcmp(dstrview(object), "room")) {
+      object = NULL;
+   }
+
+   /* user is looking at an object */
+   if (NULL != object) {
+      printf("STUB: looking at object\n");
+   }
+
+   /* user is looking at the current room */
+   else {
+      displayRoom(location);
+   }
+
    return 1;
 }
 
