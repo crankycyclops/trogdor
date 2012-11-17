@@ -115,9 +115,9 @@ int actionList(Command command) {
       return 0;
    }
 
-   if (inventory != NULL) {
+   if (inventory.list != NULL) {
       printf("Items in your inventory:\n");
-      for (item = inventory; item != NULL; item = item->next) {
+      for (item = inventory.list; item != NULL; item = item->next) {
          printf("%s\n", dstrview(((Object *)item->data)->name));
       }
    }
@@ -237,7 +237,7 @@ static Object *getObject(dstring_t name, int objectSource) {
          break;
 
       case OBJ_FROM_INVENTORY:
-         objectsByName = g_hash_table_lookup(inventoryByName, dstrview(name));
+         objectsByName = g_hash_table_lookup(inventory.byName, dstrview(name));
          break;
 
       default:

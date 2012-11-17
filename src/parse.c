@@ -209,6 +209,8 @@ static Object *initObject(ObjectParsed *objectParsed) {
 
    object->name = objectParsed->name;
    object->description = objectParsed->description;
+   object->weight = atoi(dstrview(objectParsed->weight));
+
    object->synonyms = objectParsed->synonyms;
 
    object->state.seenByPlayer = 0;

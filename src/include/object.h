@@ -17,6 +17,8 @@ typedef struct object {
 
    dstring_t name;         /* name of the object */
    dstring_t description;  /* the user reads this when seen the first time */
+   int weight;             /* object's weight */
+
    ObjectState state;
 
    /* an array of synonyms (dstring_t's) */

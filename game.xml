@@ -13,6 +13,11 @@
          <description>
 It appears to be a firey cylinder of wax burning with the passion of a thousand suns.
          </description>
+
+         <!-- specifies an object's weight; not specifying this will default to
+              0, which means it has no weight -->
+         <weight>1</weight>
+
          <synonym>fire</synonym>
          <synonym>flame</synonym>
       </object>
@@ -28,6 +33,7 @@ It's nothing special.  It's gray, bumpy and a little lopsided.
          <description>
 It's a huge rock.  You're not sure if you'll be able to lift it.
          </description>
+         <weight>1</weight>
          <synonym>rock</synonym>
          <synonym>stone</synonym>
       </object>

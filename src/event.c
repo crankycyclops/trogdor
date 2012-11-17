@@ -22,34 +22,39 @@ void event(char *name, void *data);
 \******************/
 
 /* called before a room is displayed - takes as input the room (type Room *) */
-void beforeRoomDisplay(void *data);
+static void beforeRoomDisplay(void *data);
 
 /* called after a room is displayed - takes as input the room (type Room *) */
-void afterRoomDisplay(void *data);
+static void afterRoomDisplay(void *data);
 
 /* called before an object is taken - takes as input the object (type Object *) */
-void beforeTakeObject(void *data);
+static void beforeTakeObject(void *data);
 
 /* called after an object is taken - takes as input the object (type Object *) */
-void afterTakeObject(void *data);
+static void afterTakeObject(void *data);
 
 /* called before an object is dropped - takes as input the object (type Object *) */
-void beforeDropObject(void *data);
+static void beforeDropObject(void *data);
 
 /* called after an object is dropped - takes as input the object (type Object *) */
-void afterDropObject(void *data);
+static void afterDropObject(void *data);
 
 /* called before an object is described - takes as input the object (type Object *) */
-void beforeDisplayObject(void *data);
+static void beforeDisplayObject(void *data);
 
 /* called after an object is described - takes as input the object (type Object *) */
-void afterDisplayObject(void *data);
+static void afterDisplayObject(void *data);
+
+/* triggered when the user tries to take an object, but their inventory doesn't
+   have enough free weight - data = object we're trying to pick up
+   (type Object *) */
+static void takeObjectTooHeavy(void *data);
 
 /* called before setting a new location - data = room we're setting (type Room *) */
-void beforeSetLocation(void *data);
+static void beforeSetLocation(void *data);
 
 /* called after setting a new location - data = room we're setting (type Room *) */
-void afterSetLocation(void *data);
+static void afterSetLocation(void *data);
 
 
 /* maintains a mapping of event names to functions */
@@ -72,6 +77,7 @@ void initEvent() {
    registerEvent("afterDropObject",     &afterDropObject);
    registerEvent("beforeDisplayObject", &beforeDisplayObject);
    registerEvent("afterDisplayObject",  &afterDisplayObject);
+   registerEvent("takeObjectTooHeavy",  &takeObjectTooHeavy);
 }
 
 /******************************************************************************/
@@ -90,11 +96,16 @@ void event(char *name, void *data) {
    if (NULL != event) {
       event(data);
    }
+
+   else {
+      fprintf(stderr, "WARNING: event %s hasn't been registered.  This is a "
+         "bug.\n", name);
+   }
 }
 
 /******************************************************************************/
 
-void beforeRoomDisplay(void *data) {
+static void beforeRoomDisplay(void *data) {
 
    Room *room = data;
 
@@ -104,7 +115,7 @@ void beforeRoomDisplay(void *data) {
 
 /******************************************************************************/
 
-void afterRoomDisplay(void *data) {
+static void afterRoomDisplay(void *data) {
 
    Room *room = data;
 
@@ -114,7 +125,7 @@ void afterRoomDisplay(void *data) {
 
 /******************************************************************************/
 
-void beforeSetLocation(void *data) {
+static void beforeSetLocation(void *data) {
 
    Room *room = data;
 
@@ -124,7 +135,7 @@ void beforeSetLocation(void *data) {
 
 /******************************************************************************/
 
-void afterSetLocation(void *data) {
+static void afterSetLocation(void *data) {
 
    Room *room = data;
 
@@ -134,7 +145,7 @@ void afterSetLocation(void *data) {
 
 /******************************************************************************/
 
-void beforeTakeObject(void *data) {
+static void beforeTakeObject(void *data) {
 
    Object *object = data;
 
@@ -144,7 +155,7 @@ void beforeTakeObject(void *data) {
 
 /******************************************************************************/
 
-void afterTakeObject(void *data) {
+static void afterTakeObject(void *data) {
 
    Object *object = data;
 
@@ -154,7 +165,7 @@ void afterTakeObject(void *data) {
 
 /******************************************************************************/
 
-void beforeDropObject(void *data) {
+static void beforeDropObject(void *data) {
 
    Object *object = data;
 
@@ -164,7 +175,7 @@ void beforeDropObject(void *data) {
 
 /******************************************************************************/
 
-void afterDropObject(void *data) {
+static void afterDropObject(void *data) {
 
    Object *object = data;
 
@@ -174,7 +185,7 @@ void afterDropObject(void *data) {
 
 /******************************************************************************/
 
-void beforeDisplayObject(void *data) {
+static void beforeDisplayObject(void *data) {
 
    Object *object = data;
 
@@ -184,11 +195,21 @@ void beforeDisplayObject(void *data) {
 
 /******************************************************************************/
 
-void afterDisplayObject(void *data) {
+static void afterDisplayObject(void *data) {
 
    Object *object = data;
 
    // TODO
+   return;
+}
+
+/******************************************************************************/
+
+static void takeObjectTooHeavy(void *data) {
+
+   // TODO
+   // TODO: should this call a global script function or a script function
+   // unique to the object?  Hmm...  I'm leaning toward global.
    return;
 }
 

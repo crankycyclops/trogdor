@@ -24,6 +24,7 @@ typedef struct objectParsed {
 
    dstring_t name;
    dstring_t description;
+   dstring_t weight;
 
    /* an array of synonyms (dstring_t's) */
    GArray *synonyms;

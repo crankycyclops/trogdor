@@ -9,6 +9,7 @@
 #include "include/parse.h"
 #include "include/parsexml.h"
 #include "include/data.h"
+#include "include/utility.h"
 
 
 /* returns true if the document was parsed successfully and false otherwise */
@@ -140,6 +141,14 @@ static void parseObject(xmlTextReaderPtr reader) {
 
    object->name = NULL;
    object->description = NULL;
+   object->weight = NULL;
+
+   if (DSTR_SUCCESS != dstralloc(&object->weight)) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   cstrtodstr(object->weight, "0");
+
    object->synonyms = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 5);
 
    /* record the object's name */
@@ -183,6 +192,16 @@ static void parseObject(xmlTextReaderPtr reader) {
       /* we're parsing the object's description */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("description", tagname)) {
          GET_XML_TAG(description, object)
+      }
+
+      /* we're parsing the object's weight (optional) */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("weight", tagname)) {
+         GET_XML_TAG(weight, object)
+         if (!isInt((char *)dstrview(object->weight))) {
+            fprintf(stderr, "error: %s is not a valid weight\n",
+               dstrview(object->weight));
+            exit(EXIT_FAILURE);
+         }
       }
 
       /* we're parsing a synonym */

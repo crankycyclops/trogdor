@@ -49,10 +49,19 @@ void takeObject(Object *object) {
 
    event("beforeTakeObject", object);
 
-   transferObject(object, TAKE_OBJECT);
-   printf("You take the %s.\n", dstrview(object->name));
+   if (0 == inventory.maxWeight ||
+   inventory.weight + object->weight <= inventory.maxWeight) {
+      transferObject(object, TAKE_OBJECT);
+      inventory.weight += object->weight;
+      printf("You take the %s.\n", dstrview(object->name));
+      event("afterTakeObject", object);
+   }
 
-   event("afterTakeObject", object);
+   else {
+      printf("%s is too heavy.  Try dropping something first.\n",
+         dstrview(object->name));
+      event("takeObjectTooHeavy", object);
+   }
 }
 
 /******************************************************************************/
@@ -62,6 +71,7 @@ void dropObject(Object *object) {
    event("beforeDropObject", object);
 
    transferObject(object, DROP_OBJECT);
+   inventory.weight -= object->weight;
    printf("You drop the %s.\n", dstrview(object->name));
 
    event("afterDropObject", object);
@@ -90,16 +100,16 @@ static void transferObject(Object *object, int action) {
       /* we're removing object from the room and adding it to the inventory */
       case TAKE_OBJECT:
          srcObjectList = location->objectList;
-         destObjectList = inventory;
+         destObjectList = inventory.list;
          srcHash = location->objectByName;
-         destHash = inventoryByName;
+         destHash = inventory.byName;
          break;
 
       /* we're removing object from the inventory and adding it to the room */
       case DROP_OBJECT:
-         srcObjectList = inventory;
+         srcObjectList = inventory.list;
          destObjectList = location->objectList;
-         srcHash = inventoryByName;
+         srcHash = inventory.byName;
          destHash = location->objectByName;
          break;
 
@@ -146,11 +156,11 @@ static void transferObject(Object *object, int action) {
 
       case TAKE_OBJECT:
          location->objectList = srcObjectList;
-         inventory = destObjectList;
+         inventory.list = destObjectList;
          break;
 
       case DROP_OBJECT:
-         inventory = srcObjectList;
+         inventory.list = srcObjectList;
          location->objectList = destObjectList;
          break;
 
