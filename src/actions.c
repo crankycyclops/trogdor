@@ -98,7 +98,7 @@ int actionLook(Command command) {
 
    /* user is looking at the current room */
    else {
-      displayRoom(location);
+      displayRoom(location, TRUE);
    }
 
    return 1;

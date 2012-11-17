@@ -19,7 +19,7 @@
 void setLocation(Room *room);
 
 /* prints description of a room (only the title once already visited) */
-void displayRoom(Room *room);
+void displayRoom(Room *room, int showLongDescription);
 
 /* prints the long description of a room */
 static void describeRoom(Room *room);
@@ -31,7 +31,7 @@ void setLocation(Room *room) {
    event("beforeSetLocation", room);
 
    location = room;
-   displayRoom(room);
+   displayRoom(room, FALSE);
    room->state.visitedByPlayer = 1;
 
    event("afterSetLocation", room);
@@ -39,14 +39,14 @@ void setLocation(Room *room) {
 
 /******************************************************************************/
 
-void displayRoom(Room *room) {
+void displayRoom(Room *room, int showLongDescription) {
 
    GList *objectList = room->objectList;
 
    event("beforeRoomDisplay", room);
 
    printf("\n%s\n", dstrview(room->title));
-   if (0 == room->state.visitedByPlayer) {
+   if (showLongDescription || 0 == room->state.visitedByPlayer) {
       describeRoom(room);
    }
 

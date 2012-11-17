@@ -50,7 +50,7 @@ typedef struct room {
 extern void setLocation(Room *room);
 
 /* prints out the description of a room */
-extern void displayRoom(Room *room);
+extern void displayRoom(Room *room, int showLongDescription);
 
 #endif
 
