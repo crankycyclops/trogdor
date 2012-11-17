@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
    initData();
 
    /* output description of the first room before starting */
-   displayRoom(location);
+   setLocation(location);
 
    /* main game loop */
    while (1) {

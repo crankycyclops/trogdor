@@ -12,12 +12,17 @@
 #include "include/shell.h"
 #include "include/object.h"
 
+#define ROOM_C
+
 
 /* sets our current location in the game */
 void setLocation(Room *room);
 
-/* prints description of a room */
+/* prints description of a room (only the title once already visited) */
 void displayRoom(Room *room);
+
+/* prints the long description of a room */
+static void describeRoom(Room *room);
 
 /******************************************************************************/
 
@@ -27,6 +32,7 @@ void setLocation(Room *room) {
 
    location = room;
    displayRoom(room);
+   room->state.visitedByPlayer = 1;
 
    // TODO: trigger event "after set location"
 }
@@ -40,7 +46,9 @@ void displayRoom(Room *room) {
    // TODO: trigger event "before display room"
 
    printf("\n%s\n", dstrview(room->title));
-   printf("\n%s\n", dstrview(room->description));
+   if (0 == room->state.visitedByPlayer) {
+      describeRoom(room);
+   }
 
    /* display objects in the room if they haven't already been seen */
    while (objectList != NULL) {
@@ -61,3 +69,9 @@ void displayRoom(Room *room) {
    // TODO: trigger event "after display room"
 }
 
+/******************************************************************************/
+
+static void describeRoom(Room *room) {
+
+   printf("\n%s\n", dstrview(room->description));
+}

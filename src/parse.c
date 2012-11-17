@@ -134,6 +134,8 @@ static Room *initRoom(RoomParsed *roomParsed) {
    room->east  = NULL;
    room->west  = NULL;
 
+   room->state.visitedByPlayer = 0;
+
    room->objectList = NULL;
    room->objectByName = NULL;
    initObjects(room, roomParsed->objects);
