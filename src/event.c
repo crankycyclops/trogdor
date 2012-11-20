@@ -1,9 +1,12 @@
 
+#define EVENT_C
+
 #include <glib.h>
 
 #include "include/object.h"
 #include "include/room.h"
 #include "include/state.h"
+#include "include/event.h"
 
 
 /* initialize the event handler (MUST be called before first use) */
@@ -11,10 +14,10 @@ void initEvent();
 
 /* register a new event (note: calling this twice with the same name will
    cause the first to be overwritten) */
-void registerEvent(char *name, void (*event)(void *));
+void registerEvent(char *name, int (*event)(void *));
 
 /* call an event */
-void event(char *name, void *data);
+int event(char *name, void *data);
 
 
 /******************\
@@ -22,39 +25,39 @@ void event(char *name, void *data);
 \******************/
 
 /* called before a room is displayed - takes as input the room (type Room *) */
-static void beforeRoomDisplay(void *data);
+static int beforeRoomDisplay(void *data);
 
 /* called after a room is displayed - takes as input the room (type Room *) */
-static void afterRoomDisplay(void *data);
+static int afterRoomDisplay(void *data);
 
 /* called before an object is taken - takes as input the object (type Object *) */
-static void beforeTakeObject(void *data);
+static int beforeTakeObject(void *data);
 
 /* called after an object is taken - takes as input the object (type Object *) */
-static void afterTakeObject(void *data);
+static int afterTakeObject(void *data);
 
 /* called before an object is dropped - takes as input the object (type Object *) */
-static void beforeDropObject(void *data);
+static int beforeDropObject(void *data);
 
 /* called after an object is dropped - takes as input the object (type Object *) */
-static void afterDropObject(void *data);
+static int afterDropObject(void *data);
 
 /* called before an object is described - takes as input the object (type Object *) */
-static void beforeDisplayObject(void *data);
+static int beforeDisplayObject(void *data);
 
 /* called after an object is described - takes as input the object (type Object *) */
-static void afterDisplayObject(void *data);
+static int afterDisplayObject(void *data);
 
 /* triggered when the user tries to take an object, but their inventory doesn't
    have enough free weight - data = object we're trying to pick up
    (type Object *) */
-static void takeObjectTooHeavy(void *data);
+static int takeObjectTooHeavy(void *data);
 
 /* called before setting a new location - data = room we're setting (type Room *) */
-static void beforeSetLocation(void *data);
+static int beforeSetLocation(void *data);
 
 /* called after setting a new location - data = room we're setting (type Room *) */
-static void afterSetLocation(void *data);
+static int afterSetLocation(void *data);
 
 
 /* maintains a mapping of event names to functions */
@@ -82,134 +85,135 @@ void initEvent() {
 
 /******************************************************************************/
 
-void registerEvent(char *name, void (*event)(void *)) {
+void registerEvent(char *name, int (*event)(void *)) {
 
    g_hash_table_insert(events, name, event);
 }
 
 /******************************************************************************/
 
-void event(char *name, void *data) {
+int event(char *name, void *data) {
 
-   void (*event)(void *) = g_hash_table_lookup(events, name);
+   int (*event)(void *) = g_hash_table_lookup(events, name);
 
    if (NULL != event) {
-      event(data);
+      return event(data);
    }
 
    else {
       fprintf(stderr, "WARNING: event %s hasn't been registered.  This is a "
          "bug.\n", name);
+      return ALLOW_ACTION;
    }
 }
 
 /******************************************************************************/
 
-static void beforeRoomDisplay(void *data) {
+static int beforeRoomDisplay(void *data) {
 
    Room *room = data;
 
    // TODO
-   return;
+   return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static void afterRoomDisplay(void *data) {
+static int afterRoomDisplay(void *data) {
 
    Room *room = data;
 
    // TODO
-   return;
+   return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static void beforeSetLocation(void *data) {
+static int beforeSetLocation(void *data) {
 
    Room *room = data;
 
    // TODO
-   return;
+   return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static void afterSetLocation(void *data) {
+static int afterSetLocation(void *data) {
 
    Room *room = data;
 
    // TODO
-   return;
+   return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static void beforeTakeObject(void *data) {
+static int beforeTakeObject(void *data) {
 
    Object *object = data;
 
    // TODO
-   return;
+   return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static void afterTakeObject(void *data) {
+static int afterTakeObject(void *data) {
 
    Object *object = data;
 
    // TODO
-   return;
+   return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static void beforeDropObject(void *data) {
+static int beforeDropObject(void *data) {
 
    Object *object = data;
 
    // TODO
-   return;
+   return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static void afterDropObject(void *data) {
+static int afterDropObject(void *data) {
 
    Object *object = data;
 
    // TODO
-   return;
+   return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static void beforeDisplayObject(void *data) {
+static int beforeDisplayObject(void *data) {
 
    Object *object = data;
 
    // TODO
-   return;
+   return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static void afterDisplayObject(void *data) {
+static int afterDisplayObject(void *data) {
 
    Object *object = data;
 
    // TODO
-   return;
+   return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static void takeObjectTooHeavy(void *data) {
+static int takeObjectTooHeavy(void *data) {
 
    // TODO
    // TODO: should this call a global script function or a script function
    // unique to the object?  Hmm...  I'm leaning toward global.
-   return;
+   return ALLOW_ACTION;
 }
 

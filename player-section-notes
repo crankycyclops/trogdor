@@ -1,0 +1,19 @@
+   <!-- Section I. Player Configuration -->
+<!--   <player>
+
+      <!-- configuration options related to the player's inventory -->
+<!--      <inventory>
+         <!-- Determines the maximum weight of the inventory.  0 means the
+              inventory has unlimited size.  Any integer greater than 0
+              determines the inventory's maximum capacity (consider this the
+              sum total of all object weights.)  For example, if object "candle"
+              is defined with a weight of 2, and object "sword" is defined with
+              a weight of 10, and the inventory weight is defined to be 11, you
+              can then hold either the candle or the sword, but not both.  What
+              integers you choose to use are totally up to you and are
+              completely subjective.
+         -->
+<!--         <weight>0</weight>
+      </inventory>
+
+   </player> -->

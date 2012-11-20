@@ -8,6 +8,7 @@
 #include "include/room.h"
 #include "include/shell.h"
 #include "include/state.h"
+#include "include/event.h"
 
 #define OBJECT_C
 
@@ -35,7 +36,9 @@ Object *clarifyObject(GList *objects, int objectCount);
 
 void displayObject(Object *object) {
 
-   event("beforeDisplayObject", object);
+   if (ALLOW_ACTION != event("beforeDisplayObject", object)) {
+      return;
+   }
 
    printf("\nYou see a %s.  %s\n", dstrview(object->name),
       dstrview(object->description));
@@ -47,7 +50,9 @@ void displayObject(Object *object) {
 
 void takeObject(Object *object) {
 
-   event("beforeTakeObject", object);
+   if (ALLOW_ACTION != event("beforeTakeObject", object)) {
+      return;
+   }
 
    if (0 == inventory.maxWeight ||
    inventory.weight + object->weight <= inventory.maxWeight) {
@@ -68,7 +73,9 @@ void takeObject(Object *object) {
 
 void dropObject(Object *object) {
 
-   event("beforeDropObject", object);
+   if (ALLOW_ACTION != event("beforeDropObject", object)) {
+      return;
+   }
 
    transferObject(object, DROP_OBJECT);
    inventory.weight -= object->weight;

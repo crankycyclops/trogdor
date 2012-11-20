@@ -11,6 +11,7 @@
 #include "include/command.h"
 #include "include/shell.h"
 #include "include/object.h"
+#include "include/event.h"
 
 #define ROOM_C
 
@@ -28,7 +29,9 @@ static void describeRoom(Room *room);
 
 void setLocation(Room *room) {
 
-   event("beforeSetLocation", room);
+   if (ALLOW_ACTION != event("beforeSetLocation", room)) {
+      return;
+   }
 
    location = room;
    displayRoom(room, FALSE);
@@ -43,7 +46,9 @@ void displayRoom(Room *room, int showLongDescription) {
 
    GList *objectList = room->objectList;
 
-   event("beforeRoomDisplay", room);
+   if (ALLOW_ACTION != event("beforeRoomDisplay", room)) {
+      return;
+   }
 
    printf("\n%s\n", dstrview(room->title));
    if (showLongDescription || 0 == room->state.visitedByPlayer) {

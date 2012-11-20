@@ -2,7 +2,7 @@
 
 <game>
 
-   <!-- Section I. Objects -->
+   <!-- Section II. Objects -->
    <objects>
 
       <!-- every object MUST HAVE a UNIQUE name -->
@@ -15,7 +15,7 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
          </description>
 
          <!-- specifies an object's weight; not specifying this will default to
-              0, which means it has no weight -->
+              0, which means it has no weight. -->
          <weight>1</weight>
 
          <synonym>fire</synonym>
@@ -40,10 +40,10 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
 
    </objects>
 
-   <!-- Section II. Creatures -->
+   <!-- Section III. Creatures -->
    <!-- TODO -->
 
-   <!-- Section III. Rooms -->
+   <!-- Section IV. Rooms -->
 
    <rooms>
 
