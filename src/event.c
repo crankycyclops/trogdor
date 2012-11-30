@@ -59,6 +59,11 @@ static int beforeSetLocation(void *data);
 /* called after setting a new location - data = room we're setting (type Room *) */
 static int afterSetLocation(void *data);
 
+/* utilized by individual event handlers and returns one of:
+   SUPPRESS_ACTION - don't allow the action immediately following the event
+   ALLOW_ACTION    - allow the action following the event to continue */
+static int callLuaEventHandler(lua_State *L, char *function, int before);
+
 
 /* maintains a mapping of event names to functions */
 static GHashTable *events = NULL;
@@ -152,9 +157,9 @@ static int afterSetLocation(void *data) {
 static int beforeTakeObject(void *data) {
 
    Object *object = data;
+   lua_State *L = object->lua;
 
-   // TODO
-   return ALLOW_ACTION;
+   return callLuaEventHandler(L, "beforeTakeObject", 1);
 }
 
 /******************************************************************************/
@@ -162,8 +167,9 @@ static int beforeTakeObject(void *data) {
 static int afterTakeObject(void *data) {
 
    Object *object = data;
+   lua_State *L = object->lua;
 
-   // TODO
+   callLuaEventHandler(L, "afterTakeObject", 0);
    return ALLOW_ACTION;
 }
 
@@ -172,9 +178,9 @@ static int afterTakeObject(void *data) {
 static int beforeDropObject(void *data) {
 
    Object *object = data;
+   lua_State *L = object->lua;
 
-   // TODO
-   return ALLOW_ACTION;
+   return callLuaEventHandler(L, "beforeDropObject", 1);
 }
 
 /******************************************************************************/
@@ -182,8 +188,9 @@ static int beforeDropObject(void *data) {
 static int afterDropObject(void *data) {
 
    Object *object = data;
+   lua_State *L = object->lua;
 
-   // TODO
+   callLuaEventHandler(L, "afterDropObject", 0);
    return ALLOW_ACTION;
 }
 
@@ -192,9 +199,9 @@ static int afterDropObject(void *data) {
 static int beforeDisplayObject(void *data) {
 
    Object *object = data;
+   lua_State *L = object->lua;
 
-   // TODO
-   return ALLOW_ACTION;
+   return callLuaEventHandler(L, "beforeDisplayObject", 1);
 }
 
 /******************************************************************************/
@@ -202,8 +209,9 @@ static int beforeDisplayObject(void *data) {
 static int afterDisplayObject(void *data) {
 
    Object *object = data;
+   lua_State *L = object->lua;
 
-   // TODO
+   callLuaEventHandler(L, "afterDisplayObject", 0);
    return ALLOW_ACTION;
 }
 
@@ -214,6 +222,60 @@ static int takeObjectTooHeavy(void *data) {
    // TODO
    // TODO: should this call a global script function or a script function
    // unique to the object?  Hmm...  I'm leaning toward global.
+
+   Object *object = data;
+   lua_State *L = object->lua;
+
+   callLuaEventHandler(L, "afterDropObject", 0);
    return ALLOW_ACTION;
+}
+
+/******************************************************************************/
+
+static int callLuaEventHandler(lua_State *L, char *function, int before) {
+
+   if (NULL != L) {
+
+      lua_getglobal(L, function);
+
+      /* only call function if it exists */
+      if (lua_isfunction(L, lua_gettop(L))) {
+
+         if (lua_pcall(L, 0, 1, 0)) {
+            fprintf(stderr, "Script error: %s\n", lua_tostring(L, -1));
+            return ALLOW_ACTION;
+         }
+
+         else {
+
+            /* only events triggered BEFORE actions can stop an action */
+            if (before) {
+
+               if (!lua_isboolean(L, -1)) {
+                  fprintf(stderr, "Script error: %s must return a boolean!\n",
+                     function);
+                  return ALLOW_ACTION;
+               }
+
+               /* script can return SUPPRESS_ACTION or ALLOW_ACTION */
+               else {
+                  int allowAction = lua_toboolean(L, -1);
+                  lua_pop(L, 1);
+                  return allowAction;
+               }
+            }
+
+            else {
+               /* this value is ignored, so whatever */
+               return ALLOW_ACTION;
+            }
+         }
+      }
+   }
+
+   /* no script, so nothing to do ;) */
+   else {
+      return ALLOW_ACTION;
+   }
 }
 

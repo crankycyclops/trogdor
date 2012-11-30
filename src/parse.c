@@ -45,6 +45,9 @@ static void initParser();
 /* frees memory associated with the parser */
 static void destroyParser();
 
+/* initializes a Lua state with our C-to-Lua API */
+static void initLua(lua_State *L);
+
 /* loads a Lua script from a file */
 static void loadScript(lua_State *L, char *filename);
 
@@ -245,20 +248,33 @@ static Object *initObject(ObjectParsed *objectParsed) {
       /* only initialize lua state if we have something to execute */
       if (NULL == L) {
          L = luaL_newstate();
+         initLua(L);
       }
 
       #define SCRIPT_FILE (char *)dstrview(g_array_index(objectParsed->scripts, dstring_t, i))
       loadScript(L, SCRIPT_FILE);
+      primeLua(L);
       #undef SCRIPT_FILE
    }
 
-   if (NULL != L) {
-      primeLua(L);
-   }
-
    object->lua = L;
-
    return object;
+}
+
+/******************************************************************************/
+
+static void initLua(lua_State *L) {
+
+   /* load standard library */
+   luaL_openlibs(L);
+
+   /* possible return values (see event.h and event.c for more details) */
+   lua_pushboolean(L, 1);
+   lua_setglobal(L, "SUPPRESS_ACTION");
+   lua_pushboolean(L, 0);
+   lua_setglobal(L, "ALLOW_ACTION");
+
+   return;
 }
 
 /******************************************************************************/
