@@ -7,6 +7,7 @@ Dependencies:
 LibXML2
 GLib
 My dstring library (http://www.github.com/crankycyclops/dstring)
+Lua 5.1
 
 Compile like so:
 make
