@@ -13,6 +13,7 @@
 #include "include/data.h"
 #include "include/state.h"
 #include "include/parse.h"
+#include "include/event.h"
 
 
 /* entry point for parsing the game file */
@@ -269,9 +270,9 @@ static void initLua(lua_State *L) {
    luaL_openlibs(L);
 
    /* possible return values (see event.h and event.c for more details) */
-   lua_pushboolean(L, 1);
+   lua_pushboolean(L, SUPPRESS_ACTION);
    lua_setglobal(L, "SUPPRESS_ACTION");
-   lua_pushboolean(L, 0);
+   lua_pushboolean(L, ALLOW_ACTION);
    lua_setglobal(L, "ALLOW_ACTION");
 
    return;
