@@ -58,6 +58,11 @@ GHashTable *objectParsedTable = NULL;
 /* a lookup table for rooms being parsed */
 GHashTable *roomParsedTable = NULL;
 
+/* This gets set to 1 if we had trouble parsing a script.  Using this will allow
+   us to delay exiting due to the error until we've parsed and reported errors
+   for all possibly bad scripts. */
+static int g_scriptError = 0;
+
 /******************************************************************************/
 
 int parseGame(const char *filename) {
@@ -76,6 +81,11 @@ int parseGame(const char *filename) {
    }
 
    initRooms();
+
+   /* make sure we didn't have any issues parsing Lua scripts */
+   if (g_scriptError) {
+      return 0;
+   }
 
    destroyParser();
    return 1;
@@ -263,11 +273,13 @@ static void loadScript(lua_State *L, char *filename) {
 
          case LUA_ERRFILE:
             fprintf(stderr, "error: could not open %s\n", filename);
-            exit(EXIT_FAILURE);
+            g_scriptError = 1;
+            break;
 
          case LUA_ERRSYNTAX:
             fprintf(stderr, "%s\n", lua_tostring(L, -1));
-            exit(EXIT_FAILURE);
+            g_scriptError = 1;
+            break;
 
          case LUA_ERRMEM:
             PRINT_OUT_OF_MEMORY_ERROR;
