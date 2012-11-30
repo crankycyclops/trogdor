@@ -3,7 +3,7 @@
 
 
 #include <dstring.h>
-#include <lua51/lua.h>
+#include <lua.h>
 
 
 /* represents the state of a game object */

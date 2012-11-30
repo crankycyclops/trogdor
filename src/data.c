@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <glib.h>
 
-#include <lua51/lua.h>
+#include <lua.h>
 
 #include "include/trogdor.h"
 #include "include/object.h"
