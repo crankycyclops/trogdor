@@ -243,7 +243,6 @@ static int callLuaEventHandler(lua_State *L, char *function, int before) {
 
          if (lua_pcall(L, 0, 1, 0)) {
             fprintf(stderr, "Script error: %s\n", lua_tostring(L, -1));
-            return ALLOW_ACTION;
          }
 
          else {
@@ -254,7 +253,6 @@ static int callLuaEventHandler(lua_State *L, char *function, int before) {
                if (!lua_isboolean(L, -1)) {
                   fprintf(stderr, "Script error: %s must return a boolean!\n",
                      function);
-                  return ALLOW_ACTION;
                }
 
                /* script can return SUPPRESS_ACTION or ALLOW_ACTION */
@@ -264,18 +262,11 @@ static int callLuaEventHandler(lua_State *L, char *function, int before) {
                   return allowAction;
                }
             }
-
-            else {
-               /* this value is ignored, so whatever */
-               return ALLOW_ACTION;
-            }
          }
       }
    }
 
    /* no script, so nothing to do ;) */
-   else {
-      return ALLOW_ACTION;
-   }
+   return ALLOW_ACTION;
 }
 
