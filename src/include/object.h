@@ -3,6 +3,7 @@
 
 
 #include <dstring.h>
+#include <lua51/lua.h>
 
 
 /* represents the state of a game object */
@@ -23,6 +24,9 @@ typedef struct object {
 
    /* an array of synonyms (dstring_t's) */
    GArray *synonyms;
+
+   /* Lua state containing scripted functions */
+   lua_State *lua;
 
 } Object;
 

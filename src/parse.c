@@ -3,6 +3,10 @@
 #include <dstring.h>
 #include <glib.h>
 
+#include <lua51/lua.h>
+#include <lua51/lualib.h>
+#include <lua51/lauxlib.h>
+
 #include "include/trogdor.h"
 #include "include/object.h"
 #include "include/room.h"
@@ -40,6 +44,12 @@ static void initParser();
 
 /* frees memory associated with the parser */
 static void destroyParser();
+
+/* loads a Lua script from a file */
+static void loadScript(lua_State *L, char *filename);
+
+/* primes Lua state so that all variables and functions get loaded */
+static void primeLua(lua_State *L);
 
 
 /* a lookup table for game objects being parsed */
@@ -199,6 +209,8 @@ static void initObjects(Room *room, GArray *objectNames) {
 
 static Object *initObject(ObjectParsed *objectParsed) {
 
+   int i;
+   lua_State *L = NULL;
    Object *object;
 
    /* initialize new object structure */
@@ -217,7 +229,64 @@ static Object *initObject(ObjectParsed *objectParsed) {
    object->state.takenByPlayer = 0;
    object->state.droppedByPlayer = 0;
 
+   /* initialize any scripts attached to the object */
+   for (i = 0; i < objectParsed->scripts->len; i++) {
+
+      /* only initialize lua state if we have something to execute */
+      if (NULL == L) {
+         L = luaL_newstate();
+      }
+
+      #define SCRIPT_FILE (char *)dstrview(g_array_index(objectParsed->scripts, dstring_t, i))
+      loadScript(L, SCRIPT_FILE);
+      #undef SCRIPT_FILE
+   }
+
+   if (NULL != L) {
+      primeLua(L);
+   }
+
+   object->lua = L;
+
    return object;
+}
+
+/******************************************************************************/
+
+static void loadScript(lua_State *L, char *filename) {
+
+   int status;
+
+   if (status = luaL_loadfile(L, filename)) {
+
+      switch (status) {
+
+         case LUA_ERRFILE:
+            fprintf(stderr, "error: could not open %s\n", filename);
+            exit(EXIT_FAILURE);
+
+         case LUA_ERRSYNTAX:
+            fprintf(stderr, "%s\n", lua_tostring(L, -1));
+            exit(EXIT_FAILURE);
+
+         case LUA_ERRMEM:
+            PRINT_OUT_OF_MEMORY_ERROR;
+
+         default:
+            break;
+      }
+   }
+}
+
+/******************************************************************************/
+
+/* TODO: this could probably be a macro instead... */
+static void primeLua(lua_State *L) {
+
+   if (lua_pcall(L, 0, 0, 0)) {
+      fprintf(stderr, "%s\n", lua_tostring(L, -1));
+      exit(EXIT_FAILURE);
+   }
 }
 
 /******************************************************************************/

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <glib.h>
 
+#include <lua51/lua.h>
+
 #include "include/trogdor.h"
 #include "include/object.h"
 #include "include/room.h"
@@ -117,6 +119,11 @@ static void destroyRoom(Room *room) {
 static void destroyObject(Object *object) {
 
    // TODO: don't free object here, just dstring_t's inside it!
+
+   if (object->lua != NULL) {
+      lua_close(object->lua);
+   }
+
    return;
 }
 

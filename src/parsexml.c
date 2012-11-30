@@ -139,7 +139,7 @@ static void parseObject(xmlTextReaderPtr reader) {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
 
-   object->name = NULL;
+   object->name = createDstring();
    object->description = NULL;
    object->weight = NULL;
 
@@ -169,10 +169,6 @@ static void parseObject(xmlTextReaderPtr reader) {
    if (0 == strcmp("room", objectName)) {
       fprintf(stderr, "error: 'room' is an invalid object name\n");
       exit(EXIT_FAILURE);
-   }
-
-   if (DSTR_SUCCESS != dstralloc(&object->name)) {
-      PRINT_OUT_OF_MEMORY_ERROR;
    }
 
    cstrtodstr(object->name, objectName);
@@ -208,11 +204,7 @@ static void parseObject(xmlTextReaderPtr reader) {
       /* we're parsing a synonym */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("synonym", tagname)) {
 
-         dstring_t synonym = NULL;
-
-         if (DSTR_SUCCESS != dstralloc(&synonym)) {
-            PRINT_OUT_OF_MEMORY_ERROR;
-         }
+         dstring_t synonym = createDstring();
 
          /* add to the object's list of synonyms */
          cstrtodstr(synonym, getNodeValue(reader));
@@ -309,7 +301,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
 
-   room->name = NULL;
+   room->name = createDstring();
    room->title = NULL;
    room->description = NULL;
    room->north = NULL;
@@ -330,10 +322,6 @@ static void parseRoom(xmlTextReaderPtr reader) {
    if (NULL != g_hash_table_lookup(roomParsedTable, roomName)) {
       fprintf(stderr, "room '%s' must be unique\n", roomName);
       exit(EXIT_FAILURE);
-   }
-
-   if (DSTR_SUCCESS != dstralloc(&room->name)) {
-      PRINT_OUT_OF_MEMORY_ERROR;
    }
 
    cstrtodstr(room->name, roomName);
