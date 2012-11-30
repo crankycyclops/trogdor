@@ -108,6 +108,7 @@ int actionLook(Command command) {
 
 int actionList(Command command) {
 
+   int totalWeight = 0;
    GList *item;
 
    /* list should only be a one word command */
@@ -119,21 +120,34 @@ int actionList(Command command) {
       printf("Items in your inventory:\n");
       for (item = inventory.list; item != NULL; item = item->next) {
 
-         printf("%s", dstrview(((Object *)item->data)->name));
+         Object *object = (Object *)item->data;
+         totalWeight += object->weight;
 
+         printf("%s", dstrview(object->name));
 
-/* TODO: finish implementing partially done support for displaying weight data 
+         /* if the inventory has a finite weight, list that data as well */
          if (inventory.maxWeight > 0) {
-            printf(" (%d %)
+
+            if (0 == object->weight) {
+               printf(" (weighs nothing)");
+            }
+
+            else {
+               printf(" (%f %%)", (double)(object->weight / inventory.weight));
+            }
          }
 
          printf("\n");
-*/
       }
    }
 
    else {
       printf("You don't have anything!\n");
+   }
+
+   if (inventory.maxWeight > 0) {
+      printf("\nYou have %d out of %d space left.\n", totalWeight,
+         inventory.maxWeight);
    }
 
    return 1;
