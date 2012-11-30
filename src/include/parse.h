@@ -28,6 +28,10 @@ typedef struct objectParsed {
 
    /* an array of synonyms (dstring_t's) */
    GArray *synonyms;
+
+   /* array of filenames containing Lua scripts */
+   GArray *scripts;
+
 } ObjectParsed;
 
 

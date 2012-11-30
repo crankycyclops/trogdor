@@ -18,6 +18,11 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
               0, which means it has no weight. -->
          <weight>1</weight>
 
+         <!-- one or more scripts can be attached to an object, which define
+              functions that get triggered by the event handler -->
+         <script>candle1.lua</script>
+         <script>candle2.lua</script>
+
          <synonym>fire</synonym>
          <synonym>flame</synonym>
       </object>

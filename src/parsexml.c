@@ -150,6 +150,7 @@ static void parseObject(xmlTextReaderPtr reader) {
    cstrtodstr(object->weight, "0");
 
    object->synonyms = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 5);
+   object->scripts  = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
 
    /* record the object's name */
    objectName = xmlTextReaderGetAttribute(reader, "name");
@@ -226,6 +227,20 @@ static void parseObject(xmlTextReaderPtr reader) {
 
          /* make sure we have a valid closing tag */
          checkClosingTag("synonym", reader);
+      }
+
+      /* we're parsing a script tag */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("script", tagname)) {
+
+         dstring_t file = createDstring();
+
+         cstrtodstr(file, getNodeValue(reader));
+         if (0 == dstrlen(file)) {
+            fprintf(stderr, "error: <script> has blank value!\n");
+         }
+
+         g_array_append_val(object->scripts, file);
+         checkClosingTag("script", reader);
       }
 
       /* an unknown tag was found */

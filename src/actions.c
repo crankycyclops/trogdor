@@ -118,7 +118,17 @@ int actionList(Command command) {
    if (inventory.list != NULL) {
       printf("Items in your inventory:\n");
       for (item = inventory.list; item != NULL; item = item->next) {
-         printf("%s\n", dstrview(((Object *)item->data)->name));
+
+         printf("%s", dstrview(((Object *)item->data)->name));
+
+
+/* TODO: finish implementing partially done support for displaying weight data 
+         if (inventory.maxWeight > 0) {
+            printf(" (%d %)
+         }
+
+         printf("\n");
+*/
       }
    }
 
