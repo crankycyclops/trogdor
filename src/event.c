@@ -62,7 +62,8 @@ static int afterSetLocation(void *data);
 /* utilized by individual event handlers and returns one of:
    SUPPRESS_ACTION - don't allow the action immediately following the event
    ALLOW_ACTION    - allow the action following the event to continue */
-static int callLuaEventHandler(lua_State *L, char *function, int before);
+static int callLuaEventHandler(lua_State *L, char *function, const char *name,
+int before);
 
 
 /* maintains a mapping of event names to functions */
@@ -159,7 +160,7 @@ static int beforeTakeObject(void *data) {
    Object *object = data;
    lua_State *L = object->lua;
 
-   return callLuaEventHandler(L, "beforeTakeObject", 1);
+   return callLuaEventHandler(L, "beforeTakeObject", dstrview(object->name), 1);
 }
 
 /******************************************************************************/
@@ -169,7 +170,7 @@ static int afterTakeObject(void *data) {
    Object *object = data;
    lua_State *L = object->lua;
 
-   callLuaEventHandler(L, "afterTakeObject", 0);
+   callLuaEventHandler(L, "afterTakeObject", dstrview(object->name), 0);
    return ALLOW_ACTION;
 }
 
@@ -180,7 +181,7 @@ static int beforeDropObject(void *data) {
    Object *object = data;
    lua_State *L = object->lua;
 
-   return callLuaEventHandler(L, "beforeDropObject", 1);
+   return callLuaEventHandler(L, "beforeDropObject", dstrview(object->name), 1);
 }
 
 /******************************************************************************/
@@ -190,7 +191,7 @@ static int afterDropObject(void *data) {
    Object *object = data;
    lua_State *L = object->lua;
 
-   callLuaEventHandler(L, "afterDropObject", 0);
+   callLuaEventHandler(L, "afterDropObject", dstrview(object->name), 0);
    return ALLOW_ACTION;
 }
 
@@ -201,7 +202,7 @@ static int beforeDisplayObject(void *data) {
    Object *object = data;
    lua_State *L = object->lua;
 
-   return callLuaEventHandler(L, "beforeDisplayObject", 1);
+   return callLuaEventHandler(L, "beforeDisplayObject", dstrview(object->name), 1);
 }
 
 /******************************************************************************/
@@ -211,7 +212,7 @@ static int afterDisplayObject(void *data) {
    Object *object = data;
    lua_State *L = object->lua;
 
-   callLuaEventHandler(L, "afterDisplayObject", 0);
+   callLuaEventHandler(L, "afterDisplayObject", dstrview(object->name), 0);
    return ALLOW_ACTION;
 }
 
@@ -226,13 +227,14 @@ static int takeObjectTooHeavy(void *data) {
    Object *object = data;
    lua_State *L = object->lua;
 
-   callLuaEventHandler(L, "afterDropObject", 0);
+   callLuaEventHandler(L, "afterDropObject", dstrview(object->name), 0);
    return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static int callLuaEventHandler(lua_State *L, char *function, int before) {
+static int callLuaEventHandler(lua_State *L, char *function, const char *name,
+int before) {
 
    if (NULL != L) {
 
@@ -241,7 +243,9 @@ static int callLuaEventHandler(lua_State *L, char *function, int before) {
       /* only call function if it exists */
       if (lua_isfunction(L, lua_gettop(L))) {
 
-         if (lua_pcall(L, 0, 1, 0)) {
+         lua_pushstring(L, name);
+
+         if (lua_pcall(L, 1, 1, 0)) {
             fprintf(stderr, "Script error: %s\n", lua_tostring(L, -1));
          }
 
