@@ -10,7 +10,7 @@
 extern void initLua(lua_State *L);
 
 /* loads a Lua script from a file */
-extern void loadScript(lua_State *L, char *filename);
+extern int loadScript(lua_State *L, char *filename);
 
 /* primes Lua state so that all variables and functions get loaded */
 extern void primeLua(lua_State *L);

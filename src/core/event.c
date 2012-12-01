@@ -7,6 +7,7 @@
 #include "include/room.h"
 #include "include/state.h"
 #include "include/event.h"
+#include "include/data.h"
 
 
 /* initialize the event handler (MUST be called before first use) */

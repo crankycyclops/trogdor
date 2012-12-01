@@ -7,13 +7,14 @@
 
 #include "include/trogdor.h"
 #include "include/event.h"
+#include "include/data.h"
 
 
 /* initializes a Lua state with our C-to-Lua API */
 void initLua(lua_State *L);
 
 /* loads a Lua script from a file */
-void loadScript(lua_State *L, char *filename);
+int loadScript(lua_State *L, char *filename);
 
 /* primes Lua state so that all variables and functions get loaded */
 void primeLua(lua_State *L);
@@ -41,7 +42,7 @@ void initLua(lua_State *L) {
 
 /******************************************************************************/
 
-void loadScript(lua_State *L, char *filename) {
+int loadScript(lua_State *L, char *filename) {
 
    int status;
 
@@ -52,12 +53,12 @@ void loadScript(lua_State *L, char *filename) {
          case LUA_ERRFILE:
             g_outputError("error: could not open %s\n", filename);
             g_scriptError = 1;
-            break;
+            return 0;
 
          case LUA_ERRSYNTAX:
             g_outputError("%s\n", lua_tostring(L, -1));
             g_scriptError = 1;
-            break;
+            return 0;
 
          case LUA_ERRMEM:
             PRINT_OUT_OF_MEMORY_ERROR;
@@ -66,6 +67,8 @@ void loadScript(lua_State *L, char *filename) {
             break;
       }
    }
+
+   return 1;
 }
 
 /******************************************************************************/
@@ -74,7 +77,7 @@ void loadScript(lua_State *L, char *filename) {
 void primeLua(lua_State *L) {
 
    if (lua_pcall(L, 0, 0, 0)) {
-      g_outputError("%s\n", lua_tostring(L, -1));
+      fprintf(stderr, "%s\n", lua_tostring(L, -1));
       exit(EXIT_FAILURE);
    }
 }

@@ -235,8 +235,9 @@ static Object *initObject(ObjectParsed *objectParsed) {
       }
 
       #define SCRIPT_FILE (char *)dstrview(g_array_index(objectParsed->scripts, dstring_t, i))
-      loadScript(L, SCRIPT_FILE);
-      primeLua(L);
+      if (loadScript(L, SCRIPT_FILE)) {
+         primeLua(L);
+      }
       #undef SCRIPT_FILE
    }
 
