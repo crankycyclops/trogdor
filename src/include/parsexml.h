@@ -8,6 +8,12 @@
 #ifdef PARSEXML_C
 
 
+/* this macro skips comments in an XML file */
+#define IF_COMMENT_IGNORE \
+   if (XML_COMMENT_NODE == xmlTextReaderNodeType(reader)) { \
+      continue; \
+   }
+
 /* this macro relies on a dstring_t object being defined with name X */
 #define GET_XML_TAG(X, Y) \
 \

@@ -44,7 +44,6 @@ GHashTable *objects = NULL;
 
 void initData() {
 
-   inventory.maxWeight = 3;
    rooms = g_hash_table_new(g_str_hash, g_str_equal);
    objects = g_hash_table_new(g_str_hash, g_str_equal);
 

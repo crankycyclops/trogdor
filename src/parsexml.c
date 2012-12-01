@@ -10,10 +10,20 @@
 #include "include/parsexml.h"
 #include "include/data.h"
 #include "include/utility.h"
+#include "include/state.h"
 
 
 /* returns true if the document was parsed successfully and false otherwise */
 int parseGameFile(const char *filename);
+
+/* parse the player configuration section */
+static void parsePlayerSection(xmlTextReaderPtr reader);
+
+/* parse the player's inventory settings */
+static void parseInventorySettings(xmlTextReaderPtr reader);
+
+/* parse the inventory's weight (if setting exists) */
+static void parseInventoryWeight(xmlTextReaderPtr reader);
 
 /* opens the XML file and prepares it for parsing */
 static xmlTextReaderPtr readXML(const char *filename);
@@ -64,6 +74,10 @@ int parseGameFile(const char *filename) {
                continue;
             }
 
+            else if (0 == strcmp("player", name)) {
+               parsePlayerSection(reader);
+            }
+
             else if (0 == strcmp("objects", name)) {
                parseObjectSection(reader);
             }
@@ -93,6 +107,86 @@ int parseGameFile(const char *filename) {
 
 /******************************************************************************/
 
+static void parsePlayerSection(xmlTextReaderPtr reader) {
+
+   int parseStatus;
+
+   while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
+   xmlTextReaderDepth(reader) > 1
+   ) {
+
+      IF_COMMENT_IGNORE
+
+      else if (0 == strcmp("inventory", xmlTextReaderConstName(reader))) {
+         parseInventorySettings(reader);
+      }
+
+      else {
+         fprintf(stderr, "error: invalid <%s> tag in <player> section\n",
+            xmlTextReaderConstName(reader));
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   if (parseStatus < 0) {
+      fprintf(stderr, "There was an error parsing game XML file\n");
+      exit(EXIT_FAILURE);
+   }
+
+   return;
+}
+
+/******************************************************************************/
+
+static void parseInventorySettings(xmlTextReaderPtr reader) {
+
+   int parseStatus;
+
+   while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
+   xmlTextReaderDepth(reader) > 2
+   ) {
+
+      IF_COMMENT_IGNORE
+
+      else if (0 == strcmp("weight", xmlTextReaderConstName(reader))) {
+         parseInventoryWeight(reader);
+      }
+
+      else {
+         fprintf(stderr, "error: invalid <%s> tag in <inventory>\n",
+            xmlTextReaderConstName(reader));
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   if (parseStatus < 0) {
+      fprintf(stderr, "There was an error parsing game XML file\n");
+      exit(EXIT_FAILURE);
+   }
+
+   return;
+}
+
+/******************************************************************************/
+
+static void parseInventoryWeight(xmlTextReaderPtr reader) {
+
+   char *weight = (char *)getNodeValue(reader);
+
+   if (isInt(weight)) {
+      inventory.maxWeight = atoi(weight);
+   }
+
+   else {
+      fprintf(stderr, "error: inventory weight must be a valid integer "
+         ">= 0\n");
+   }
+
+   checkClosingTag("weight", reader);
+}
+
+/******************************************************************************/
+
 static void parseObjectSection(xmlTextReaderPtr reader) {
 
    int parseStatus;
@@ -101,10 +195,7 @@ static void parseObjectSection(xmlTextReaderPtr reader) {
    xmlTextReaderDepth(reader) > 1
    ) {
 
-      /* ignore XML comments */
-      if (XML_COMMENT_NODE == xmlTextReaderNodeType(reader)) {
-         continue;
-      }
+      IF_COMMENT_IGNORE
 
       else if (0 == strcmp("object", xmlTextReaderConstName(reader))) {
          parseObject(reader);
@@ -264,10 +355,7 @@ static void parseRoomSection(xmlTextReaderPtr reader) {
    xmlTextReaderDepth(reader) > 1
    ) {
 
-      /* ignore XML comments */
-      if (XML_COMMENT_NODE == xmlTextReaderNodeType(reader)) {
-         continue;
-      }
+      IF_COMMENT_IGNORE
 
       else if (0 == strcmp("room", xmlTextReaderConstName(reader))) {
          parseRoom(reader);
