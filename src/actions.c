@@ -133,7 +133,8 @@ int actionList(Command command) {
             }
 
             else {
-               printf(" (%f %%)", (double)(object->weight / inventory.weight));
+               printf(" (%1.1f %%)",
+                  100 * ((double)object->weight / (double)inventory.maxWeight));
             }
          }
 
@@ -146,7 +147,7 @@ int actionList(Command command) {
    }
 
    if (inventory.maxWeight > 0) {
-      printf("\nYou have %d out of %d space left.\n", totalWeight,
+      printf("\nUsed: %d/%d\n", totalWeight,
          inventory.maxWeight);
    }
 
