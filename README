@@ -9,10 +9,15 @@ GLib
 My dstring library (http://www.github.com/crankycyclops/dstring)
 Lua 5.1
 
-Compile like so:
+I've split the code into two components: core (trogdor's data and functionality) and
+standalone (wraps around core for a single player experience.)  The reason for the separation
+is that I plan to write a MUD based on core in the (hopefully) not too distant future.
+
+To compile standalone, just type (so far, only tested on Ubuntu 12.04):
+
 make
 
-Or, if you're on FreeBSD:
+Or, if you're on FreeBSD (until I have a more elegant build system):
 gcc -L/usr/local/lib -I/usr/local/include -I/usr/local/include/libxml2 \
 -I/usr/local/include/lua51 -ldstring -lxml2 `pkg-config -cflags -libs glib-2.0` src/core/*.c \
 -llua-5.1 src/standalone/*.c
