@@ -99,6 +99,10 @@ Verb *getVerbs() {
       /* list items in the user's inventory */
       {"list", &actionList},
 
+      /* misc actions */
+      {"jump", &actionJump},
+      {"leap", &actionJump},
+
       /* TODO: lose command = lose game (haha) */
       {"quit",  &actionQuit},
 

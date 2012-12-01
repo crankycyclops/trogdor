@@ -21,7 +21,10 @@ extern int actionList(Command command);
 extern int actionPickupObject(Command command);
 
 /* allows the user to drop an object */
-int actionDropObject(Command command);
+extern int actionDropObject(Command command);
+
+/* allows the user to jump */
+extern int actionJump(Command command);
 
 
 #endif

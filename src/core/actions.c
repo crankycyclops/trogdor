@@ -35,6 +35,10 @@ int actionPickupObject(Command command);
 /* allows the user to drop an object */
 int actionDropObject(Command command);
 
+/* allows the user to jump */
+// TODO: support jumping to places, triggering jump events, etc?
+int actionJump(Command command);
+
 /* returns object referenced by name, and disambiguates between synonyms if 
    necessary */
 static Object *getObject(dstring_t name, int objectSource);
@@ -344,6 +348,19 @@ int actionDropObject(Command command) {
    }
 
    // always return 1 only because so far, there are no possible syntax errors
+   return 1;
+}
+
+/******************************************************************************/
+
+// TODO: support jumping to places, triggering jump events, etc?
+int actionJump(Command command) {
+
+   if (command.directObject != NULL || command.indirectObject != NULL) {
+      return 0;
+   }
+
+   g_outputString("Weeee!\n");
    return 1;
 }
 
