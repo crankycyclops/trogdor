@@ -4,7 +4,7 @@
 #include <dstring.h>
 
 
-dstring_t readCommand() {
+dstring_t readCommandFromStdin() {
 
    dstring_t command;
 

@@ -4,9 +4,9 @@
 #include <dstring.h>
 
 #include "include/trogdor.h"
+#include "include/data.h"
 #include "include/object.h"
 #include "include/room.h"
-#include "include/shell.h"
 #include "include/state.h"
 #include "include/event.h"
 
@@ -189,6 +189,12 @@ Object *clarifyObject(GList *objects, int objectCount) {
    Object     *object;
    GList      *curObject = objects;
 
+   /* make sure a function for reading the command was provided by the client */
+   if (NULL == g_readCommand) {
+      fprintf(stderr, "error: client must provide g_readCommand()!\n");
+      exit(EXIT_FAILURE);
+   }
+
    printf ("Do you mean the ");
 
    for (i = 0; curObject != NULL; i++) {
@@ -210,7 +216,7 @@ Object *clarifyObject(GList *objects, int objectCount) {
 
    /* get an object name from the shell */
    do {
-      name = readCommand();
+      name = g_readCommand();
    } while (0 == dstrlen(name));
 
    /* locate the correct object */

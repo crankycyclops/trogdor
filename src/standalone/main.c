@@ -1,16 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "include/trogdor.h"
-#include "include/room.h"
-#include "include/data.h"
-#include "include/state.h"
-#include "include/command.h"
-#include "include/room.h"
-#include "include/event.h"
+#include "../core/include/trogdor.h"
+#include "../core/include/room.h"
+#include "../core/include/data.h"
+#include "../core/include/state.h"
+#include "../core/include/room.h"
+#include "../core/include/event.h"
+
+#include "include/shell.h"
 
 
 int main(int argc, char *argv[]) {
+
+   /* register our shell with the core */
+   g_readCommand = &readCommandFromStdin;
 
    /* initialize our event handler */
    initEvent();

@@ -6,7 +6,7 @@
 #include <dstring.h>
 
 /* Returns the command read by the shell, always in all lowercase letters. */
-dstring_t readCommand();
+extern dstring_t readCommandFromStdin();
 
 
 #endif

@@ -34,6 +34,9 @@ static void destroyObjects();
 static void destroyObject(Object *object);
 
 
+/* Points to whatever function we should use to read input from the user. */
+dstring_t (*g_readCommand)();
+
 /* all rooms in the game, indexed by name */
 GHashTable *rooms = NULL;
 

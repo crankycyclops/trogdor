@@ -5,9 +5,9 @@
 #include <dstring.h>
 
 #include "include/trogdor.h"
+#include "include/data.h"
 #include "include/room.h"
 #include "include/state.h"
-#include "include/shell.h"
 #include "include/token.h"
 #include "include/action.h"
 #include "include/vocabulary.h"
@@ -94,9 +94,15 @@ void executeCommand() {
    Command command;
    dstring_t commandStr = NULL;
 
+   /* make sure a function for reading the command was provided by the client */
+   if (NULL == g_readCommand) {
+      fprintf(stderr, "error: client must provide g_readCommand()!\n");
+      exit(EXIT_FAILURE);
+   }
+
    /* keep reading from the shell until we get something useful */
    do {
-      commandStr = readCommand();
+      commandStr = g_readCommand();
    } while (0 == dstrlen(commandStr));
 
    command = parseCommand(commandStr);

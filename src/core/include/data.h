@@ -19,6 +19,10 @@ extern void initData();
 /* frees memory used by game data/assets */
 extern void destroyData();
 
+/* Points to whatever function we should use to read input from the user
+   (this should be provided by the application making use of the core) */
+extern dstring_t (*g_readCommand)();
+
 
 #endif
 

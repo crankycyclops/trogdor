@@ -9,7 +9,6 @@
 #include "include/data.h"
 #include "include/state.h"
 #include "include/command.h"
-#include "include/shell.h"
 #include "include/object.h"
 #include "include/event.h"
 
