@@ -41,6 +41,11 @@ dstring_t (*g_readCommand)();
    (this should be provided by the application making use of the core) */
 int (*g_outputString)(const char *format, ...);
 
+/* Points to whatever function we should use to replace fprintf(stderr,...)
+   (this should be provided by the application making use of the core) */
+int (*g_outputError)(const char *format, ...);
+
+
 /* all rooms in the game, indexed by name */
 GHashTable *rooms = NULL;
 

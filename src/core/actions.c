@@ -266,7 +266,7 @@ static Object *getObject(dstring_t name, int objectSource) {
          break;
 
       default:
-         fprintf(stderr, "called getObject() with an invalid source!\n");
+         g_outputError("called getObject() with an invalid source!\n");
          exit(EXIT_FAILURE);
    }
 

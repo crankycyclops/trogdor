@@ -122,8 +122,8 @@ static void transferObject(Object *object, int action) {
 
       /* WTF? >:( */
       default:
-         fprintf(stderr, "Unsupported action in ownershipOfObject().  "
-            "This is a bug.\n");
+         g_outputError("Unsupported action in ownershipOfObject().  This is a "
+            "bug.\n");
          exit(EXIT_FAILURE);
    }
 
@@ -191,7 +191,7 @@ Object *clarifyObject(GList *objects, int objectCount) {
 
    /* make sure a function for reading the command was provided by the client */
    if (NULL == g_readCommand) {
-      fprintf(stderr, "error: client must provide g_readCommand()!\n");
+      g_outputError("error: client must provide g_readCommand()!\n");
       exit(EXIT_FAILURE);
    }
 

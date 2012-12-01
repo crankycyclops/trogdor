@@ -107,7 +107,7 @@ int event(char *name, void *data) {
    }
 
    else {
-      fprintf(stderr, "WARNING: event %s hasn't been registered.  This is a "
+      g_outputError("WARNING: event %s hasn't been registered.  This is a "
          "bug.\n", name);
       return ALLOW_ACTION;
    }
@@ -246,7 +246,7 @@ int before) {
          lua_pushstring(L, name);
 
          if (lua_pcall(L, 1, 1, 0)) {
-            fprintf(stderr, "Script error: %s\n", lua_tostring(L, -1));
+            g_outputError("Script error: %s\n", lua_tostring(L, -1));
          }
 
          else {
@@ -255,7 +255,7 @@ int before) {
             if (before) {
 
                if (!lua_isboolean(L, -1)) {
-                  fprintf(stderr, "Script error: %s must return a boolean!\n",
+                  g_outputError("Script error: %s must return a boolean!\n",
                      function);
                }
 

@@ -50,12 +50,12 @@ void loadScript(lua_State *L, char *filename) {
       switch (status) {
 
          case LUA_ERRFILE:
-            fprintf(stderr, "error: could not open %s\n", filename);
+            g_outputError("error: could not open %s\n", filename);
             g_scriptError = 1;
             break;
 
          case LUA_ERRSYNTAX:
-            fprintf(stderr, "%s\n", lua_tostring(L, -1));
+            g_outputError("%s\n", lua_tostring(L, -1));
             g_scriptError = 1;
             break;
 
@@ -74,7 +74,7 @@ void loadScript(lua_State *L, char *filename) {
 void primeLua(lua_State *L) {
 
    if (lua_pcall(L, 0, 0, 0)) {
-      fprintf(stderr, "%s\n", lua_tostring(L, -1));
+      g_outputError("%s\n", lua_tostring(L, -1));
       exit(EXIT_FAILURE);
    }
 }

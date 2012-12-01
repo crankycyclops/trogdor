@@ -4,8 +4,6 @@
 #include <dstring.h>
 
 
-/******************************************************************************/
-
 int consoleOut(const char *format, ...) {
 
    int status;
@@ -13,6 +11,20 @@ int consoleOut(const char *format, ...) {
 
    va_start(args, format);
    status = vprintf(format, args);
+   va_end(args);
+
+   return status;
+}
+
+/******************************************************************************/
+
+int consoleError(const char *format, ...) {
+
+   int status;
+   va_list args;
+
+   va_start(args, format);
+   status = vfprintf(stderr, format, args);
    va_end(args);
 
    return status;

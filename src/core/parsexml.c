@@ -64,7 +64,7 @@ int parseGameFile(const char *filename) {
          name = xmlTextReaderConstName(reader);
 
          if (NULL == name) {
-            fprintf(stderr, "error parsing XML\n");
+            g_outputError("error parsing XML\n");
             return 0;
          }
 
@@ -93,7 +93,7 @@ int parseGameFile(const char *filename) {
       xmlFreeTextReader(reader);
 
       if (parseStatus < 0) {
-         fprintf(stderr, "failed to parse XML\n");
+         g_outputError("failed to parse XML\n");
          return 0;
       }
 
@@ -122,14 +122,14 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
       }
 
       else {
-         fprintf(stderr, "error: invalid <%s> tag in <player> section\n",
+         g_outputError("error: invalid <%s> tag in <player> section\n",
             xmlTextReaderConstName(reader));
          exit(EXIT_FAILURE);
       }
    }
 
    if (parseStatus < 0) {
-      fprintf(stderr, "There was an error parsing game XML file\n");
+      g_outputError("There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
    }
 
@@ -153,14 +153,14 @@ static void parseInventorySettings(xmlTextReaderPtr reader) {
       }
 
       else {
-         fprintf(stderr, "error: invalid <%s> tag in <inventory>\n",
+         g_outputError("error: invalid <%s> tag in <inventory>\n",
             xmlTextReaderConstName(reader));
          exit(EXIT_FAILURE);
       }
    }
 
    if (parseStatus < 0) {
-      fprintf(stderr, "There was an error parsing game XML file\n");
+      g_outputError("There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
    }
 
@@ -178,7 +178,7 @@ static void parseInventoryWeight(xmlTextReaderPtr reader) {
    }
 
    else {
-      fprintf(stderr, "error: inventory weight must be a valid integer "
+      g_outputError("error: inventory weight must be a valid integer "
          ">= 0\n");
    }
 
@@ -202,13 +202,13 @@ static void parseObjectSection(xmlTextReaderPtr reader) {
       }
 
       else {
-         fprintf(stderr, "error: only <object> tags are allowed in <objects>\n");
+         g_outputError("error: only <object> tags are allowed in <objects>\n");
          exit(EXIT_FAILURE);
       }
    }
 
    if (parseStatus < 0) {
-      fprintf(stderr, "There was an error parsing game XML file\n");
+      g_outputError("There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
    }
 
@@ -247,18 +247,18 @@ static void parseObject(xmlTextReaderPtr reader) {
    objectName = xmlTextReaderGetAttribute(reader, "name");
 
    if (NULL == objectName || 0 == strlen(objectName)) {
-      fprintf(stderr, "Error: objects must be assigned a name\n");
+      g_outputError("Error: objects must be assigned a name\n");
       exit(EXIT_FAILURE);
    }
 
    /* make sure the object doesn't already exist */
    if (NULL != g_hash_table_lookup(objectParsedTable, objectName)) {
-      fprintf(stderr, "object '%s' must be unique\n", objectName);
+      g_outputError("object '%s' must be unique\n", objectName);
       exit(EXIT_FAILURE);
    }
 
    if (0 == strcmp("room", objectName)) {
-      fprintf(stderr, "error: 'room' is an invalid object name\n");
+      g_outputError("error: 'room' is an invalid object name\n");
       exit(EXIT_FAILURE);
    }
 
@@ -286,7 +286,7 @@ static void parseObject(xmlTextReaderPtr reader) {
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("weight", tagname)) {
          GET_XML_TAG(weight, object)
          if (!isInt((char *)dstrview(object->weight))) {
-            fprintf(stderr, "error: %s is not a valid weight\n",
+            g_outputError("error: %s is not a valid weight\n",
                dstrview(object->weight));
             exit(EXIT_FAILURE);
          }
@@ -304,7 +304,7 @@ static void parseObject(xmlTextReaderPtr reader) {
 
          /* 'room' is an invalid synonym */
          if (0 == strcmp("room", dstrview(synonym))) {
-            fprintf(stderr, "error: 'room' is an invalid synonym\n");
+            g_outputError("error: 'room' is an invalid synonym\n");
             exit(EXIT_FAILURE);
          }
 
@@ -319,7 +319,7 @@ static void parseObject(xmlTextReaderPtr reader) {
 
          cstrtodstr(file, getNodeValue(reader));
          if (0 == dstrlen(file)) {
-            fprintf(stderr, "error: <script> has blank value!\n");
+            g_outputError("error: <script> has blank value!\n");
          }
 
          g_array_append_val(object->scripts, file);
@@ -328,14 +328,14 @@ static void parseObject(xmlTextReaderPtr reader) {
 
       /* an unknown tag was found */
       else {
-         fprintf(stderr, "Illegal tag <%s> found in object definition",
+         g_outputError("Illegal tag <%s> found in object definition",
             xmlTextReaderConstName(reader));
          exit(EXIT_FAILURE);
       }
    }
 
    if (parseStatus < 0) {
-      fprintf(stderr, "There was an error parsing game XML file\n");
+      g_outputError("There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
    }
 
@@ -362,13 +362,13 @@ static void parseRoomSection(xmlTextReaderPtr reader) {
       }
 
       else {
-         fprintf(stderr, "error: only <room> tags are allowed in <rooms>\n");
+         g_outputError("error: only <room> tags are allowed in <rooms>\n");
          exit(EXIT_FAILURE);
       }
    }
 
    if (parseStatus < 0) {
-      fprintf(stderr, "There was an error parsing game XML file\n");
+      g_outputError("There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
    }
 
@@ -402,13 +402,13 @@ static void parseRoom(xmlTextReaderPtr reader) {
    roomName = xmlTextReaderGetAttribute(reader, "name");
 
    if (NULL == roomName || 0 == strlen(roomName)) {
-      fprintf(stderr, "Error: rooms must be assigned a name\n");
+      g_outputError("Error: rooms must be assigned a name\n");
       exit(EXIT_FAILURE);
    }
 
    /* make sure the room doesn't already exist */
    if (NULL != g_hash_table_lookup(roomParsedTable, roomName)) {
-      fprintf(stderr, "room '%s' must be unique\n", roomName);
+      g_outputError("room '%s' must be unique\n", roomName);
       exit(EXIT_FAILURE);
    }
 
@@ -469,7 +469,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
 
          /* make sure the object exists */
          if (NULL == g_hash_table_lookup(objectParsedTable, objectName)) {
-            fprintf(stderr, "object '%s' in room '%s' doesn't exist\n",
+            g_outputError("object '%s' in room '%s' doesn't exist\n",
                objectName, roomName);
             exit(EXIT_FAILURE);
          }
@@ -485,27 +485,27 @@ static void parseRoom(xmlTextReaderPtr reader) {
 
       /* an unknown tag was found */
       else {
-         fprintf(stderr, "Illegal tag <%s> found in room definition",
+         g_outputError("Illegal tag <%s> found in room definition",
             xmlTextReaderConstName(reader));
          exit(EXIT_FAILURE);
       }
    }
 
    if (parseStatus < 0) {
-      fprintf(stderr, "There was an error parsing game XML file\n");
+      g_outputError("There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
    }
 
    /* title element is required */
    else if (NULL == room->title) {
-      fprintf(stderr, "Room \"%s\" is missing required <title> element\n",
+      g_outputError("Room \"%s\" is missing required <title> element\n",
          dstrview(room->name));
       exit(EXIT_FAILURE);
    }
 
    /* description element is required */
    else if (NULL == room->description) {
-      fprintf(stderr, "Room \"%s\" is missing required <description> element\n",
+      g_outputError("Room \"%s\" is missing required <description> element\n",
          dstrview(room->name));
       exit(EXIT_FAILURE);
    }
@@ -524,13 +524,13 @@ static void checkClosingTag(const char *tag, xmlTextReaderPtr reader) {
    int parseStatus = xmlTextReaderRead(reader);
 
    if (parseStatus < 0) {
-      fprintf(stderr, "There was an error parsing game XML file\n");
+      g_outputError("There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
    }
 
    else if (XML_ELEMENT_DECL != xmlTextReaderNodeType(reader) ||
    0 != strcmp(tag, xmlTextReaderConstName(reader))) {
-      fprintf(stderr, "missing closing </%s>\n", tag);
+      g_outputError("missing closing </%s>\n", tag);
       exit(EXIT_FAILURE);
    }
 }
@@ -543,12 +543,12 @@ static const char *getNodeValue(xmlTextReaderPtr reader) {
    int parseStatus = xmlTextReaderRead(reader);
 
    if (parseStatus < 0) {
-      fprintf(stderr, "There was an error parsing game XML file\n");
+      g_outputError("There was an error parsing game XML file\n");
       exit(EXIT_FAILURE);
    }
 
    else if (0 != strcmp("#text", xmlTextReaderConstName(reader))) {
-      fprintf(stderr, "<description> tag must be present and must contain a value\n");
+      g_outputError("<description> tag must be present and must contain a value\n");
       exit(EXIT_FAILURE);
    }
 
@@ -567,7 +567,7 @@ static xmlTextReaderPtr readXML(const char *filename) {
    }
 
    else {
-      fprintf(stderr, "unable to open %s\n", filename);
+      g_outputError("unable to open %s\n", filename);
       return NULL;
    }
 }

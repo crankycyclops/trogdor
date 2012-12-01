@@ -19,6 +19,9 @@ int main(int argc, char *argv[]) {
    /* register our replacement for printf */
    g_outputString = &consoleOut;
 
+   /* register our replacement for fprintf(stderr, ...) */
+   g_outputError = &consoleError;
+
    /* initialize our event handler */
    initEvent();
 

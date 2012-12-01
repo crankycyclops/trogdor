@@ -27,6 +27,10 @@ extern dstring_t (*g_readCommand)();
    (this should be provided by the application making use of the core) */
 extern int (*g_outputString)(const char *format, ...);
 
+/* Points to whatever function we should use to replace fprintf(stderr,...)
+   (this should be provided by the application making use of the core) */
+extern int (*g_outputError)(const char *format, ...);
+
 
 #endif
 

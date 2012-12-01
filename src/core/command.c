@@ -96,7 +96,7 @@ void executeCommand() {
 
    /* make sure a function for reading the command was provided by the client */
    if (NULL == g_readCommand) {
-      fprintf(stderr, "error: client must provide g_readCommand()!\n");
+      g_outputError("error: client must provide g_readCommand()!\n");
       exit(EXIT_FAILURE);
    }
 

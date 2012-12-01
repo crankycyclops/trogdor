@@ -56,13 +56,13 @@ int parseGame(const char *filename) {
    initParser();
 
    if (!parseGameFile(filename)) {
-      fprintf(stderr, "failed to parse game file %s\n", filename);
+      g_outputError("failed to parse game file %s\n", filename);
       return 0;
    }
 
    /* make sure a room named "start" exists */
    if (NULL == g_hash_table_lookup(roomParsedTable, "start")) {
-      fprintf(stderr, "room 'start' must be defined\n");
+      g_outputError("room 'start' must be defined\n");
       return 0;
    }
 
@@ -264,7 +264,7 @@ static void connectRooms() {
 
          /* game file specified a room that wasn't defined! */ 
          if (NULL == connected) {
-            fprintf(stderr, "error: room '%s' connects to room '%s', but "
+            g_outputError("error: room '%s' connects to room '%s', but "
                "room '%s' doesn't exist!\n", dstrview(room->name),
                dstrview(roomDefinition->north), dstrview(roomDefinition->north));
             exit(EXIT_FAILURE);
@@ -278,7 +278,7 @@ static void connectRooms() {
          connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->south));
 
          if (NULL == connected) {
-            fprintf(stderr, "error: room '%s' connects to room '%s', but "
+            g_outputError("error: room '%s' connects to room '%s', but "
                "room '%s' doesn't exist!\n", dstrview(room->name),
                dstrview(roomDefinition->south), dstrview(roomDefinition->south));
             exit(EXIT_FAILURE);
@@ -292,7 +292,7 @@ static void connectRooms() {
          connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->east));
 
          if (NULL == connected) {
-            fprintf(stderr, "error: room '%s' connects to room '%s', but "
+            g_outputError("error: room '%s' connects to room '%s', but "
                "room '%s' doesn't exist!\n", dstrview(room->name),
                dstrview(roomDefinition->east), dstrview(roomDefinition->east));
             exit(EXIT_FAILURE);
@@ -306,7 +306,7 @@ static void connectRooms() {
          connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->west));
 
          if (NULL == connected) {
-            fprintf(stderr, "error: room '%s' connects to room '%s', but "
+            g_outputError("error: room '%s' connects to room '%s', but "
                "room '%s' doesn't exist!\n", dstrview(room->name),
                dstrview(roomDefinition->west), dstrview(roomDefinition->west));
             exit(EXIT_FAILURE);
