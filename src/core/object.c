@@ -40,7 +40,7 @@ void displayObject(Object *object) {
       return;
    }
 
-   printf("\nYou see a %s.  %s\n", dstrview(object->name),
+   g_outputString("\nYou see a %s.  %s\n", dstrview(object->name),
       dstrview(object->description));
 
    event("afterDisplayObject", object);
@@ -58,12 +58,12 @@ void takeObject(Object *object) {
    inventory.weight + object->weight <= inventory.maxWeight) {
       transferObject(object, TAKE_OBJECT);
       inventory.weight += object->weight;
-      printf("You take the %s.\n", dstrview(object->name));
+      g_outputString("You take the %s.\n", dstrview(object->name));
       event("afterTakeObject", object);
    }
 
    else {
-      printf("%s is too heavy.  Try dropping something first.\n",
+      g_outputString("%s is too heavy.  Try dropping something first.\n",
          dstrview(object->name));
       event("takeObjectTooHeavy", object);
    }
@@ -79,7 +79,7 @@ void dropObject(Object *object) {
 
    transferObject(object, DROP_OBJECT);
    inventory.weight -= object->weight;
-   printf("You drop the %s.\n", dstrview(object->name));
+   g_outputString("You drop the %s.\n", dstrview(object->name));
 
    event("afterDropObject", object);
 }
@@ -195,24 +195,24 @@ Object *clarifyObject(GList *objects, int objectCount) {
       exit(EXIT_FAILURE);
    }
 
-   printf ("Do you mean the ");
+   g_outputString("Do you mean the ");
 
    for (i = 0; curObject != NULL; i++) {
 
-      printf("%s", dstrview(((Object *)curObject->data)->name));
+      g_outputString("%s", dstrview(((Object *)curObject->data)->name));
 
       if (i < objectCount - 2) {
-         printf(", ");
+         g_outputString(", ");
       }
 
       else if (i < objectCount - 1) {
-         printf(" or the ");
+         g_outputString(" or the ");
       }
 
       curObject = g_list_next(curObject);
    }
 
-   printf("?\n");
+   g_outputString("?\n");
 
    /* get an object name from the shell */
    do {
@@ -238,7 +238,7 @@ Object *clarifyObject(GList *objects, int objectCount) {
 
    /* if user entered a non-existent value, try again until we succeed */
    if (!objectFound) {
-      printf("There is no %s here!\n", dstrview(name));
+      g_outputString("There is no %s here!\n", dstrview(name));
       return clarifyObject(objects, objectCount);
    }
 

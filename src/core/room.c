@@ -49,7 +49,7 @@ void displayRoom(Room *room, int showLongDescription) {
       return;
    }
 
-   printf("\n%s\n", dstrview(room->title));
+   g_outputString("\n%s\n", dstrview(room->title));
    if (showLongDescription || 0 == room->state.visitedByPlayer) {
       describeRoom(room);
    }
@@ -63,7 +63,7 @@ void displayRoom(Room *room, int showLongDescription) {
       }
 
       else {
-         printf("\nYou see a %s.\n",
+         g_outputString("\nYou see a %s.\n",
             dstrview(((Object *)objectList->data)->name));
       }
 
@@ -77,5 +77,5 @@ void displayRoom(Room *room, int showLongDescription) {
 
 static void describeRoom(Room *room) {
 
-   printf("\n%s\n", dstrview(room->description));
+   g_outputString("\n%s\n", dstrview(room->description));
 }

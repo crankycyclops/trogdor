@@ -4,6 +4,7 @@
 #include <dstring.h>
 
 #include "include/trogdor.h"
+#include "include/data.h"
 #include "include/object.h"
 #include "include/room.h"
 #include "include/data.h"
@@ -43,7 +44,7 @@ static Object *getObject(dstring_t name, int objectSource);
 int actionQuit(Command command) {
 
    destroyData();
-   printf("Goodbye!\n");
+   g_outputString("Goodbye!\n");
    exit(EXIT_SUCCESS);
 }
 
@@ -87,7 +88,7 @@ int actionLook(Command command) {
       }
 
       if (NULL == thing) {
-         printf("There is no %s here!\n", dstrview(object));
+         g_outputString("There is no %s here!\n", dstrview(object));
       }
 
       else {
@@ -116,37 +117,37 @@ int actionList(Command command) {
    }
 
    if (inventory.list != NULL) {
-      printf("Items in your inventory:\n");
+      g_outputString("Items in your inventory:\n");
       for (item = inventory.list; item != NULL; item = item->next) {
 
          Object *object = (Object *)item->data;
          totalWeight += object->weight;
 
-         printf("%s", dstrview(object->name));
+         g_outputString("%s", dstrview(object->name));
 
          /* if the inventory has a finite weight, list that data as well */
          if (inventory.maxWeight > 0) {
 
             if (0 == object->weight) {
-               printf(" (weighs nothing)");
+               g_outputString(" (weighs nothing)");
             }
 
             else {
-               printf(" (%1.1f %%)",
+               g_outputString(" (%1.1f %%)",
                   100 * ((double)object->weight / (double)inventory.maxWeight));
             }
          }
 
-         printf("\n");
+         g_outputString("\n");
       }
    }
 
    else {
-      printf("You don't have anything!\n");
+      g_outputString("You don't have anything!\n");
    }
 
    if (inventory.maxWeight > 0) {
-      printf("\nUsed: %d/%d\n", totalWeight,
+      g_outputString("\nUsed: %d/%d\n", totalWeight,
          inventory.maxWeight);
    }
 
@@ -176,7 +177,7 @@ int actionMove(Command command) {
       }
 
       else {
-         printf("Where would you like to go?\n");
+         g_outputString("Where would you like to go?\n");
          return 1;
       }
    }
@@ -193,7 +194,7 @@ int actionMove(Command command) {
          }
 
          else {
-            printf("You can't go that way!\n");
+            g_outputString("You can't go that way!\n");
          }
 
          return 1;
@@ -206,7 +207,7 @@ int actionMove(Command command) {
          }
 
          else {
-            printf("You can't go that way!\n");
+            g_outputString("You can't go that way!\n");
          }
 
          return 1;
@@ -219,7 +220,7 @@ int actionMove(Command command) {
          }
 
          else {
-            printf("You can't go that way!\n");
+            g_outputString("You can't go that way!\n");
          }
 
          return 1;
@@ -232,7 +233,7 @@ int actionMove(Command command) {
          }
 
          else {
-            printf("You can't go that way!\n");
+            g_outputString("You can't go that way!\n");
          }
 
          return 1;
@@ -299,14 +300,14 @@ int actionPickupObject(Command command) {
    if (NULL == command.directObject) {
       // TODO: add support for prompting the user for clarification
       // (e.g. "What would you like to take?")
-      printf("Tell me what you want to %s!\n", dstrview(command.verb));
+      g_outputString("Tell me what you want to %s!\n", dstrview(command.verb));
       return 1;
    }
 
    object = getObject(command.directObject, OBJ_FROM_ROOM);
 
    if (NULL == object) {
-      printf("There is no %s here!\n", dstrview(command.directObject));
+      g_outputString("There is no %s here!\n", dstrview(command.directObject));
    }
 
    else {
@@ -327,14 +328,15 @@ int actionDropObject(Command command) {
    if (NULL == command.directObject) {
       // TODO: add support for prompting the user for clarification
       // (e.g. "What would you like to drop?")
-      printf("Tell me what you want to %s!\n", dstrview(command.verb));
+      g_outputString("Tell me what you want to %s!\n", dstrview(command.verb));
+      return 1;
    }
 
    object = getObject(command.directObject, OBJ_FROM_INVENTORY);
 
    if (NULL == object) {
       // TODO: select a/an depending on vowel rules to make it prettier
-      printf("You don't have a %s!\n", dstrview(command.directObject));
+      g_outputString("You don't have a %s!\n", dstrview(command.directObject));
    }
 
    else {

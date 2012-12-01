@@ -8,13 +8,16 @@
 #include "../core/include/room.h"
 #include "../core/include/event.h"
 
-#include "include/shell.h"
+#include "include/console.h"
 
 
 int main(int argc, char *argv[]) {
 
    /* register our shell with the core */
-   g_readCommand = &readCommandFromStdin;
+   g_readCommand = &consoleIn;
+
+   /* register our replacement for printf */
+   g_outputString = &consoleOut;
 
    /* initialize our event handler */
    initEvent();

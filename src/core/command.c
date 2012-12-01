@@ -108,7 +108,7 @@ void executeCommand() {
    command = parseCommand(commandStr);
 
    if (!callAction(command)) {
-      printf("Sorry, I don't understand you.\n");
+      g_outputString("Sorry, I don't understand you.\n");
    }
 
    // TODO: This should work and is a memory leak!

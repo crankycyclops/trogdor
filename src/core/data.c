@@ -37,6 +37,10 @@ static void destroyObject(Object *object);
 /* Points to whatever function we should use to read input from the user. */
 dstring_t (*g_readCommand)();
 
+/* Points to whatever function we should use to replace printf
+   (this should be provided by the application making use of the core) */
+int (*g_outputString)(const char *format, ...);
+
 /* all rooms in the game, indexed by name */
 GHashTable *rooms = NULL;
 

@@ -4,7 +4,23 @@
 #include <dstring.h>
 
 
-dstring_t readCommandFromStdin() {
+/******************************************************************************/
+
+int consoleOut(const char *format, ...) {
+
+   int status;
+   va_list args;
+
+   va_start(args, format);
+   status = vprintf(format, args);
+   va_end(args);
+
+   return status;
+}
+
+/******************************************************************************/
+
+dstring_t consoleIn() {
 
    dstring_t command;
 

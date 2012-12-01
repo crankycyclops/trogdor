@@ -23,6 +23,10 @@ extern void destroyData();
    (this should be provided by the application making use of the core) */
 extern dstring_t (*g_readCommand)();
 
+/* Points to whatever function we should use to replace printf
+   (this should be provided by the application making use of the core) */
+extern int (*g_outputString)(const char *format, ...);
+
 
 #endif
 
