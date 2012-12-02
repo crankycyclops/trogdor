@@ -77,7 +77,7 @@ int loadScript(lua_State *L, char *filename) {
 void primeLua(lua_State *L) {
 
    if (lua_pcall(L, 0, 0, 0)) {
-      fprintf(stderr, "%s\n", lua_tostring(L, -1));
+      g_outputError("%s\n", lua_tostring(L, -1));
       exit(EXIT_FAILURE);
    }
 }
