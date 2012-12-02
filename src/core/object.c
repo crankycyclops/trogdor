@@ -17,8 +17,11 @@
 #define DROP_OBJECT  2
 
 
+/* called everytime a player "sees" the object */
+void displayObject(Player *player, Object *object, int showLongDescription);
+
 /* allows a player to describe an object */
-void displayObject(Player *player, Object *object);
+static void describeObject(Object *object);
 
 /* processes the posession of an object from the current room */
 void takeObject(Player *player, Object *object);
@@ -35,16 +38,37 @@ Object *clarifyObject(GList *objects, int objectCount);
 
 /******************************************************************************/
 
-void displayObject(Player *player, Object *object) {
+void displayObject(Player *player, Object *object, int showLongDescription) {
 
    if (ALLOW_ACTION != event(player, "beforeDisplayObject", object)) {
       return;
    }
 
-   g_outputString("\nYou see a %s.  %s\n", dstrview(object->name),
-      dstrview(object->description));
+   if (TRUE == showLongDescription ||
+   NULL == g_hash_table_lookup(object->state.seenByPlayers,
+   (char *)dstrview(player->name))) {
+
+      g_hash_table_insert(object->state.seenByPlayers,
+         (char *)dstrview(player->name),
+         player);
+
+      describeObject(object);
+   }
+
+   else {
+      g_outputString("\nYou see a %s.\n",
+         dstrview(object->name));
+   }
 
    event(player, "afterDisplayObject", object);
+}
+
+/******************************************************************************/
+
+static void describeObject(Object *object) {
+
+   g_outputString("\nYou see a %s.  %s\n", dstrview(object->name),
+      dstrview(object->description));
 }
 
 /******************************************************************************/

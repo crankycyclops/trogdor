@@ -97,7 +97,7 @@ int actionLook(Player *player, Command command) {
       }
 
       else {
-         displayObject(player, thing);
+         displayObject(player, thing, TRUE);
       }
    }
 

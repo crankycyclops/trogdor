@@ -222,6 +222,10 @@ static Object *initObject(ObjectParsed *objectParsed) {
 
    object->synonyms = objectParsed->synonyms;
 
+   object->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
+   object->state.takenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
+   object->state.droppedByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
+
    object->state.seenByPlayer = 0;
    object->state.takenByPlayer = 0;
    object->state.droppedByPlayer = 0;

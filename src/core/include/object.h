@@ -8,9 +8,15 @@
 
 /* represents the state of a game object */
 typedef struct objectState {
-   int seenByPlayer;    /* whether object has been seen by the player */
-   int takenByPlayer;   /* whether object has been taken by the player */
-   int droppedByPlayer; /* whether object has been dropped by the player */
+
+   GHashTable *seenByPlayers;    /* all players that have seen the object */
+   GHashTable *takenByPlayers;   /* all players that have taken the object */
+   GHashTable *droppedByPlayers; /* all players that have dropped the object */
+
+   int seenByPlayer;    /* whether object has been seen by any player */
+   int takenByPlayer;   /* whether object has been taken by any player */
+   int droppedByPlayer; /* whether object has been dropped by any player */
+
 } ObjectState;
 
 /* Synonyms will be stored as keys in a hash table */
@@ -37,7 +43,7 @@ typedef struct object {
 #include "player.h"
 
 /* allows a player to describe an object */
-extern void displayObject(Player *player, Object *object);
+extern void displayObject(Player *player, Object *object, int showLongDescription);
 
 /* processes the posession of an object from the current room */
 extern void takeObject(Player *player, Object *object);

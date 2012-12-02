@@ -65,17 +65,7 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
 
    /* display objects in the room if they haven't already been seen */
    while (objectList != NULL) {
-
-      if (!((Object *)objectList->data)->state.seenByPlayer) {
-         displayObject(player, (Object *)objectList->data);
-         ((Object *)objectList->data)->state.seenByPlayer = 1;
-      }
-
-      else {
-         g_outputString("\nYou see a %s.\n",
-            dstrview(((Object *)objectList->data)->name));
-      }
-
+      displayObject(player, (Object *)objectList->data, FALSE);
       objectList = g_list_next(objectList);
    }
 
