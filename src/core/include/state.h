@@ -28,6 +28,12 @@ typedef struct inventory {
 /* initialize the game's state */
 extern void initGame();
 
+/* destroys resources and quits the game */
+extern void destroyGame();
+
+/* keeps data consistent between threads */
+extern pthread_mutex_t resourceMutex;
+
 #endif
 
 

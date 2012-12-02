@@ -38,6 +38,9 @@ int main(int argc, char *argv[]) {
    /* output description of the first room before starting */
    setLocation(player, player->location);
 
+   /* start the timer */
+   initTimer();
+
    /* main game loop */
    while (1) {
       executeCommand(player);

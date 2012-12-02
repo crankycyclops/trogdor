@@ -30,8 +30,14 @@ int callAction(Player *player, Command command) {
    Verb *verbs = getVerbs();
 
    for (i = 0; verbs[i].word != NULL; i++) {
+
       if (0 == strcmp(verbs[i].word, dstrview(command.verb))) {
-         return verbs[i].action(player, command);
+
+         pthread_mutex_lock(&resourceMutex);
+         int result = verbs[i].action(player, command);
+         pthread_mutex_unlock(&resourceMutex);
+
+         return result;
       }
    }
 

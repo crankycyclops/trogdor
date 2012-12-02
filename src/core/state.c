@@ -23,17 +23,37 @@ GHashTable *g_players;
 /* initialize the game's state */
 void initGame();
 
+/* destroys resources and quits the game */
+void destroyGame();
+
 /* creates a new player */
 Player *createPlayer(char *name);
 
 /* initializes a player with default starting values */
 static void initPlayer(Player *newplayer);
 
+/* keeps data consistent between threads */
+pthread_mutex_t resourceMutex;
+
 /******************************************************************************/
 
 void initGame() {
 
+   pthread_mutex_init(&resourceMutex, NULL);
    g_players = g_hash_table_new(g_str_hash, g_str_equal);
+}
+
+/******************************************************************************/
+
+void destroyGame() {
+
+   destroyData();
+
+   pthread_mutex_destroy(&resourceMutex);
+   pthread_exit(NULL);
+
+   g_outputString("Goodbye!\n");
+   exit(EXIT_SUCCESS);
 }
 
 /******************************************************************************/

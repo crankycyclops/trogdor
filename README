@@ -17,5 +17,6 @@ make
 
 Or, if you're on FreeBSD (until I have a more elegant build system):
 gcc -L/usr/local/lib -I/usr/local/include -I/usr/local/include/libxml2 \
--I/usr/local/include/lua51 -ldstring -lxml2 `pkg-config -cflags -libs glib-2.0` src/core/*.c \
--llua-5.1 src/standalone/*.c -o trogdor
+-I/usr/local/include/lua51 -ldstring -lxml2 `pkg-config -cflags \
+-libs glib-2.0` -pthread src/core/*.c -llua-5.1 src/standalone/*.c \
+-o trogdor

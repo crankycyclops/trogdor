@@ -47,9 +47,7 @@ static Object *getObject(Player *player, dstring_t name, int objectSource);
 
 int actionQuit(Player *player, Command command) {
 
-   destroyData();
-   g_outputString("Goodbye!\n");
-   exit(EXIT_SUCCESS);
+   destroyGame();
 }
 
 /******************************************************************************/
