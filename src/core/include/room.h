@@ -2,13 +2,13 @@
 #define ROOM_H
 
 
+#include <glib.h>
 #include <dstring.h>
-
 
 /* Represents the state of a single room */
 typedef struct roomState {
 
-   int visitedByPlayer;    /* whether or not player has seen the room */
+   int visitedByPlayer;    /* whether or not a player has seen the room */
 
 } RoomState;
 
@@ -41,16 +41,21 @@ typedef struct room {
    /* We also need an iterable array of all objects in a room so that we can
       quickly operate on all objects when we enter a room. */
    GList *objectList;
+
 } Room;
+
+#include "object.h"
 
 
 #ifndef ROOM_C
 
-/* sets our current location in the game */
-extern void setLocation(Room *room);
+#include "player.h"
+
+/* sets a player's current location in the game */
+extern void setLocation(Player *player, Room *room);
 
 /* prints out the description of a room */
-extern void displayRoom(Room *room, int showLongDescription);
+extern void displayRoom(Player *player, Room *room, int showLongDescription);
 
 #endif
 

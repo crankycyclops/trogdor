@@ -33,14 +33,17 @@ typedef struct object {
 
 #ifndef OBJECT_C
 
-/* prints description of an object */
-extern void displayObject(Object *object);
+#include "room.h"
+#include "player.h"
+
+/* allows a player to describe an object */
+extern void displayObject(Player *player, Object *object);
 
 /* processes the posession of an object from the current room */
-extern void takeObject(Object *object);
+extern void takeObject(Player *player, Object *object);
 
-/* drops the specified object into the current room */
-extern void dropObject(Object *object);
+/* let's a player drop the specified object into the current room */
+extern void dropObject(Player *player, Object *object);
 
 /* disambiguates in the case where a name refers to more than one object */
 extern Object *clarifyObject(GList *objects, int objectCount);

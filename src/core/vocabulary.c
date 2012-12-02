@@ -3,6 +3,7 @@
 
 #include "include/vocabulary.h"
 #include "include/command.h"
+#include "include/player.h"
 #include "include/actions.h"
 
 

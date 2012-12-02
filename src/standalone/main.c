@@ -6,12 +6,16 @@
 #include "../core/include/data.h"
 #include "../core/include/state.h"
 #include "../core/include/room.h"
+#include "../core/include/object.h"
+#include "../core/include/player.h"
 #include "../core/include/event.h"
 
 #include "include/console.h"
 
 
 int main(int argc, char *argv[]) {
+
+   Player *player;
 
    /* register our shell with the core */
    g_readCommand = &consoleIn;
@@ -28,12 +32,15 @@ int main(int argc, char *argv[]) {
    /* load assets and game related data, and initialize the game's state */
    initData();
 
+   /* single player game, so just add one with name of "player" */
+   player = createPlayer("player");
+
    /* output description of the first room before starting */
-   setLocation(location);
+   setLocation(player, player->location);
 
    /* main game loop */
    while (1) {
-      executeCommand();
+      executeCommand(player);
    }
 
    return EXIT_SUCCESS;

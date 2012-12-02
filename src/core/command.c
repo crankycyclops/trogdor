@@ -8,6 +8,7 @@
 #include "include/data.h"
 #include "include/room.h"
 #include "include/state.h"
+#include "include/player.h"
 #include "include/token.h"
 #include "include/action.h"
 #include "include/vocabulary.h"
@@ -23,7 +24,7 @@ static void initCommand(Command *command);
 static void destroyCommand(Command *command);
 
 /* executes a user input command */
-void executeCommand();
+void executeCommand(Player *player);
 
 /* debugging function */
 static void printCommand(Command command);
@@ -89,7 +90,7 @@ static void destroyCommand(Command *command) {
 
 /******************************************************************************/
 
-void executeCommand() {
+void executeCommand(Player *player) {
 
    Command command;
    dstring_t commandStr = NULL;
@@ -107,7 +108,7 @@ void executeCommand() {
 
    command = parseCommand(commandStr);
 
-   if (!callAction(command)) {
+   if (!callAction(player, command)) {
       g_outputString("Sorry, I don't understand you.\n");
    }
 

@@ -4,8 +4,9 @@
 
 
 #include <glib.h>
+#include <dstring.h>
+
 #include "trogdor.h"
-#include "room.h"
 
 typedef struct inventory {
 
@@ -23,12 +24,6 @@ typedef struct inventory {
 
 
 #ifndef STATE_C
-
-/* our current location in the game */
-extern Room *location;
-
-/* list of player-owned objects */
-extern Inventory inventory;
 
 /* initialize the game's state */
 extern void initGame();

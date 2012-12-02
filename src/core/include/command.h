@@ -17,8 +17,12 @@ typedef struct command {
 
 #ifndef COMMAND_C
 
+#include "room.h"
+#include "object.h"
+#include "player.h"
+
 /* Executes a user input command. */
-extern void executeCommand();
+extern void executeCommand(Player *player);
 
 #endif
 

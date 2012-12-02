@@ -5,8 +5,8 @@
 #include "command.h"
 
 typedef struct verb {
-   char *word;              /* verb that maps to a specific action */
-   int (*action)(Command);  /* pointer to the action we call for the verb */
+   char *word;                     /* verb that maps to a specific action */
+   int (*action)(Player *, Command); /* pointer to the action we call for the verb */
 } Verb;
 
 

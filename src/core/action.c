@@ -5,6 +5,7 @@
 #include "include/trogdor.h"
 #include "include/room.h"
 #include "include/state.h"
+#include "include/player.h"
 #include "include/data.h"
 #include "include/command.h"
 #include "include/actions.h"
@@ -17,11 +18,11 @@
       If there was a syntax error, or if the given verb doesn't correspond to
       any known action, false.  Otherwise, true.
 */
-int callAction(Command command);
+int callAction(Player *player, Command command);
 
 /******************************************************************************/
 
-int callAction(Command command) {
+int callAction(Player *player, Command command) {
 
    int i;
 
@@ -30,7 +31,7 @@ int callAction(Command command) {
 
    for (i = 0; verbs[i].word != NULL; i++) {
       if (0 == strcmp(verbs[i].word, dstrview(command.verb))) {
-         return verbs[i].action(command);
+         return verbs[i].action(player, command);
       }
    }
 

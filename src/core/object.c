@@ -8,6 +8,7 @@
 #include "include/object.h"
 #include "include/room.h"
 #include "include/state.h"
+#include "include/player.h"
 #include "include/event.h"
 
 #define OBJECT_C
@@ -16,25 +17,25 @@
 #define DROP_OBJECT  2
 
 
-/* prints description of an object */
-void displayObject(Object *object);
+/* allows a player to describe an object */
+void displayObject(Player *player, Object *object);
 
 /* processes the posession of an object from the current room */
-void takeObject(Object *object);
+void takeObject(Player *player, Object *object);
 
-/* drops the specified object into the current room */
-void dropObject(Object *object);
+/* let's a player drop the specified object into the current room */
+void dropObject(Player *player, Object *object);
 
 /* called internally by takeObject and dropObject:
    action can be TAKE_OBJECT or DROP_OBJECT (defined above) */
-static void transferObject(Object *object, int action);
+static void transferObject(Player *player, Object *object, int action);
 
 /* disambiguates in the case where a name refers to more than one object */
 Object *clarifyObject(GList *objects, int objectCount);
 
 /******************************************************************************/
 
-void displayObject(Object *object) {
+void displayObject(Player *player, Object *object) {
 
    if (ALLOW_ACTION != event("beforeDisplayObject", object)) {
       return;
@@ -48,16 +49,16 @@ void displayObject(Object *object) {
 
 /******************************************************************************/
 
-void takeObject(Object *object) {
+void takeObject(Player *player, Object *object) {
 
    if (ALLOW_ACTION != event("beforeTakeObject", object)) {
       return;
    }
 
-   if (0 == inventory.maxWeight ||
-   inventory.weight + object->weight <= inventory.maxWeight) {
-      transferObject(object, TAKE_OBJECT);
-      inventory.weight += object->weight;
+   if (0 == player->inventory.maxWeight ||
+   player->inventory.weight + object->weight <= player->inventory.maxWeight) {
+      transferObject(player, object, TAKE_OBJECT);
+      player->inventory.weight += object->weight;
       g_outputString("You take the %s.\n", dstrview(object->name));
       event("afterTakeObject", object);
    }
@@ -71,14 +72,14 @@ void takeObject(Object *object) {
 
 /******************************************************************************/
 
-void dropObject(Object *object) {
+void dropObject(Player *player, Object *object) {
 
    if (ALLOW_ACTION != event("beforeDropObject", object)) {
       return;
    }
 
-   transferObject(object, DROP_OBJECT);
-   inventory.weight -= object->weight;
+   transferObject(player, object, DROP_OBJECT);
+   player->inventory.weight -= object->weight;
    g_outputString("You drop the %s.\n", dstrview(object->name));
 
    event("afterDropObject", object);
@@ -86,7 +87,7 @@ void dropObject(Object *object) {
 
 /******************************************************************************/
 
-static void transferObject(Object *object, int action) {
+static void transferObject(Player *player, Object *object, int action) {
 
    int i;
 
@@ -106,18 +107,18 @@ static void transferObject(Object *object, int action) {
 
       /* we're removing object from the room and adding it to the inventory */
       case TAKE_OBJECT:
-         srcObjectList = location->objectList;
-         destObjectList = inventory.list;
-         srcHash = location->objectByName;
-         destHash = inventory.byName;
+         srcObjectList = player->location->objectList;
+         destObjectList = player->inventory.list;
+         srcHash = player->location->objectByName;
+         destHash = player->inventory.byName;
          break;
 
       /* we're removing object from the inventory and adding it to the room */
       case DROP_OBJECT:
-         srcObjectList = inventory.list;
-         destObjectList = location->objectList;
-         srcHash = inventory.byName;
-         destHash = location->objectByName;
+         srcObjectList = player->inventory.list;
+         destObjectList = player->location->objectList;
+         srcHash = player->inventory.byName;
+         destHash = player->location->objectByName;
          break;
 
       /* WTF? >:( */
@@ -162,13 +163,13 @@ static void transferObject(Object *object, int action) {
    switch (action) {
 
       case TAKE_OBJECT:
-         location->objectList = srcObjectList;
-         inventory.list = destObjectList;
+         player->location->objectList = srcObjectList;
+         player->inventory.list = destObjectList;
          break;
 
       case DROP_OBJECT:
-         inventory.list = srcObjectList;
-         location->objectList = destObjectList;
+         player->inventory.list = srcObjectList;
+         player->location->objectList = destObjectList;
          break;
 
       default:

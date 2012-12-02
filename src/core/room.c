@@ -8,6 +8,7 @@
 #include "include/room.h"
 #include "include/data.h"
 #include "include/state.h"
+#include "include/player.h"
 #include "include/command.h"
 #include "include/object.h"
 #include "include/event.h"
@@ -15,25 +16,25 @@
 #define ROOM_C
 
 
-/* sets our current location in the game */
-void setLocation(Room *room);
+/* sets a player's current location in the game */
+void setLocation(Player *player, Room *room);
 
 /* prints description of a room (only the title once already visited) */
-void displayRoom(Room *room, int showLongDescription);
+void displayRoom(Player *player, Room *room, int showLongDescription);
 
 /* prints the long description of a room */
 static void describeRoom(Room *room);
 
 /******************************************************************************/
 
-void setLocation(Room *room) {
+void setLocation(Player *player, Room *room) {
 
    if (ALLOW_ACTION != event("beforeSetLocation", room)) {
       return;
    }
 
-   location = room;
-   displayRoom(room, FALSE);
+   player->location = room;
+   displayRoom(player, room, FALSE);
    room->state.visitedByPlayer = 1;
 
    event("afterSetLocation", room);
@@ -41,7 +42,7 @@ void setLocation(Room *room) {
 
 /******************************************************************************/
 
-void displayRoom(Room *room, int showLongDescription) {
+void displayRoom(Player *player, Room *room, int showLongDescription) {
 
    GList *objectList = room->objectList;
 
@@ -58,7 +59,7 @@ void displayRoom(Room *room, int showLongDescription) {
    while (objectList != NULL) {
 
       if (!((Object *)objectList->data)->state.seenByPlayer) {
-         displayObject((Object *)objectList->data);
+         displayObject(player, (Object *)objectList->data);
          ((Object *)objectList->data)->state.seenByPlayer = 1;
       }
 

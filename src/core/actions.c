@@ -5,10 +5,11 @@
 
 #include "include/trogdor.h"
 #include "include/data.h"
-#include "include/object.h"
-#include "include/room.h"
 #include "include/data.h"
+#include "include/room.h"
+#include "include/object.h"
 #include "include/state.h"
+#include "include/player.h"
 #include "include/command.h"
 #include "include/object.h"
 #include "include/room.h"
@@ -18,34 +19,34 @@
 
 
 /* psuedo action that frees allocated memory and quits the game */
-int actionQuit(Command command);
+int actionQuit(Player *player, Command command);
 
 /* look at objects or describe the room again */
-int actionLook(Command command);
+int actionLook(Player *player, Command command);
 
 /* list the items in the user's inventory */
-int actionList(Command command);
+int actionList(Player *player, Command command);
 
 /* moves the user in the specified direction */
-int actionMove(Command command);
+int actionMove(Player *player, Command command);
 
 /* allows the user to pick up an object (requires direct object) */
-int actionPickupObject(Command command);
+int actionPickupObject(Player *player, Command command);
 
 /* allows the user to drop an object */
-int actionDropObject(Command command);
+int actionDropObject(Player *player, Command command);
 
 /* allows the user to jump */
 // TODO: support jumping to places, triggering jump events, etc?
-int actionJump(Command command);
+int actionJump(Player *player, Command command);
 
 /* returns object referenced by name, and disambiguates between synonyms if 
    necessary */
-static Object *getObject(dstring_t name, int objectSource);
+static Object *getObject(Player *player, dstring_t name, int objectSource);
 
 /******************************************************************************/
 
-int actionQuit(Command command) {
+int actionQuit(Player *player, Command command) {
 
    destroyData();
    g_outputString("Goodbye!\n");
@@ -54,7 +55,7 @@ int actionQuit(Command command) {
 
 /******************************************************************************/
 
-int actionLook(Command command) {
+int actionLook(Player *player, Command command) {
 
    /* name of the object we want to look at */
    dstring_t object = NULL;
@@ -85,10 +86,10 @@ int actionLook(Command command) {
 
       /* objects in the room have precedence over objects in the inventory
          -- no good reason to do this, except that it makes the code easier :) */
-      thing = getObject(object, OBJ_FROM_ROOM);
+      thing = getObject(player, object, OBJ_FROM_ROOM);
 
       if (NULL == thing) {
-         thing = getObject(object, OBJ_FROM_INVENTORY);
+         thing = getObject(player, object, OBJ_FROM_INVENTORY);
       }
 
       if (NULL == thing) {
@@ -96,13 +97,13 @@ int actionLook(Command command) {
       }
 
       else {
-         displayObject(thing);
+         displayObject(player, thing);
       }
    }
 
    /* user is looking at the current room */
    else {
-      displayRoom(location, TRUE);
+      displayRoom(player, player->location, TRUE);
    }
 
    return 1;
@@ -110,7 +111,7 @@ int actionLook(Command command) {
 
 /******************************************************************************/
 
-int actionList(Command command) {
+int actionList(Player *player, Command command) {
 
    int totalWeight = 0;
    GList *item;
@@ -120,9 +121,9 @@ int actionList(Command command) {
       return 0;
    }
 
-   if (inventory.list != NULL) {
+   if (player->inventory.list != NULL) {
       g_outputString("Items in your inventory:\n");
-      for (item = inventory.list; item != NULL; item = item->next) {
+      for (item = player->inventory.list; item != NULL; item = item->next) {
 
          Object *object = (Object *)item->data;
          totalWeight += object->weight;
@@ -130,7 +131,7 @@ int actionList(Command command) {
          g_outputString("%s", dstrview(object->name));
 
          /* if the inventory has a finite weight, list that data as well */
-         if (inventory.maxWeight > 0) {
+         if (player->inventory.maxWeight > 0) {
 
             if (0 == object->weight) {
                g_outputString(" (weighs nothing)");
@@ -138,7 +139,8 @@ int actionList(Command command) {
 
             else {
                g_outputString(" (%1.1f %%)",
-                  100 * ((double)object->weight / (double)inventory.maxWeight));
+                  100 * ((double)object->weight /
+                  (double)player->inventory.maxWeight));
             }
          }
 
@@ -150,9 +152,9 @@ int actionList(Command command) {
       g_outputString("You don't have anything!\n");
    }
 
-   if (inventory.maxWeight > 0) {
+   if (player->inventory.maxWeight > 0) {
       g_outputString("\nUsed: %d/%d\n", totalWeight,
-         inventory.maxWeight);
+         player->inventory.maxWeight);
    }
 
    return 1;
@@ -160,7 +162,7 @@ int actionList(Command command) {
 
 /******************************************************************************/
 
-int actionMove(Command command) {
+int actionMove(Player *player, Command command) {
 
    dstring_t direction;
 
@@ -193,8 +195,8 @@ int actionMove(Command command) {
 
    if (0 == strcmp("north", dstrview(direction))) {
 
-         if (NULL != location->north) {
-            setLocation(location->north);
+         if (NULL != player->location->north) {
+            setLocation(player, player->location->north);
          }
 
          else {
@@ -206,8 +208,8 @@ int actionMove(Command command) {
 
    else if (0 == strcmp("south", dstrview(direction))) {
 
-         if (NULL != location->south) {
-            setLocation(location->south);
+         if (NULL != player->location->south) {
+            setLocation(player, player->location->south);
          }
 
          else {
@@ -219,8 +221,8 @@ int actionMove(Command command) {
 
    else if (0 == strcmp("east", dstrview(direction))) {
 
-         if (NULL != location->east) {
-            setLocation(location->east);
+         if (NULL != player->location->east) {
+            setLocation(player, player->location->east);
          }
 
          else {
@@ -232,8 +234,8 @@ int actionMove(Command command) {
 
    else if (0 == strcmp("west", dstrview(direction))) {
 
-         if (NULL != location->west) {
-            setLocation(location->west);
+         if (NULL != player->location->west) {
+            setLocation(player, player->location->west);
          }
 
          else {
@@ -251,7 +253,7 @@ int actionMove(Command command) {
 
 /******************************************************************************/
 
-static Object *getObject(dstring_t name, int objectSource) {
+static Object *getObject(Player *player, dstring_t name, int objectSource) {
 
    GList *objectsByName;
    GList *curObject;
@@ -261,17 +263,17 @@ static Object *getObject(dstring_t name, int objectSource) {
    switch (objectSource) {
 
       case OBJ_FROM_ROOM:
-         objectsByName = g_hash_table_lookup(location->objectByName,
+         objectsByName = g_hash_table_lookup(player->location->objectByName,
             dstrview(name));
          break;
 
       case OBJ_FROM_INVENTORY:
-         objectsByName = g_hash_table_lookup(inventory.byName, dstrview(name));
+         objectsByName = g_hash_table_lookup(player->inventory.byName,
+            dstrview(name));
          break;
 
       default:
          g_outputError("called getObject() with an invalid source!\n");
-         exit(EXIT_FAILURE);
    }
 
    curObject = objectsByName;
@@ -296,7 +298,7 @@ static Object *getObject(dstring_t name, int objectSource) {
 
 /******************************************************************************/
 
-int actionPickupObject(Command command) {
+int actionPickupObject(Player *player, Command command) {
 
    Object *object;
 
@@ -308,14 +310,14 @@ int actionPickupObject(Command command) {
       return 1;
    }
 
-   object = getObject(command.directObject, OBJ_FROM_ROOM);
+   object = getObject(player, command.directObject, OBJ_FROM_ROOM);
 
    if (NULL == object) {
       g_outputString("There is no %s here!\n", dstrview(command.directObject));
    }
 
    else {
-      takeObject(object);
+      takeObject(player, object);
    }
 
    // always return 1 only because so far, there are no possible syntax errors
@@ -324,7 +326,7 @@ int actionPickupObject(Command command) {
 
 /******************************************************************************/
 
-int actionDropObject(Command command) {
+int actionDropObject(Player *player, Command command) {
 
    Object *object;
 
@@ -336,7 +338,7 @@ int actionDropObject(Command command) {
       return 1;
    }
 
-   object = getObject(command.directObject, OBJ_FROM_INVENTORY);
+   object = getObject(player, command.directObject, OBJ_FROM_INVENTORY);
 
    if (NULL == object) {
       // TODO: select a/an depending on vowel rules to make it prettier
@@ -344,7 +346,7 @@ int actionDropObject(Command command) {
    }
 
    else {
-      dropObject(object);
+      dropObject(player, object);
    }
 
    // always return 1 only because so far, there are no possible syntax errors
@@ -354,7 +356,7 @@ int actionDropObject(Command command) {
 /******************************************************************************/
 
 // TODO: support jumping to places, triggering jump events, etc?
-int actionJump(Command command) {
+int actionJump(Player *player, Command command) {
 
    if (command.directObject != NULL || command.indirectObject != NULL) {
       return 0;

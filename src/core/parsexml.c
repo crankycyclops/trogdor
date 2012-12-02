@@ -11,6 +11,9 @@
 #include "include/data.h"
 #include "include/utility.h"
 #include "include/state.h"
+#include "include/object.h"
+#include "include/room.h"
+#include "include/player.h"
 
 
 /* returns true if the document was parsed successfully and false otherwise */
@@ -174,7 +177,7 @@ static void parseInventoryWeight(xmlTextReaderPtr reader) {
    char *weight = (char *)getNodeValue(reader);
 
    if (isInt(weight)) {
-      inventory.maxWeight = atoi(weight);
+      g_playerConfig.inventory.maxWeight = atoi(weight);
    }
 
    else {
