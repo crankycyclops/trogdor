@@ -1,7 +1,6 @@
 
 #include <stdlib.h>
 #include <ctype.h>
-#include <dstring.h>
 
 #include "include/trogdor.h"
 

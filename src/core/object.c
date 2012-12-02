@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <glib.h>
-#include <dstring.h>
 
 #include "include/trogdor.h"
 #include "include/data.h"

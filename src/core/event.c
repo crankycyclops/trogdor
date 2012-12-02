@@ -2,8 +2,8 @@
 #define EVENT_C
 
 #include <stdlib.h>
-#include <glib.h>
 
+#include "include/trogdor.h"
 #include "include/object.h"
 #include "include/room.h"
 #include "include/state.h"

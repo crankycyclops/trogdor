@@ -1,6 +1,5 @@
 
 #include <stdlib.h>
-#include <glib.h>
 
 #include "include/trogdor.h"
 #include "include/utility.h"

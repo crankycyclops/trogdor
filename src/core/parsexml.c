@@ -1,6 +1,5 @@
 
 #include <string.h>
-#include <dstring.h>
 #include <libxml/xmlreader.h>
 
 #define PARSEXML_C
