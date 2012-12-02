@@ -48,6 +48,8 @@ void displayObject(Player *player, Object *object, int showLongDescription) {
    NULL == g_hash_table_lookup(object->state.seenByPlayers,
    (char *)dstrview(player->name))) {
 
+      object->state.seenByPlayer = 1;
+
       g_hash_table_insert(object->state.seenByPlayers,
          (char *)dstrview(player->name),
          player);
@@ -81,8 +83,15 @@ void takeObject(Player *player, Object *object) {
 
    if (0 == player->inventory.maxWeight ||
    player->inventory.weight + object->weight <= player->inventory.maxWeight) {
+
       transferObject(player, object, TAKE_OBJECT);
+
       player->inventory.weight += object->weight;
+
+      g_hash_table_insert(object->state.takenByPlayers,
+         (char *)dstrview(player->name), player);
+      object->state.takenByPlayer = 1;
+
       g_outputString("You take the %s.\n", dstrview(object->name));
       event(player, "afterTakeObject", object);
    }
@@ -103,7 +112,13 @@ void dropObject(Player *player, Object *object) {
    }
 
    transferObject(player, object, DROP_OBJECT);
+
    player->inventory.weight -= object->weight;
+
+   g_hash_table_insert(object->state.droppedByPlayers,
+      (char *)dstrview(player->name), player);
+   object->state.droppedByPlayer = 1;
+
    g_outputString("You drop the %s.\n", dstrview(object->name));
 
    event(player, "afterDropObject", object);
