@@ -58,7 +58,8 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
 
    g_outputString("\n%s\n", dstrview(room->title));
    if (showLongDescription ||
-   NULL == g_hash_table_lookup(room->state.players, (char *)dstrview(player->name))) {
+   NULL == g_hash_table_lookup(room->state.players,
+   (char *)dstrview(player->name))) {
       describeRoom(room);
    }
 
