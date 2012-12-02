@@ -29,7 +29,7 @@ static void describeRoom(Room *room);
 
 void setLocation(Player *player, Room *room) {
 
-   if (ALLOW_ACTION != event("beforeSetLocation", room)) {
+   if (ALLOW_ACTION != event(player, "beforeSetLocation", room)) {
       return;
    }
 
@@ -37,7 +37,7 @@ void setLocation(Player *player, Room *room) {
    displayRoom(player, room, FALSE);
    room->state.visitedByPlayer = 1;
 
-   event("afterSetLocation", room);
+   event(player, "afterSetLocation", room);
 }
 
 /******************************************************************************/
@@ -46,7 +46,7 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
 
    GList *objectList = room->objectList;
 
-   if (ALLOW_ACTION != event("beforeRoomDisplay", room)) {
+   if (ALLOW_ACTION != event(player, "beforeRoomDisplay", room)) {
       return;
    }
 
@@ -71,7 +71,7 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
       objectList = g_list_next(objectList);
    }
 
-   event("afterRoomDisplay", room);
+   event(player, "afterRoomDisplay", room);
 }
 
 /******************************************************************************/

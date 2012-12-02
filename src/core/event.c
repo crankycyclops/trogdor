@@ -1,6 +1,7 @@
 
 #define EVENT_C
 
+#include <stdlib.h>
 #include <glib.h>
 
 #include "include/object.h"
@@ -8,6 +9,7 @@
 #include "include/state.h"
 #include "include/player.h"
 #include "include/event.h"
+#include "include/player.h"
 #include "include/data.h"
 
 
@@ -16,10 +18,10 @@ void initEvent();
 
 /* register a new event (note: calling this twice with the same name will
    cause the first to be overwritten) */
-void registerEvent(char *name, int (*event)(void *));
+void registerEvent(char *name, int (*event)(Player *, void *));
 
 /* call an event */
-int event(char *name, void *data);
+int event(Player *player, char *name, void *data);
 
 
 /******************\
@@ -27,45 +29,45 @@ int event(char *name, void *data);
 \******************/
 
 /* called before a room is displayed - takes as input the room (type Room *) */
-static int beforeRoomDisplay(void *data);
+static int beforeRoomDisplay(Player *player, void *data);
 
 /* called after a room is displayed - takes as input the room (type Room *) */
-static int afterRoomDisplay(void *data);
+static int afterRoomDisplay(Player *player, void *data);
 
 /* called before an object is taken - takes as input the object (type Object *) */
-static int beforeTakeObject(void *data);
+static int beforeTakeObject(Player *player, void *data);
 
 /* called after an object is taken - takes as input the object (type Object *) */
-static int afterTakeObject(void *data);
+static int afterTakeObject(Player *player, void *data);
 
 /* called before an object is dropped - takes as input the object (type Object *) */
-static int beforeDropObject(void *data);
+static int beforeDropObject(Player *player, void *data);
 
 /* called after an object is dropped - takes as input the object (type Object *) */
-static int afterDropObject(void *data);
+static int afterDropObject(Player *player, void *data);
 
 /* called before an object is described - takes as input the object (type Object *) */
-static int beforeDisplayObject(void *data);
+static int beforeDisplayObject(Player *player, void *data);
 
 /* called after an object is described - takes as input the object (type Object *) */
-static int afterDisplayObject(void *data);
+static int afterDisplayObject(Player *player, void *data);
 
 /* triggered when the user tries to take an object, but their inventory doesn't
    have enough free weight - data = object we're trying to pick up
    (type Object *) */
-static int takeObjectTooHeavy(void *data);
+static int takeObjectTooHeavy(Player *player, void *data);
 
 /* called before setting a new location - data = room we're setting (type Room *) */
-static int beforeSetLocation(void *data);
+static int beforeSetLocation(Player *player, void *data);
 
 /* called after setting a new location - data = room we're setting (type Room *) */
-static int afterSetLocation(void *data);
+static int afterSetLocation(Player *player, void *data);
 
 /* utilized by individual event handlers and returns one of:
    SUPPRESS_ACTION - don't allow the action immediately following the event
    ALLOW_ACTION    - allow the action following the event to continue */
-static int callLuaEventHandler(lua_State *L, char *function, const char *name,
-int before);
+static int callLuaEventHandler(lua_State *L, char *function, const char *player,
+const char *name, int before);
 
 
 /* maintains a mapping of event names to functions */
@@ -93,19 +95,19 @@ void initEvent() {
 
 /******************************************************************************/
 
-void registerEvent(char *name, int (*event)(void *)) {
+void registerEvent(char *name, int (*event)(Player *, void *)) {
 
    g_hash_table_insert(events, name, event);
 }
 
 /******************************************************************************/
 
-int event(char *name, void *data) {
+int event(Player *player, char *name, void *data) {
 
-   int (*event)(void *) = g_hash_table_lookup(events, name);
+   int (*event)(Player *, void *) = g_hash_table_lookup(events, name);
 
    if (NULL != event) {
-      return event(data);
+      return event(player, data);
    }
 
    else {
@@ -117,7 +119,7 @@ int event(char *name, void *data) {
 
 /******************************************************************************/
 
-static int beforeRoomDisplay(void *data) {
+static int beforeRoomDisplay(Player *player, void *data) {
 
    Room *room = data;
 
@@ -127,7 +129,7 @@ static int beforeRoomDisplay(void *data) {
 
 /******************************************************************************/
 
-static int afterRoomDisplay(void *data) {
+static int afterRoomDisplay(Player *player, void *data) {
 
    Room *room = data;
 
@@ -137,7 +139,7 @@ static int afterRoomDisplay(void *data) {
 
 /******************************************************************************/
 
-static int beforeSetLocation(void *data) {
+static int beforeSetLocation(Player *player, void *data) {
 
    Room *room = data;
 
@@ -147,7 +149,7 @@ static int beforeSetLocation(void *data) {
 
 /******************************************************************************/
 
-static int afterSetLocation(void *data) {
+static int afterSetLocation(Player *player, void *data) {
 
    Room *room = data;
 
@@ -157,70 +159,76 @@ static int afterSetLocation(void *data) {
 
 /******************************************************************************/
 
-static int beforeTakeObject(void *data) {
+static int beforeTakeObject(Player *player, void *data) {
 
    Object *object = data;
    lua_State *L = object->lua;
 
-   return callLuaEventHandler(L, "beforeTakeObject", dstrview(object->name), 1);
+   return callLuaEventHandler(L, "beforeTakeObject", dstrview(player->name),
+      dstrview(object->name), 1);
 }
 
 /******************************************************************************/
 
-static int afterTakeObject(void *data) {
+static int afterTakeObject(Player *player, void *data) {
 
    Object *object = data;
    lua_State *L = object->lua;
 
-   callLuaEventHandler(L, "afterTakeObject", dstrview(object->name), 0);
+   callLuaEventHandler(L, "afterTakeObject", dstrview(player->name),
+      dstrview(object->name), 0);
    return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static int beforeDropObject(void *data) {
+static int beforeDropObject(Player *player, void *data) {
 
    Object *object = data;
    lua_State *L = object->lua;
 
-   return callLuaEventHandler(L, "beforeDropObject", dstrview(object->name), 1);
+   return callLuaEventHandler(L, "beforeDropObject", dstrview(player->name),
+      dstrview(object->name), 1);
 }
 
 /******************************************************************************/
 
-static int afterDropObject(void *data) {
+static int afterDropObject(Player *player, void *data) {
 
    Object *object = data;
    lua_State *L = object->lua;
 
-   callLuaEventHandler(L, "afterDropObject", dstrview(object->name), 0);
+   callLuaEventHandler(L, "afterDropObject", dstrview(player->name),
+      dstrview(object->name), 0);
    return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static int beforeDisplayObject(void *data) {
+static int beforeDisplayObject(Player *player, void *data) {
 
    Object *object = data;
    lua_State *L = object->lua;
 
-   return callLuaEventHandler(L, "beforeDisplayObject", dstrview(object->name), 1);
+   return callLuaEventHandler(L, "beforeDisplayObject", dstrview(player->name),
+      dstrview(object->name), 1);
 }
 
 /******************************************************************************/
 
-static int afterDisplayObject(void *data) {
+static int afterDisplayObject(Player *player, void *data) {
 
    Object *object = data;
    lua_State *L = object->lua;
 
-   callLuaEventHandler(L, "afterDisplayObject", dstrview(object->name), 0);
+   callLuaEventHandler(L, "afterDisplayObject", dstrview(player->name),
+      dstrview(object->name), 0);
    return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static int takeObjectTooHeavy(void *data) {
+static int takeObjectTooHeavy(Player *player, void *data) {
 
    // TODO
    // TODO: should this call a global script function or a script function
@@ -229,14 +237,15 @@ static int takeObjectTooHeavy(void *data) {
    Object *object = data;
    lua_State *L = object->lua;
 
-   callLuaEventHandler(L, "afterDropObject", dstrview(object->name), 0);
+   callLuaEventHandler(L, "afterDropObject", dstrview(player->name),
+      dstrview(object->name), 0);
    return ALLOW_ACTION;
 }
 
 /******************************************************************************/
 
-static int callLuaEventHandler(lua_State *L, char *function, const char *name,
-int before) {
+static int callLuaEventHandler(lua_State *L, char *function, const char *player,
+const char *thing, int before) {
 
    if (NULL != L) {
 
@@ -245,9 +254,10 @@ int before) {
       /* only call function if it exists */
       if (lua_isfunction(L, lua_gettop(L))) {
 
-         lua_pushstring(L, name);
+         lua_pushstring(L, player);
+         lua_pushstring(L, thing);
 
-         if (lua_pcall(L, 1, 1, 0)) {
+         if (lua_pcall(L, 2, 1, 0)) {
             g_outputError("Script error: %s\n", lua_tostring(L, -1));
          }
 

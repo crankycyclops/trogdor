@@ -37,21 +37,21 @@ Object *clarifyObject(GList *objects, int objectCount);
 
 void displayObject(Player *player, Object *object) {
 
-   if (ALLOW_ACTION != event("beforeDisplayObject", object)) {
+   if (ALLOW_ACTION != event(player, "beforeDisplayObject", object)) {
       return;
    }
 
    g_outputString("\nYou see a %s.  %s\n", dstrview(object->name),
       dstrview(object->description));
 
-   event("afterDisplayObject", object);
+   event(player, "afterDisplayObject", object);
 }
 
 /******************************************************************************/
 
 void takeObject(Player *player, Object *object) {
 
-   if (ALLOW_ACTION != event("beforeTakeObject", object)) {
+   if (ALLOW_ACTION != event(player, "beforeTakeObject", object)) {
       return;
    }
 
@@ -60,13 +60,13 @@ void takeObject(Player *player, Object *object) {
       transferObject(player, object, TAKE_OBJECT);
       player->inventory.weight += object->weight;
       g_outputString("You take the %s.\n", dstrview(object->name));
-      event("afterTakeObject", object);
+      event(player, "afterTakeObject", object);
    }
 
    else {
       g_outputString("%s is too heavy.  Try dropping something first.\n",
          dstrview(object->name));
-      event("takeObjectTooHeavy", object);
+      event(player, "takeObjectTooHeavy", object);
    }
 }
 
@@ -74,7 +74,7 @@ void takeObject(Player *player, Object *object) {
 
 void dropObject(Player *player, Object *object) {
 
-   if (ALLOW_ACTION != event("beforeDropObject", object)) {
+   if (ALLOW_ACTION != event(player, "beforeDropObject", object)) {
       return;
    }
 
@@ -82,7 +82,7 @@ void dropObject(Player *player, Object *object) {
    player->inventory.weight -= object->weight;
    g_outputString("You drop the %s.\n", dstrview(object->name));
 
-   event("afterDropObject", object);
+   event(player, "afterDropObject", object);
 }
 
 /******************************************************************************/

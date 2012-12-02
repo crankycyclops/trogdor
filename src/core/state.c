@@ -3,6 +3,7 @@
 #include <glib.h>
 
 #include "include/trogdor.h"
+#include "include/utility.h"
 #include "include/object.h"
 #include "include/room.h"
 #include "include/data.h"
@@ -12,6 +13,7 @@
 
 /* contains the default configuration for all newly initialized players */
 Player g_playerConfig = {
+   NULL,                /* player's name */
    NULL,                /* current location */
    {NULL, NULL, 0, 0}   /* player's inventory */
 };
@@ -48,8 +50,12 @@ Player *createPlayer(char *name) {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
 
+   newplayer->name = createDstring();
+   cstrtodstr(newplayer->name, name);
+
    initPlayer(newplayer);
    g_hash_table_insert(g_players, name, newplayer);
+
    return newplayer;
 }
 
@@ -58,6 +64,9 @@ Player *createPlayer(char *name) {
 static void initPlayer(Player *newplayer) {
 
    newplayer->location = g_hash_table_lookup(rooms, "start");
+
+   newplayer->inventory.maxWeight = g_playerConfig.inventory.maxWeight;
+   newplayer->inventory.weight = g_playerConfig.inventory.weight;
    newplayer->inventory.list = NULL;
    newplayer->inventory.byName = g_hash_table_new(g_str_hash, g_str_equal);
 }

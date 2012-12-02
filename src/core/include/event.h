@@ -1,6 +1,9 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include "room.h"
+#include "object.h"
+#include "player.h"
 
 /* event() returns whether or not the normal action should be suppressed --
    this is only relevant if the event() is triggered BEFORE the action */
@@ -18,7 +21,7 @@ extern void initEvent();
 extern void registerEvent(char *name, int (*event)(void *));
 
 /* call an event */
-extern int event(char *name, void *data);
+extern int event(Player *player, char *name, void *data);
 
 #endif
 

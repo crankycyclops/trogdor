@@ -9,6 +9,8 @@
 
 typedef struct player {
 
+   dstring_t   name;
+
    Room       *location;
    Inventory   inventory;
 
