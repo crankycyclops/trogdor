@@ -8,7 +8,8 @@
 /* Represents the state of a single room */
 typedef struct roomState {
 
-   int visitedByPlayer;    /* whether or not a player has seen the room */
+   GHashTable *players;    /* list of players who have been to this room */
+   int visitedByAPlayer;   /* whether or not a player has seen the room */
 
 } RoomState;
 

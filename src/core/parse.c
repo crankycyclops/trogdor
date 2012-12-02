@@ -140,7 +140,8 @@ static Room *initRoom(RoomParsed *roomParsed) {
    room->east  = NULL;
    room->west  = NULL;
 
-   room->state.visitedByPlayer = 0;
+   room->state.visitedByAPlayer = 0;
+   room->state.players = g_hash_table_new(g_str_hash, g_str_equal);
 
    room->objectList = NULL;
    room->objectByName = NULL;

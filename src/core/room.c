@@ -35,7 +35,13 @@ void setLocation(Player *player, Room *room) {
 
    player->location = room;
    displayRoom(player, room, FALSE);
-   room->state.visitedByPlayer = 1;
+
+   /* this only tells us that the room was visited and not by who*/
+   room->state.visitedByAPlayer = 1;
+
+   /* this tells us who's visited the room */
+   g_hash_table_insert(room->state.players, (char *)dstrview(player->name),
+      player);
 
    event(player, "afterSetLocation", room);
 }
@@ -51,7 +57,8 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
    }
 
    g_outputString("\n%s\n", dstrview(room->title));
-   if (showLongDescription || 0 == room->state.visitedByPlayer) {
+   if (showLongDescription ||
+   NULL == g_hash_table_lookup(room->state.players, (char *)dstrview(player->name))) {
       describeRoom(room);
    }
 
