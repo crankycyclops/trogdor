@@ -10,11 +10,24 @@
 /* starts the timer */
 void initTimer();
 
+/* get the current time (how many seconds the game has been running) */
+int getTime();
+
 /* calls tick() on each interval */
 static void *timer(void *threadId);
 
 /* execute the timer's payload */
 static void tick();
+
+/* current tick (continually incremented by the ticker) */
+static int gameTime = 0;
+
+/******************************************************************************/
+
+int getTime() {
+
+   return gameTime;
+}
 
 /******************************************************************************/
 
@@ -33,6 +46,7 @@ void initTimer() {
 static void *timer(void *threadId) {
 
    while (1) {
+      gameTime++;
       sleep(1);
       tick();
    }
