@@ -8,6 +8,7 @@ LibXML2
 GLib
 My dstring library (http://www.github.com/crankycyclops/dstring)
 Lua 5.1
+PThread
 
 I've split the code into two components: core (trogdor's data and functionality) and standalone (wraps around core for a single player experience.)  The reason for the separation is that I plan to write a MUD based on core in the (hopefully) not too distant future.
 
