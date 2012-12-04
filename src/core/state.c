@@ -8,6 +8,7 @@
 #include "include/data.h"
 #include "include/state.h"
 #include "include/player.h"
+#include "include/timer.h"
 
 
 /* contains the default configuration for all newly initialized players */
@@ -47,8 +48,10 @@ void initGame() {
 
 void destroyGame() {
 
+   destroyTimer();
    destroyData();
 
+   /* close any leftover threads (TODO: is this necessary?) */
    pthread_mutex_destroy(&resourceMutex);
    pthread_exit(NULL);
 

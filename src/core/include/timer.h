@@ -18,11 +18,17 @@ typedef struct {
 
 } TimedJob;
 
+/* we pass this to registerTimedJob() when we want a job to run indefinitely */
+#define EXECUTE_INDEFINITELY -1
+
 
 #ifndef TIMER_C
 
 /* starts the timer */
 extern void initTimer();
+
+/* stops the timer and returns the total ellapsed time */
+extern unsigned long destroyTimer();
 
 /* get the current time (how many seconds the game has been running) */
 extern unsigned long getTime();

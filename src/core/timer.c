@@ -13,6 +13,9 @@
 /* starts the timer */
 void initTimer();
 
+/* stops the timer and returns the total ellapsed time */
+unsigned long destroyTimer();
+
 /* get the current time (how many seconds the game has been running) */
 unsigned long getTime();
 
@@ -33,6 +36,9 @@ static void *timer(void *threadId);
 /* execute the timer's payload */
 static void tick();
 
+/* whether or not the timer is active */
+static int timerActive = 0;
+
 /* current tick (continually incremented by the ticker) */
 static unsigned long gameTime = 0;
 
@@ -41,6 +47,9 @@ static GList *workQueue = NULL;
 
 /* keeps track of the last assigned job id */
 static unsigned long lastJobID = 0;
+
+/* use this to synchronize start/stop of the timer */
+static pthread_mutex_t timerMutex;
 
 /******************************************************************************/
 
@@ -55,10 +64,37 @@ void initTimer() {
 
    pthread_t timerThread;
 
+   gameTime = 0;
+   timerActive = 1;
+
    if (pthread_create(&timerThread, NULL, timer, NULL)) {
       g_outputError("Failed to start timer!\n");
       exit(EXIT_FAILURE);
    }
+}
+
+/******************************************************************************/
+
+unsigned long destroyTimer() {
+
+   GList *curJob = workQueue;
+
+   /* deactivate the timer */
+   pthread_mutex_lock(&timerMutex);
+   timerActive = 0;
+   pthread_mutex_unlock(&timerMutex);
+
+   /* destroy the work queue and free all memory associated with it */
+   while (curJob != NULL) {
+
+      TimedJob *job = (TimedJob *)curJob->data;
+      free(job);
+      workQueue = g_list_delete_link(workQueue, curJob);
+
+      curJob = curJob->next;
+   }
+
+   return gameTime;
 }
 
 /******************************************************************************/
@@ -113,10 +149,14 @@ int deregisterTimedJob(unsigned long id) {
 
 static void *timer(void *threadId) {
 
-   while (1) {
-      gameTime++;
+   while (timerActive) {
+
       sleep(1);
+
+      pthread_mutex_lock(&timerMutex);
+      gameTime++;
       tick();
+      pthread_mutex_unlock(&timerMutex);
    }
 
    return NULL;
@@ -127,6 +167,11 @@ static void *timer(void *threadId) {
 static void tick() {
 
    GList *curJob = workQueue;
+
+   /* we might have destroyed the timer while in the middle of a tick */
+   if (!timerActive) {
+      return;
+   }
 
    while (curJob != NULL) {
 

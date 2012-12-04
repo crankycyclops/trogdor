@@ -9,15 +9,10 @@
 #include "../core/include/object.h"
 #include "../core/include/player.h"
 #include "../core/include/event.h"
+#include "../core/include/timer.h"
 
 #include "include/console.h"
 
-
-void *jobtest(void *data) {
-   static int w = 1;
-   printf("WTF! %d\n", w);
-   w++;
-}
 
 int main(int argc, char *argv[]) {
 
