@@ -98,7 +98,9 @@ Verb *getVerbs() {
       {"examine",  &actionLook},
 
       /* list items in the user's inventory */
-      {"list", &actionList},
+      {"list",      &actionList},
+      {"inv",       &actionList},
+      {"inventory", &actionList},
 
       /* misc actions */
       {"jump", &actionJump},
