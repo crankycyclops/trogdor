@@ -67,6 +67,8 @@ void initTimer() {
    gameTime = 0;
    timerActive = 1;
 
+   pthread_mutex_init(&timerMutex, NULL);
+
    if (pthread_create(&timerThread, NULL, timer, NULL)) {
       g_outputError("Failed to start timer!\n");
       exit(EXIT_FAILURE);
@@ -94,6 +96,7 @@ unsigned long destroyTimer() {
       curJob = curJob->next;
    }
 
+   pthread_mutex_destroy(&timerMutex);
    return gameTime;
 }
 
