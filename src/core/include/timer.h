@@ -25,17 +25,17 @@ typedef struct {
 extern void initTimer();
 
 /* get the current time (how many seconds the game has been running) */
-extern int getTime();
+extern unsigned long getTime();
 
 /* Inserts a job into the timer queue.  Takes as input a pointer to the function
    we want to execute, an argument to pass to that function, an interval and
    the number of times we want the job to execute before removing it from the
    queue. */
-extern unsigned int registerTimedJob(void (*job)(void *), void *argument,
+extern unsigned long registerTimedJob(void (*job)(void *), void *argument,
    int interval, int executions);
 
 /* removes job with the specified id from the timer queue */
-extern int deregisterTimedJob(unsigned int id);
+extern int deregisterTimedJob(unsigned long id);
 
 #endif
 

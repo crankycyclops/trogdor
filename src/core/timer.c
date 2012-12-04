@@ -14,18 +14,18 @@
 void initTimer();
 
 /* get the current time (how many seconds the game has been running) */
-int getTime();
+unsigned long getTime();
 
 /* Inserts a job into the timer queue.  Takes as input a pointer to the function
    we want to execute, an argument to pass to that function, an interval and
    the number of times we want the job to execute before removing it from the
    queue. */
-unsigned int registerTimedJob(void (*job)(void *), void *argument, int interval,
-   int executions);
+unsigned long registerTimedJob(void (*job)(void *), void *argument, int interval,
+int executions);
 
 /* Removes job with the specified id from the timer queue.  Returns 1 if the
    job was successfully removed and 0 if it was not. */
-int deregisterTimedJob(unsigned int id);
+int deregisterTimedJob(unsigned long id);
 
 /* calls tick() on each interval */
 static void *timer(void *threadId);
@@ -34,17 +34,17 @@ static void *timer(void *threadId);
 static void tick();
 
 /* current tick (continually incremented by the ticker) */
-static int gameTime = 0;
+static unsigned long gameTime = 0;
 
 /* queue of jobs to execute on each tick of the clock */
 static GList *workQueue = NULL;
 
 /* keeps track of the last assigned job id */
-static unsigned int lastJobID = 0;
+static unsigned long lastJobID = 0;
 
 /******************************************************************************/
 
-int getTime() {
+unsigned long getTime() {
 
    return gameTime;
 }
@@ -63,7 +63,7 @@ void initTimer() {
 
 /******************************************************************************/
 
-unsigned int registerTimedJob(void (*job)(void *), void *argument, int interval,
+unsigned long registerTimedJob(void (*job)(void *), void *argument, int interval,
 int executions) {
 
    TimedJob *newjob;
@@ -89,7 +89,7 @@ int executions) {
 
 /******************************************************************************/
 
-int deregisterTimedJob(unsigned int id) {
+int deregisterTimedJob(unsigned long id) {
 
    GList *curJob = workQueue;
 
