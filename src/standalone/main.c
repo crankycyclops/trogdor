@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
    initTimer();
 
    /* main game loop */
-   while (1) {
+   while (isInGame()) {
       executeCommand(player);
    }
 

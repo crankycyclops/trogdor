@@ -27,6 +27,9 @@ void initGame();
 /* destroys resources and quits the game */
 void destroyGame();
 
+/* returns 1 if we're running a game and 0 if not */
+int isInGame();
+
 /* creates a new player */
 Player *createPlayer(char *name);
 
@@ -36,12 +39,24 @@ static void initPlayer(Player *newplayer);
 /* keeps data consistent between threads */
 pthread_mutex_t resourceMutex;
 
+/* whether or not we're currently running a game */
+static int inGame = 0;
+
+/******************************************************************************/
+
+int isInGame() {
+
+   return inGame;
+}
+
 /******************************************************************************/
 
 void initGame() {
 
    pthread_mutex_init(&resourceMutex, NULL);
    g_players = g_hash_table_new(g_str_hash, g_str_equal);
+
+   inGame = 1;
 }
 
 /******************************************************************************/
@@ -51,12 +66,9 @@ void destroyGame() {
    destroyTimer();
    destroyData();
 
-   /* close any leftover threads (TODO: is this necessary?) */
-   pthread_mutex_destroy(&resourceMutex);
-   pthread_exit(NULL);
+   inGame = 0;
 
-   g_outputString("Goodbye!\n");
-   exit(EXIT_SUCCESS);
+   return;
 }
 
 /******************************************************************************/

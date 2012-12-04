@@ -25,6 +25,9 @@ typedef struct inventory {
 
 #ifndef STATE_C
 
+/* returns 1 if we're running a game and 0 if not */
+extern int isInGame();
+
 /* initialize the game's state */
 extern void initGame();
 
