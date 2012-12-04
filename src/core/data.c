@@ -84,6 +84,7 @@ static void destroyRooms() {
    /* free all rooms */
    while (NULL != curRoom) {
       destroyRoom((Room *)curRoom->data);
+      curRoom = curRoom->next;
    }
 
    g_list_free(gRoomList);
@@ -99,6 +100,7 @@ static void destroyObjects() {
    /* free all game objects */
    while (NULL != curObject) {
       destroyObject((Object *)curObject->data);
+      curObject = curObject->next;
    }
 
    g_list_free(gObjectList);
