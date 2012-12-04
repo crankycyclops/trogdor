@@ -6,6 +6,7 @@ typedef struct {
 
    int id;              /* uniquely identifies jobs in the timer queue */
    int initTime;        /* time when job was registered in the timer queue */
+   int startTime;       /* how long to wait before starting execution */
    int interval;        /* timer ticks between each call to job() */
    void (*job)(void *); /* function to execute on each interval */
    void *argument;      /* this argument is passed to job() */
@@ -18,8 +19,13 @@ typedef struct {
 
 } TimedJob;
 
+/* Pass this to registerTimedJob() to start a job immediately.  Note that this
+   value is 1, not 0.  This is because our function won't get called until the
+   NEXT call to tick(), afterwhich we would have already passed 0. */
+#define TIMER_START_NOW 1
+
 /* we pass this to registerTimedJob() when we want a job to run indefinitely */
-#define EXECUTE_INDEFINITELY -1
+#define TIMER_EXECUTE_INDEFINITELY -1
 
 
 #ifndef TIMER_C
@@ -38,7 +44,7 @@ extern unsigned long getTime();
    the number of times we want the job to execute before removing it from the
    queue. */
 extern unsigned long registerTimedJob(void (*job)(void *), void *argument,
-   int interval, int executions);
+unsigned long start, unsigned long interval, int executions);
 
 /* removes job with the specified id from the timer queue */
 extern int deregisterTimedJob(unsigned long id);

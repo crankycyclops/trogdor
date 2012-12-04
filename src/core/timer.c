@@ -23,8 +23,8 @@ unsigned long getTime();
    we want to execute, an argument to pass to that function, an interval and
    the number of times we want the job to execute before removing it from the
    queue. */
-unsigned long registerTimedJob(void (*job)(void *), void *argument, int interval,
-int executions);
+unsigned long registerTimedJob(void (*job)(void *), void *argument,
+unsigned long start, unsigned long interval, int executions);
 
 /* Removes job with the specified id from the timer queue.  Returns 1 if the
    job was successfully removed and 0 if it was not. */
@@ -99,8 +99,8 @@ unsigned long destroyTimer() {
 
 /******************************************************************************/
 
-unsigned long registerTimedJob(void (*job)(void *), void *argument, int interval,
-int executions) {
+unsigned long registerTimedJob(void (*job)(void *), void *argument,
+unsigned long start, unsigned long interval, int executions) {
 
    TimedJob *newjob;
 
@@ -113,12 +113,15 @@ int executions) {
 
    newjob->id = lastJobID;
    newjob->initTime = gameTime;
+   newjob->startTime = start;
    newjob->interval = interval;
    newjob->executions = executions;
    newjob->job = job;
    newjob->argument = argument;
 
+   pthread_mutex_lock(&timerMutex);
    workQueue = g_list_append(workQueue, newjob);
+   pthread_mutex_unlock(&timerMutex);
 
    return newjob->id;
 }
@@ -132,9 +135,11 @@ int deregisterTimedJob(unsigned long id) {
    while (curJob != NULL) {
 
       if (id == ((TimedJob *)curJob->data)->id) {
+         pthread_mutex_lock(&timerMutex);
          TimedJob *job = (TimedJob *)curJob->data;
          free(job);
          workQueue = g_list_delete_link(workQueue, curJob);
+         pthread_mutex_unlock(&timerMutex);
          return 1;
       }
 
@@ -179,8 +184,8 @@ static void tick() {
 
       if (job->executions != 0) {
 
-         if (gameTime - job->initTime > 0 &&
-         (gameTime - job->initTime) % job->interval == 0) {
+         if (gameTime - job->initTime >= job->startTime &&
+         (gameTime - job->initTime - job->startTime) % job->interval == 0) {
 
             pthread_mutex_lock(&resourceMutex);
             job->job(job->argument);
@@ -195,8 +200,10 @@ static void tick() {
 
       // job has expired, so remove it
       else {
+         pthread_mutex_lock(&timerMutex);
          free(job);
          workQueue = g_list_delete_link(workQueue, curJob);
+         pthread_mutex_unlock(&timerMutex);
       }
 
       curJob = curJob->next;
