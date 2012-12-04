@@ -13,6 +13,12 @@
 #include "include/console.h"
 
 
+void *jobtest(void *data) {
+   static int w = 1;
+   printf("WTF! %d\n", w);
+   w++;
+}
+
 int main(int argc, char *argv[]) {
 
    Player *player;

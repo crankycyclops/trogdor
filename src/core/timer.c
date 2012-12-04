@@ -55,7 +55,7 @@ void initTimer() {
 
    pthread_t timerThread;
 
-   if (pthread_create(&timerThread, NULL, timer, TIMER_THREAD_ID)) {
+   if (pthread_create(&timerThread, NULL, timer, NULL)) {
       g_outputError("Failed to start timer!\n");
       exit(EXIT_FAILURE);
    }
@@ -126,10 +126,36 @@ static void *timer(void *threadId) {
 
 static void tick() {
 
-   // NOTE: only do locking if payload actually does anything...
-   pthread_mutex_lock(&resourceMutex);
-   // TODO: execute work queue jobs
-   pthread_mutex_unlock(&resourceMutex);
+   GList *curJob = workQueue;
+
+   while (curJob != NULL) {
+
+      TimedJob *job = (TimedJob *)curJob->data;
+
+      if (job->executions != 0) {
+
+         if (gameTime - job->initTime > 0 &&
+         (gameTime - job->initTime) % job->interval == 0) {
+
+            pthread_mutex_lock(&resourceMutex);
+            job->job(job->argument);
+            pthread_mutex_unlock(&resourceMutex);
+
+            /* -1 is possible and refers to a job that doesn't expire */
+            if (job->executions > 0) {
+               job->executions--;
+            }
+         }
+      }
+
+      // job has expired, so remove it
+      else {
+         free(job);
+         workQueue = g_list_delete_link(workQueue, curJob);
+      }
+
+      curJob = curJob->next;
+   }
 
    return;
 }
