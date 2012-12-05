@@ -79,7 +79,13 @@ void takeObject(Player *player, Object *object) {
       return;
    }
 
-   if (0 == player->inventory.maxWeight ||
+   if (!object->takeable) {
+      event(player, "takeObjectUntakeable", object);
+      g_outputString("You can't take the %s.\n", dstrview(object->name));
+      return;
+   }
+
+   else if (0 == player->inventory.maxWeight ||
    player->inventory.weight + object->weight <= player->inventory.maxWeight) {
 
       transferObject(player, object, TAKE_OBJECT);
@@ -106,6 +112,12 @@ void takeObject(Player *player, Object *object) {
 void dropObject(Player *player, Object *object) {
 
    if (ALLOW_ACTION != event(player, "beforeDropObject", object)) {
+      return;
+   }
+
+   if (!object->droppable) {
+      event(player, "dropObjectUndroppable", object);
+      g_outputString("You can't drop the %s.\n", dstrview(object->name));
       return;
    }
 

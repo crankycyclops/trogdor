@@ -25,6 +25,8 @@ typedef struct object {
    dstring_t name;         /* name of the object */
    dstring_t description;  /* the user reads this when seen the first time */
    int weight;             /* object's weight */
+   int takeable;           /* whether or not object can be taken */
+   int droppable;          /* whether or not object can be dropped */
 
    ObjectState state;
 

@@ -234,13 +234,18 @@ static void parseObject(xmlTextReaderPtr reader) {
 
    object->name = createDstring();
    object->description = NULL;
-   object->weight = NULL;
+   object->weight = createDstring();
+   object->takeable = createDstring();
+   object->droppable = createDstring();
 
-   if (DSTR_SUCCESS != dstralloc(&object->weight)) {
-      PRINT_OUT_OF_MEMORY_ERROR;
-   }
-
+   /* by default, an object has no weight */
    cstrtodstr(object->weight, "0");
+
+   /* by default, an object is takeable */
+   cstrtodstr(object->takeable, "1");
+
+   /* by default, an object is droppable */
+   cstrtodstr(object->droppable, "1");
 
    object->synonyms = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 5);
    object->scripts  = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
@@ -287,9 +292,32 @@ static void parseObject(xmlTextReaderPtr reader) {
       /* we're parsing the object's weight (optional) */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("weight", tagname)) {
          GET_XML_TAG(weight, object)
+         dstrtrim(object->weight);
          if (!isInt((char *)dstrview(object->weight))) {
             g_outputError("error: %s is not a valid weight\n",
                dstrview(object->weight));
+            exit(EXIT_FAILURE);
+         }
+      }
+
+      /* we're parsing the object's "takeability" (optional) */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("takeable", tagname)) {
+         GET_XML_TAG(takeable, object)
+         dstrtrim(object->takeable);
+         if (strcmp(dstrview(object->takeable), "0") &&
+         strcmp(dstrview(object->takeable), "1")) {
+            g_outputError("error: takeable should be set to 1 (true) or 0 (false)\n");
+            exit(EXIT_FAILURE);
+         }
+      }
+
+      /* we're parsing the object's "droppability" (optional) */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("droppable", tagname)) {
+         GET_XML_TAG(droppable, object)
+         dstrtrim(object->droppable);
+         if (0 != strcmp(dstrview(object->droppable), "0") &&
+         0 != strcmp(dstrview(object->droppable), "1")) {
+            g_outputError("error: droppable should be set to 1 (true) or 0 (false)\n");
             exit(EXIT_FAILURE);
          }
       }

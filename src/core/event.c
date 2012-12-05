@@ -57,6 +57,14 @@ static int afterDisplayObject(Player *player, void *data);
    (type Object *) */
 static int takeObjectTooHeavy(Player *player, void *data);
 
+/* triggered when the user tries to take an untakeable object
+   - data = object we're trying to pick up (type Object *) */
+static int takeObjectUntakeable(Player *player, void *data);
+
+/* triggered when the user tries to drop an undroppable object
+   - data = object we're trying to pick up (type Object *) */
+static int dropObjectUndroppable(Player *player, void *data);
+
 /* called before setting a new location - data = room we're setting (type Room *) */
 static int beforeSetLocation(Player *player, void *data);
 
@@ -80,17 +88,19 @@ void initEvent() {
 
    events = g_hash_table_new(g_str_hash, g_str_equal);
 
-   registerEvent("beforeRoomDisplay",   &beforeRoomDisplay);
-   registerEvent("afterRoomDisplay",    &afterRoomDisplay);
-   registerEvent("beforeSetLocation",   &beforeSetLocation);
-   registerEvent("afterSetLocation",    &afterSetLocation);
-   registerEvent("beforeTakeObject",    &beforeTakeObject);
-   registerEvent("afterTakeObject",     &afterTakeObject);
-   registerEvent("beforeDropObject",    &beforeDropObject);
-   registerEvent("afterDropObject",     &afterDropObject);
-   registerEvent("beforeDisplayObject", &beforeDisplayObject);
-   registerEvent("afterDisplayObject",  &afterDisplayObject);
-   registerEvent("takeObjectTooHeavy",  &takeObjectTooHeavy);
+   registerEvent("beforeRoomDisplay",     &beforeRoomDisplay);
+   registerEvent("afterRoomDisplay",      &afterRoomDisplay);
+   registerEvent("beforeSetLocation",     &beforeSetLocation);
+   registerEvent("afterSetLocation",      &afterSetLocation);
+   registerEvent("beforeTakeObject",      &beforeTakeObject);
+   registerEvent("afterTakeObject",       &afterTakeObject);
+   registerEvent("beforeDropObject",      &beforeDropObject);
+   registerEvent("afterDropObject",       &afterDropObject);
+   registerEvent("beforeDisplayObject",   &beforeDisplayObject);
+   registerEvent("afterDisplayObject",    &afterDisplayObject);
+   registerEvent("takeObjectTooHeavy",    &takeObjectTooHeavy);
+   registerEvent("takeObjectUntakeable",  &takeObjectUntakeable);
+   registerEvent("dropObjectUndroppable", &dropObjectUndroppable);
 }
 
 /******************************************************************************/
@@ -238,6 +248,38 @@ static int takeObjectTooHeavy(Player *player, void *data) {
    lua_State *L = object->lua;
 
    callLuaEventHandler(L, "afterDropObject", dstrview(player->name),
+      dstrview(object->name), 0);
+   return ALLOW_ACTION;
+}
+
+/******************************************************************************/
+
+static int takeObjectUntakeable(Player *player, void *data) {
+
+   // TODO
+   // TODO: should this call a global script function or a script function
+   // unique to the object?  Hmm...  I'm leaning toward global.
+
+   Object *object = data;
+   lua_State *L = object->lua;
+
+   callLuaEventHandler(L, "takeObjectUntakeable", dstrview(player->name),
+      dstrview(object->name), 0);
+   return ALLOW_ACTION;
+}
+
+/******************************************************************************/
+
+static int dropObjectUndroppable(Player *player, void *data) {
+
+   // TODO
+   // TODO: should this call a global script function or a script function
+   // unique to the object?  Hmm...  I'm leaning toward global.
+
+   Object *object = data;
+   lua_State *L = object->lua;
+
+   callLuaEventHandler(L, "dropObjectUndroppable", dstrview(player->name),
       dstrview(object->name), 0);
    return ALLOW_ACTION;
 }
