@@ -68,6 +68,7 @@ void destroyGame() {
 
    inGame = 0;
 
+   pthread_mutex_destroy(&resourceMutex);
    return;
 }
 

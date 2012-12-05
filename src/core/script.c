@@ -8,6 +8,7 @@
 #include "include/trogdor.h"
 #include "include/event.h"
 #include "include/data.h"
+#include "include/luaapi.h"
 
 
 /* initializes a Lua state with our C-to-Lua API */
@@ -31,11 +32,8 @@ void initLua(lua_State *L) {
    /* load standard library */
    luaL_openlibs(L);
 
-   /* possible return values (see event.h and event.c for more details) */
-   lua_pushboolean(L, SUPPRESS_ACTION);
-   lua_setglobal(L, "SUPPRESS_ACTION");
-   lua_pushboolean(L, ALLOW_ACTION);
-   lua_setglobal(L, "ALLOW_ACTION");
+   /* initialize Lua API */
+   initLuaApi(L);
 
    return;
 }
