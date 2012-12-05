@@ -3,7 +3,8 @@
 function beforeTakeObject(player, object)
 
    -- this is just a placeholder for now
-   io.write("The candle jumps up in the air, does a backflip and transforms into a spoon. ");
+   outputString("The candle jumps up in the air, does a backflip and transforms into a spoon. ");
    return ALLOW_ACTION
 
 end
+
