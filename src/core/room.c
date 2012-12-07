@@ -16,7 +16,7 @@
 
 
 /* sets a player's current location in the game */
-void setLocation(Player *player, Room *room);
+void setLocation(Player *player, Room *room, int triggerEvents);
 
 /* prints description of a room (only the title once already visited) */
 void displayRoom(Player *player, Room *room, int showLongDescription);
@@ -26,7 +26,7 @@ static void describeRoom(Room *room);
 
 /******************************************************************************/
 
-void setLocation(Player *player, Room *room) {
+void setLocation(Player *player, Room *room, int triggerEvents) {
 
    if (ALLOW_ACTION != event(player, "beforeSetLocation", room)) {
       return;

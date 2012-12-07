@@ -53,7 +53,7 @@ typedef struct room {
 #include "player.h"
 
 /* sets a player's current location in the game */
-extern void setLocation(Player *player, Room *room);
+extern void setLocation(Player *player, Room *room, int triggerEvents);
 
 /* prints out the description of a room */
 extern void displayRoom(Player *player, Room *room, int showLongDescription);

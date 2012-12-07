@@ -193,7 +193,7 @@ int actionMove(Player *player, Command command) {
    if (0 == strcmp("north", dstrview(direction))) {
 
          if (NULL != player->location->north) {
-            setLocation(player, player->location->north);
+            setLocation(player, player->location->north, 1);
          }
 
          else {
@@ -206,7 +206,7 @@ int actionMove(Player *player, Command command) {
    else if (0 == strcmp("south", dstrview(direction))) {
 
          if (NULL != player->location->south) {
-            setLocation(player, player->location->south);
+            setLocation(player, player->location->south, 1);
          }
 
          else {
@@ -219,7 +219,7 @@ int actionMove(Player *player, Command command) {
    else if (0 == strcmp("east", dstrview(direction))) {
 
          if (NULL != player->location->east) {
-            setLocation(player, player->location->east);
+            setLocation(player, player->location->east, 1);
          }
 
          else {
@@ -232,7 +232,7 @@ int actionMove(Player *player, Command command) {
    else if (0 == strcmp("west", dstrview(direction))) {
 
          if (NULL != player->location->west) {
-            setLocation(player, player->location->west);
+            setLocation(player, player->location->west, 1);
          }
 
          else {

@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
    player = createPlayer("player");
 
    /* output description of the first room before starting */
-   setLocation(player, player->location);
+   setLocation(player, player->location, 0);
 
    /* start the timer */
    initTimer();
