@@ -22,6 +22,9 @@ static int l_outputError(lua_State *L);
 /* change the player's location */
 static int l_setLocation(lua_State *L);
 
+/* retrieves a room struct in the form of a Lua table */
+static int l_getRoom(lua_State *L);
+
 /******************************************************************************/
 
 void initLuaApi(lua_State *L) {
@@ -34,8 +37,9 @@ void initLuaApi(lua_State *L) {
 
    /* register C-Lua API functions */
    lua_register(L, "outputString", &l_outputString);
-   lua_register(L, "outputError", &l_outputError);
-   lua_register(L, "setLocation", &l_setLocation);
+   lua_register(L, "outputError",  &l_outputError);
+   lua_register(L, "setLocation",  &l_setLocation);
+   lua_register(L, "getRoom",      &l_getRoom);
 
    return;
 }
@@ -113,6 +117,77 @@ static int l_setLocation(lua_State *L) {
 
    setLocation(player, newLocation, 0);
    lua_pushboolean(L, 1);
+   return 1;
+}
+
+/******************************************************************************/
+
+static int l_getRoom(lua_State *L) {
+
+   Room *room;
+   const char *roomName;
+   int n = lua_gettop(L);
+
+   /* script must provide room name */
+   if (n < 1) {
+      lua_pushboolean(L, 0);
+      return 1;
+   }
+
+   roomName = lua_tostring(L, 1);
+   room = g_hash_table_lookup(rooms, roomName);
+
+   /* specified room doesn't exist */
+   if (NULL == room) {
+      lua_pushboolean(L, 0);
+      return 1;
+   }
+
+   lua_newtable(L);
+
+   lua_pushstring(L, "title");
+   lua_pushstring(L, dstrview(room->title));
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "description");
+   lua_pushstring(L, dstrview(room->description));
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "north");
+   if (NULL == room->north) {
+      lua_pushboolean(L, 0);
+   } else {
+      lua_pushstring(L, dstrview(room->north->name));
+   }
+
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "south");
+   if (NULL == room->south) {
+      lua_pushboolean(L, 0);
+   } else {
+      lua_pushstring(L, dstrview(room->south->name));
+   }
+
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "east");
+   if (NULL == room->east) {
+      lua_pushboolean(L, 0);
+   } else {
+      lua_pushstring(L, dstrview(room->east->name));
+   }
+
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "west");
+   if (NULL == room->west) {
+      lua_pushboolean(L, 0);
+   } else {
+      lua_pushstring(L, dstrview(room->west->name));
+   }
+
+   lua_settable(L, -3);
    return 1;
 }
 
