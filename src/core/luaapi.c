@@ -13,10 +13,10 @@
 #include "include/data.h"
 
 
-/* allows scripting engine to output strings */
+/* outputs a string */
 static int l_outputString(lua_State *L);
 
-/* allows scrcipting engine to output error messages */
+/* outputs an error message */
 static int l_outputError(lua_State *L);
 
 /* change the player's location */
@@ -24,6 +24,9 @@ static int l_setLocation(lua_State *L);
 
 /* retrieves a room struct in the form of a Lua table */
 static int l_getRoom(lua_State *L);
+
+/* creates a room */
+static int l_createRoom(lua_State *L);
 
 /******************************************************************************/
 
@@ -40,6 +43,7 @@ void initLuaApi(lua_State *L) {
    lua_register(L, "outputError",  &l_outputError);
    lua_register(L, "setLocation",  &l_setLocation);
    lua_register(L, "getRoom",      &l_getRoom);
+   lua_register(L, "createRoom",   &l_createRoom);
 
    return;
 }
@@ -188,6 +192,129 @@ static int l_getRoom(lua_State *L) {
    }
 
    lua_settable(L, -3);
+   return 1;
+}
+
+/******************************************************************************/
+
+static int l_createRoom(lua_State *L) {
+
+   Room *newroom;
+
+   char *name        = NULL;
+   char *title       = NULL;
+   char *description = NULL;
+
+   Room *north = NULL;
+   Room *south = NULL;
+   Room *east  = NULL;
+   Room *west  = NULL;
+
+   int n = lua_gettop(L);
+
+   /* script must provide a name and a table of room properties */
+   if (n < 2) {
+      lua_pushboolean(L, 0);
+      lua_pushstring(L, "Must provide room name and table of its properties");
+      return 2;
+   }
+
+   name = (char *)lua_tostring(L, 1);
+
+   /* make sure room doesn't already exist */
+   if (g_hash_table_lookup(rooms, name)) {
+      lua_pushboolean(L, 0);
+      lua_pushstring(L, "Room already exists!");
+      return 2;
+   }
+
+   lua_pushnil(L);  /* first key (popped by lua_next) */
+
+   while (lua_next(L, 2) != 0) {
+
+      const char *key = lua_tostring(L, -2);
+      const char *value = lua_tostring(L, -1);
+
+      if (0 == strcmp("title", key)) {
+         title = (char *)value;
+      }
+
+      else if (0 == strcmp("description", key)) {
+         description = (char *)value;
+      }
+
+      else if (0 == strcmp("north", key)) {
+         north = g_hash_table_lookup(rooms, value);
+         if (NULL == north) {
+            lua_pushboolean(L, 0);
+            lua_pushstring(L, "Room to the north doesn't exist!");
+            return 2;
+         }
+      }
+
+      else if (0 == strcmp("south", key)) {
+         south = g_hash_table_lookup(rooms, value);
+         if (NULL == south) {
+            lua_pushboolean(L, 0);
+            lua_pushstring(L, "Room to the south doesn't exist!");
+            return 2;
+         }
+      }
+
+      else if (0 == strcmp("east", key)) {
+         east = g_hash_table_lookup(rooms, value);
+         if (NULL == east) {
+            lua_pushboolean(L, 0);
+            lua_pushstring(L, "Room to the east doesn't exist!");
+            return 2;
+         }
+      }
+
+      else if (0 == strcmp("west", key)) {
+         west = g_hash_table_lookup(rooms, value);
+         if (NULL == west) {
+            lua_pushboolean(L, 0);
+            lua_pushstring(L, "Room to the west doesn't exist!");
+            return 2;
+         }
+      }
+
+      else {
+         lua_pop(L, 1);
+         lua_pushboolean(L, 0);
+         lua_pushstring(L, "Invalid property!");
+         return 2;
+      }
+
+      /* removes 'value'; keeps 'key' for next iteration */
+      lua_pop(L, 1);
+   }
+
+   if (NULL == title) {
+         lua_pushboolean(L, 0);
+         lua_pushstring(L, "title property is required");
+         return 2;
+   }
+
+   else if (NULL == description) {
+         lua_pushboolean(L, 0);
+         lua_pushstring(L, "description property is required");
+         return 2;
+   }
+
+   newroom = roomAlloc();
+
+   cstrtodstr(newroom->name, name);
+   cstrtodstr(newroom->title, title);
+   cstrtodstr(newroom->description, description);   
+
+   newroom->north = north;
+   newroom->south = south;
+   newroom->east = east;
+   newroom->west = west;   
+
+   g_hash_table_insert(rooms, name, newroom);
+   lua_pushboolean(L, 1);
    return 1;
 }
 
