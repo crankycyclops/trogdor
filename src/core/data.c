@@ -7,6 +7,7 @@
 #include "include/trogdor.h"
 #include "include/object.h"
 #include "include/room.h"
+#include "include/creature.h"
 #include "include/parse.h"
 #include "include/parsexml.h"
 #include "include/state.h"
@@ -51,12 +52,16 @@ GHashTable *rooms = NULL;
 /* all objects in the game, indexed by name ONLY (no synonyms) */
 GHashTable *objects = NULL;
 
+/* all creatures in the game */
+GHashTable *g_creatures = NULL;
+
 /******************************************************************************/
 
 void initData() {
 
    rooms = g_hash_table_new(g_str_hash, g_str_equal);
    objects = g_hash_table_new(g_str_hash, g_str_equal);
+   g_creatures = g_hash_table_new(g_str_hash, g_str_equal);
 
    if (!parseGame(GAME_FILE)) {
       exit(EXIT_FAILURE);
