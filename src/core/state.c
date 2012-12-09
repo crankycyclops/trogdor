@@ -98,7 +98,7 @@ Player *createPlayer(char *name) {
 
 static void initPlayer(Player *newplayer) {
 
-   newplayer->location = g_hash_table_lookup(rooms, "start");
+   newplayer->location = g_hash_table_lookup(g_rooms, "start");
 
    newplayer->inventory.maxWeight = g_playerConfig.inventory.maxWeight;
    newplayer->inventory.weight = g_playerConfig.inventory.weight;

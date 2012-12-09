@@ -47,10 +47,10 @@ int (*g_outputError)(const char *format, ...);
 
 
 /* all rooms in the game, indexed by name */
-GHashTable *rooms = NULL;
+GHashTable *g_rooms = NULL;
 
 /* all objects in the game, indexed by name ONLY (no synonyms) */
-GHashTable *objects = NULL;
+GHashTable *g_objects = NULL;
 
 /* all creatures in the game */
 GHashTable *g_creatures = NULL;
@@ -59,8 +59,8 @@ GHashTable *g_creatures = NULL;
 
 void initData() {
 
-   rooms = g_hash_table_new(g_str_hash, g_str_equal);
-   objects = g_hash_table_new(g_str_hash, g_str_equal);
+   g_rooms = g_hash_table_new(g_str_hash, g_str_equal);
+   g_objects = g_hash_table_new(g_str_hash, g_str_equal);
    g_creatures = g_hash_table_new(g_str_hash, g_str_equal);
 
    if (!parseGame(GAME_FILE)) {
@@ -83,7 +83,7 @@ void destroyData() {
 
 static void destroyRooms() {
 
-   GList *gRoomList = g_hash_table_get_values(rooms);
+   GList *gRoomList = g_hash_table_get_values(g_rooms);
    GList *curRoom = gRoomList;
 
    /* free all rooms */
@@ -99,7 +99,7 @@ static void destroyRooms() {
 
 static void destroyObjects() {
 
-   GList *gObjectList = g_hash_table_get_values(objects);
+   GList *gObjectList = g_hash_table_get_values(g_objects);
    GList *curObject = gObjectList;
 
    /* free all game objects */

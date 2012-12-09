@@ -112,7 +112,7 @@ static int l_setLocation(lua_State *L) {
       return 2;
    }
 
-   newLocation = g_hash_table_lookup(rooms, roomName);
+   newLocation = g_hash_table_lookup(g_rooms, roomName);
    if (NULL == newLocation) {
       lua_pushboolean(L, 0);
       lua_pushstring(L, "room doesn't exist");
@@ -139,7 +139,7 @@ static int l_getRoom(lua_State *L) {
    }
 
    roomName = lua_tostring(L, 1);
-   room = g_hash_table_lookup(rooms, roomName);
+   room = g_hash_table_lookup(g_rooms, roomName);
 
    /* specified room doesn't exist */
    if (NULL == room) {
@@ -222,7 +222,7 @@ static int l_createRoom(lua_State *L) {
    name = (char *)lua_tostring(L, 1);
 
    /* make sure room doesn't already exist */
-   if (g_hash_table_lookup(rooms, name)) {
+   if (g_hash_table_lookup(g_rooms, name)) {
       lua_pushboolean(L, 0);
       lua_pushstring(L, "Room already exists!");
       return 2;
@@ -244,7 +244,7 @@ static int l_createRoom(lua_State *L) {
       }
 
       else if (0 == strcmp("north", key)) {
-         north = g_hash_table_lookup(rooms, value);
+         north = g_hash_table_lookup(g_rooms, value);
          if (NULL == north) {
             lua_pushboolean(L, 0);
             lua_pushstring(L, "Room to the north doesn't exist!");
@@ -253,7 +253,7 @@ static int l_createRoom(lua_State *L) {
       }
 
       else if (0 == strcmp("south", key)) {
-         south = g_hash_table_lookup(rooms, value);
+         south = g_hash_table_lookup(g_rooms, value);
          if (NULL == south) {
             lua_pushboolean(L, 0);
             lua_pushstring(L, "Room to the south doesn't exist!");
@@ -262,7 +262,7 @@ static int l_createRoom(lua_State *L) {
       }
 
       else if (0 == strcmp("east", key)) {
-         east = g_hash_table_lookup(rooms, value);
+         east = g_hash_table_lookup(g_rooms, value);
          if (NULL == east) {
             lua_pushboolean(L, 0);
             lua_pushstring(L, "Room to the east doesn't exist!");
@@ -271,7 +271,7 @@ static int l_createRoom(lua_State *L) {
       }
 
       else if (0 == strcmp("west", key)) {
-         west = g_hash_table_lookup(rooms, value);
+         west = g_hash_table_lookup(g_rooms, value);
          if (NULL == west) {
             lua_pushboolean(L, 0);
             lua_pushstring(L, "Room to the west doesn't exist!");
@@ -313,7 +313,7 @@ static int l_createRoom(lua_State *L) {
    newroom->east = east;
    newroom->west = west;   
 
-   g_hash_table_insert(rooms, name, newroom);
+   g_hash_table_insert(g_rooms, name, newroom);
    lua_pushboolean(L, 1);
    return 1;
 }

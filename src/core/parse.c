@@ -104,7 +104,7 @@ static void initRooms() {
 
       /* build the room structure and index it by name */
       room = initRoom((RoomParsed *)curParsedRoom->data);
-      g_hash_table_insert(rooms, (char *)dstrview(room->name), room);
+      g_hash_table_insert(g_rooms, (char *)dstrview(room->name), room);
 
       curParsedRoom = curParsedRoom->next;
    }
@@ -164,7 +164,7 @@ static void initObjects(Room *room, GArray *objectNames) {
       object = initObject(curParsedObject);
 
       /* add object to our global list */
-      g_hash_table_insert(objects, (char *)dstrview(object->name), object);
+      g_hash_table_insert(g_objects, (char *)dstrview(object->name), object);
 
       /* add object to whatever room it belongs in */
       room->objectList = g_list_append(room->objectList, object);
@@ -245,19 +245,19 @@ static Object *initObject(ObjectParsed *objectParsed) {
 
 static void connectRooms() {
 
-   GList *roomNames = g_hash_table_get_keys(rooms);
+   GList *roomNames = g_hash_table_get_keys(g_rooms);
    GList *currentRoomName = roomNames;
 
    while (currentRoomName != NULL) {
 
-      Room *room = g_hash_table_lookup(rooms, currentRoomName->data);
+      Room *room = g_hash_table_lookup(g_rooms, currentRoomName->data);
       Room *connected = NULL;
       RoomParsed *roomDefinition = g_hash_table_lookup(roomParsedTable,
          currentRoomName->data);
 
       if (NULL != roomDefinition->north) {
 
-         connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->north));
+         connected = g_hash_table_lookup(g_rooms, dstrview(roomDefinition->north));
 
          /* game file specified a room that wasn't defined! */ 
          if (NULL == connected) {
@@ -272,7 +272,7 @@ static void connectRooms() {
 
       if (NULL != roomDefinition->south) {
 
-         connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->south));
+         connected = g_hash_table_lookup(g_rooms, dstrview(roomDefinition->south));
 
          if (NULL == connected) {
             g_outputError("error: room '%s' connects to room '%s', but "
@@ -286,7 +286,7 @@ static void connectRooms() {
 
       if (NULL != roomDefinition->east) {
 
-         connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->east));
+         connected = g_hash_table_lookup(g_rooms, dstrview(roomDefinition->east));
 
          if (NULL == connected) {
             g_outputError("error: room '%s' connects to room '%s', but "
@@ -300,7 +300,7 @@ static void connectRooms() {
 
       if (NULL != roomDefinition->west) {
 
-         connected = g_hash_table_lookup(rooms, dstrview(roomDefinition->west));
+         connected = g_hash_table_lookup(g_rooms, dstrview(roomDefinition->west));
 
          if (NULL == connected) {
             g_outputError("error: room '%s' connects to room '%s', but "
