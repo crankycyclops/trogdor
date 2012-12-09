@@ -1,4 +1,5 @@
 
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -38,6 +39,9 @@ int actionDropObject(Player *player, Command command);
 /* allows the user to jump */
 // TODO: support jumping to places, triggering jump events, etc?
 int actionJump(Player *player, Command command);
+
+/* responds to profanity */
+int actionProfanity(Player *player, Command command);
 
 /* returns object referenced by name, and disambiguates between synonyms if 
    necessary */
@@ -360,6 +364,37 @@ int actionJump(Player *player, Command command) {
    }
 
    g_outputString("Weeee!\n");
+   return 1;
+}
+
+int test(Player *player, Command *command) {
+
+   return 1;
+}
+
+/******************************************************************************/
+
+int actionProfanity(Player *player, Command command) {
+
+   static char *responses[] = {
+      "Such language!\n",
+      "You, sir, have a foul mouth!\n",
+      "Well, ?&*@! to you too!\n",
+      "Do you miss your mother with that mouth?\n",
+      "Classy.\n"
+   };
+
+   static int arrSize = sizeof(responses) / sizeof (char *);
+
+   int i = (rand() % arrSize) - 1;
+
+   if (i < 0) {
+      i = 0;
+   }
+
+   srand(time(NULL));
+   g_outputString("%s", responses[i]);
+
    return 1;
 }
 

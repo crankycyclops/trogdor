@@ -52,6 +52,9 @@ typedef struct room {
 
 #include "player.h"
 
+/* allocates memory for a new room */
+extern Room *roomAlloc();
+
 /* sets a player's current location in the game */
 extern void setLocation(Player *player, Room *room, int triggerEvents);
 

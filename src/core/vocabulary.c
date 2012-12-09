@@ -106,6 +106,11 @@ Verb *getVerbs() {
       {"jump", &actionJump},
       {"leap", &actionJump},
 
+      /* fun: profanity recognition :) */
+      {"fuck", &actionProfanity},
+      {"shit", &actionProfanity},
+      {"damn", &actionProfanity},
+
       /* TODO: lose command = lose game (haha) */
       {"quit",  &actionQuit},
 

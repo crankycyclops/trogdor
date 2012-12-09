@@ -14,6 +14,8 @@
 
 #define ROOM_C
 
+/* allocates memory for a room */
+Room *roomAlloc();
 
 /* sets a player's current location in the game */
 void setLocation(Player *player, Room *room, int triggerEvents);
@@ -23,6 +25,24 @@ void displayRoom(Player *player, Room *room, int showLongDescription);
 
 /* prints the long description of a room */
 static void describeRoom(Room *room);
+
+/******************************************************************************/
+
+Room *roomAlloc() {
+
+   Room *newroom;
+
+   newroom = malloc(sizeof(Room));
+   if (NULL == newroom) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   /* initialize the room's state */
+   newroom->state.players = g_hash_table_new(g_str_hash, g_str_equal);
+   newroom->state.visitedByAPlayer = 0;
+
+   return newroom;
+}
 
 /******************************************************************************/
 

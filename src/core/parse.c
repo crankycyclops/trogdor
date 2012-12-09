@@ -119,13 +119,7 @@ static void initRooms() {
 
 static Room *initRoom(RoomParsed *roomParsed) {
 
-   Room *room;  /* actual room object */
-
-   /* initialize new room structure */
-   room = malloc(sizeof(Room));
-   if (NULL == room) {
-      PRINT_OUT_OF_MEMORY_ERROR;
-   }
+   Room *room = roomAlloc();  /* actual room object */
 
    /* don't free these dstring_t objects when we free the parsed rooms table! */
    room->name = roomParsed->name;
@@ -137,9 +131,6 @@ static Room *initRoom(RoomParsed *roomParsed) {
    room->south = NULL;
    room->east  = NULL;
    room->west  = NULL;
-
-   room->state.visitedByAPlayer = 0;
-   room->state.players = g_hash_table_new(g_str_hash, g_str_equal);
 
    room->objectList = NULL;
    room->objectByName = NULL;

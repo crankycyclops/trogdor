@@ -26,6 +26,9 @@ extern int actionDropObject(Player *player, Command command);
 /* allows the user to jump */
 extern int actionJump(Player *player, Command command);
 
+/* responds to profanity */
+extern int actionProfanity(Player *player, Command command);
+
 
 #endif
 
