@@ -9,7 +9,6 @@
 #include "include/state.h"
 #include "include/player.h"
 #include "include/command.h"
-#include "include/object.h"
 #include "include/event.h"
 
 #define ROOM_C

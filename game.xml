@@ -80,7 +80,20 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
    </objects>
 
    <!-- Section III. Creatures -->
-   <!-- TODO -->
+
+   <creatures>
+
+      <creature name="trogdor">
+         <title>Trogdor the Burninator</title>
+         <description>
+            He stands 8 feet tall and breathes fire from his nostrils.
+         </description>
+         <deaddesc>
+            He lies down on the ground, slain and very much dead.
+         </deaddesc>
+      </creature>
+
+   </creatures>
 
    <!-- Section IV. Rooms -->
 

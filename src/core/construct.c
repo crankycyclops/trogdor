@@ -4,6 +4,7 @@
 #include "include/trogdor.h"
 #include "include/object.h"
 #include "include/room.h"
+#include "include/creature.h"
 #include "include/data.h"
 #include "include/state.h"
 #include "include/construct.h"
@@ -19,6 +20,12 @@ static void initRooms();
 
 /* called by initRooms(); builds the structure for a room */
 static Room *initRoom(RoomParsed *roomParsed);
+
+/* builds creature structures */
+static void initCreatures();
+
+/* creates individual creature structures; called by initCreatures() */
+static Creature *initCreature(CreatureParsed *creatureParsed);
 
 /* initialize game objects in a room from parsed data */
 static void initObjects(Room *room, GArray *objectNames);
@@ -47,6 +54,9 @@ GHashTable *objectParsedTable = NULL;
 /* a lookup table for rooms being parsed */
 GHashTable *roomParsedTable = NULL;
 
+/* a lookup table for creatures being parsed */
+GHashTable *creatureParsedTable = NULL;
+
 /******************************************************************************/
 
 int parseGame(const char *filename) {
@@ -64,6 +74,10 @@ int parseGame(const char *filename) {
       return 0;
    }
 
+   // TODO: refactor initObjects() to do all objects and call it here
+   initCreatures();
+   // TODO: should insert objects already existing in global once we refactor
+   // TODO: add code to add creatures to room
    initRooms();
 
    /* make sure we didn't have any issues parsing Lua scripts */
@@ -79,8 +93,9 @@ int parseGame(const char *filename) {
 
 static void initParser() {
 
-   objectParsedTable = g_hash_table_new(g_str_hash, g_str_equal);
-   roomParsedTable   = g_hash_table_new(g_str_hash, g_str_equal);
+   objectParsedTable   = g_hash_table_new(g_str_hash, g_str_equal);
+   roomParsedTable     = g_hash_table_new(g_str_hash, g_str_equal);
+   creatureParsedTable = g_hash_table_new(g_str_hash, g_str_equal);
 }
 
 /******************************************************************************/
@@ -89,6 +104,62 @@ static void destroyParser() {
 
    g_hash_table_destroy(objectParsedTable);
    g_hash_table_destroy(roomParsedTable);
+   g_hash_table_destroy(creatureParsedTable);
+}
+
+/******************************************************************************/
+
+static void initCreatures() {
+
+   GList *creatures = g_hash_table_get_values(creatureParsedTable);
+   GList *next = creatures;
+
+   while (NULL != next) {
+      Creature *creature = (Creature *)next->data;
+      g_hash_table_insert(g_creatures, (char *)dstrview(creature->name),
+         creature);
+      next = next->next;
+   }
+}
+
+/******************************************************************************/
+
+static Creature *initCreature(CreatureParsed *creatureParsed) {
+
+   Creature *creature = creatureAlloc();;
+
+   int i;
+   lua_State *L;
+
+   // TODO: set alive or dead here (default set in alloc() is alive)
+
+   creature->name = creatureParsed->name;
+   creature->title = creatureParsed->title;
+   creature->description = creatureParsed->description;
+   creature->deadDesc = creatureParsed->deadDesc;
+
+   creature->objects = NULL;
+
+   // TODO: make this common function and replace code in initObject() with it too
+   /* initialize any scripts attached to the creature */
+   for (i = 0; i < creatureParsed->scripts->len; i++) {
+
+      /* only initialize lua state if we have something to execute */
+      if (NULL == L) {
+         L = luaL_newstate();
+         initLua(L);
+      }
+
+      #define SCRIPT_FILE (char *)dstrview(g_array_index(creatureParsed->scripts, dstring_t, i))
+      if (loadScript(L, SCRIPT_FILE)) {
+         primeLua(L);
+      }
+      #undef SCRIPT_FILE
+   }
+
+   creature->lua = L;
+
+   return creature;
 }
 
 /******************************************************************************/

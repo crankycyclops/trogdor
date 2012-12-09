@@ -36,12 +36,27 @@ typedef struct objectParsed {
 
 } ObjectParsed;
 
+typedef struct creatureParsed {
+
+   dstring_t name;
+   dstring_t title;
+   dstring_t description;
+   dstring_t deadDesc;
+
+   /* array of filenames containing Lua scripts */
+   GArray *scripts;
+
+} CreatureParsed;
+
 
 /* a lookup table for game objects being parsed */
 extern GHashTable *objectParsedTable;
 
 /* a lookup table for rooms being parsed */
 extern GHashTable *roomParsedTable;
+
+/* a lookup table for creatures being parsed */
+extern GHashTable *creatureParsedTable;
 
 
 /* entry point for parsing the game file */

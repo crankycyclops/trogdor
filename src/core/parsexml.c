@@ -39,11 +39,17 @@ static void checkClosingTag(const char *tag, xmlTextReaderPtr reader);
 /* parse the objects section */
 static void parseObjectSection(xmlTextReaderPtr reader);
 
+/* parse the creatures section */
+static void parseCreatureSection(xmlTextReaderPtr reader);
+
 /* parse the rooms section */
 static void parseRoomSection(xmlTextReaderPtr reader);
 
 /* parses an object */
 static void parseObject(xmlTextReaderPtr reader);
+
+/* parses a creature */
+static void parseCreature(xmlTextReaderPtr reader);
 
 /* parses a room */
 static void parseRoom(xmlTextReaderPtr reader);
@@ -84,7 +90,9 @@ int parseGameFile(const char *filename) {
                parseObjectSection(reader);
             }
 
-            // TODO: parse creatures
+            else if (0 == strcmp("creatures", name)) {
+               parseCreatureSection(reader);
+            }
 
             else if (0 == strcmp("rooms", name)) {
                parseRoomSection(reader);
@@ -254,7 +262,7 @@ static void parseObject(xmlTextReaderPtr reader) {
    objectName = xmlTextReaderGetAttribute(reader, "name");
 
    if (NULL == objectName || 0 == strlen(objectName)) {
-      g_outputError("Error: objects must be assigned a name\n");
+      g_outputError("Error: objects must be assigned a unique name\n");
       exit(EXIT_FAILURE);
    }
 
@@ -266,6 +274,11 @@ static void parseObject(xmlTextReaderPtr reader) {
 
    if (0 == strcmp("room", objectName)) {
       g_outputError("error: 'room' is an invalid object name\n");
+      exit(EXIT_FAILURE);
+   }
+
+   if (0 == strcmp("creature", objectName)) {
+      g_outputError("error: 'creature' is an invalid object name\n");
       exit(EXIT_FAILURE);
    }
 
@@ -371,6 +384,156 @@ static void parseObject(xmlTextReaderPtr reader) {
 
    /* add the object to the objects parsed table for lookup later */
    g_hash_table_insert(objectParsedTable, (gpointer)objectName, object);
+
+   return;
+}
+
+/******************************************************************************/
+
+static void parseCreatureSection(xmlTextReaderPtr reader) {
+
+   int parseStatus;
+
+   while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
+   xmlTextReaderDepth(reader) > 1
+   ) {
+
+      IF_COMMENT_IGNORE
+
+      else if (0 == strcmp("creature", xmlTextReaderConstName(reader))) {
+         parseCreature(reader);
+      }
+
+      else {
+         g_outputError("error: only <creature> tags are allowed in <creatures>\n");
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   if (parseStatus < 0) {
+      g_outputError("There was an error parsing game XML file\n");
+      exit(EXIT_FAILURE);
+   }
+
+   return;
+}
+
+/******************************************************************************/
+
+static void parseCreature(xmlTextReaderPtr reader) {
+
+   int parseStatus;          /* whether the parser could extract another node */
+
+   const char *creatureName; /* name of the creature */
+   CreatureParsed *creature; /* struct to represent what we've parsed for the room */
+
+   creature = malloc(sizeof(CreatureParsed));
+   if (NULL == creature) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   creature->name = createDstring();
+   creature->title = NULL;
+   creature->description = NULL;
+   creature->deadDesc = NULL;
+
+   creature->scripts = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
+
+   /* record the creature's name */
+   creatureName = xmlTextReaderGetAttribute(reader, "name");
+
+   if (NULL == creatureName || 0 == strlen(creatureName)) {
+      g_outputError("Error: creatures must be assigned a unique name\n");
+      exit(EXIT_FAILURE);
+   }
+
+   /* make sure the creature doesn't already exist */
+   if (NULL != g_hash_table_lookup(creatureParsedTable, creatureName)) {
+      g_outputError("creature '%s' must be unique\n", creatureName);
+      exit(EXIT_FAILURE);
+   }
+
+   if (0 == strcmp("room", creatureName)) {
+      g_outputError("error: 'room' is an invalid creature name\n");
+      exit(EXIT_FAILURE);
+   }
+
+   else if (0 == strcmp("object", creatureName)) {
+      g_outputError("error: 'object' is an invalid creature name\n");
+      exit(EXIT_FAILURE);
+   }
+
+   cstrtodstr(creature->name, creatureName);
+   dstrtrim(creature->name);
+
+   /* parse all of the creature's elements */
+   while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
+   xmlTextReaderDepth(reader) > 2
+   ) {
+      int        tagtype  = xmlTextReaderNodeType(reader);
+      const char *tagname = xmlTextReaderConstName(reader);
+
+      /* ignore XML comment */
+      if (XML_COMMENT_NODE == tagtype) {
+         continue;
+      }
+
+      /* we're parsing the creature's title */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("title", tagname)) {
+         GET_XML_TAG(title, creature)
+      }
+
+      /* we're parsing the creature's description */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("description", tagname)) {
+         GET_XML_TAG(description, creature)
+      }
+
+      /* we're parsing the creature's description when dead */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("deaddesc", tagname)) {
+
+         if (NULL != creature->deadDesc) {
+            fprintf(stderr, "Warning: \"deadDesc\" declared twice. \n"
+               "Overwriting the first.\n");
+         }
+
+         else {
+            creature->deadDesc = createDstring();
+         }
+
+         cstrtodstr(creature->deadDesc, getNodeValue(reader));
+         dstrtrim(creature->deadDesc);
+         checkClosingTag("deaddesc", reader);
+      }
+
+      /* we're parsing a script tag */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("script", tagname)) {
+
+         dstring_t file = createDstring();
+
+         cstrtodstr(file, getNodeValue(reader));
+         if (0 == dstrlen(file)) {
+            g_outputError("error: <script> has blank value!\n");
+         }
+
+         g_array_append_val(creature->scripts, file);
+         checkClosingTag("script", reader);
+      }
+
+      /* an unknown tag was found */
+      else {
+         g_outputError("Illegal tag <%s> found in creature definition",
+            xmlTextReaderConstName(reader));
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   if (parseStatus < 0) {
+      g_outputError("There was an error parsing game XML file\n");
+      exit(EXIT_FAILURE);
+   }
+
+   /* add the creature to the creatures parsed table for lookup later */
+   g_hash_table_insert(creatureParsedTable, (gpointer)creatureName, creature);
 
    return;
 }
