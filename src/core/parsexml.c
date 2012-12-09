@@ -5,7 +5,7 @@
 #define PARSEXML_C
 
 #include "include/trogdor.h"
-#include "include/parse.h"
+#include "include/construct.h"
 #include "include/parsexml.h"
 #include "include/data.h"
 #include "include/utility.h"

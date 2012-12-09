@@ -1,5 +1,5 @@
-#ifndef PARSE_H
-#define PARSE_H
+#ifndef CONSTRUCT_H
+#define CONSTRUCT_H
 
 
 #include <dstring.h>

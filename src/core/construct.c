@@ -6,7 +6,7 @@
 #include "include/room.h"
 #include "include/data.h"
 #include "include/state.h"
-#include "include/parse.h"
+#include "include/construct.h"
 #include "include/script.h"
 #include "include/event.h"
 

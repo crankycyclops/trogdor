@@ -8,7 +8,7 @@
 #include "include/object.h"
 #include "include/room.h"
 #include "include/creature.h"
-#include "include/parse.h"
+#include "include/construct.h"
 #include "include/parsexml.h"
 #include "include/state.h"
 
