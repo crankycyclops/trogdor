@@ -152,6 +152,9 @@ things waiting for you here!
 
          <east>cave</east>
 
+         <!-- you can place creatures in rooms -->
+         <creature>trogdor</creature>
+
          <object>rock</object>
          <object>boulder</object>
 

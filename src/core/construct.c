@@ -190,8 +190,9 @@ static Room *initRoom(RoomParsed *roomParsed) {
 
    int i;
 
-   GArray *objectNames = roomParsed->objects;  /* objects in the room */
-   Room *room = roomAlloc();                   /* actual room object */
+   GArray *creatureNames = roomParsed->creatures; /* creatures in the room */
+   GArray *objectNames = roomParsed->objects;     /* objects in the room */
+   Room *room = roomAlloc();                      /* actual room object */
 
    /* list of objects referenced by a name */
    GList *synonymList;
@@ -207,8 +208,18 @@ static Room *initRoom(RoomParsed *roomParsed) {
    room->east  = NULL;
    room->west  = NULL;
 
+   room->creatureList = NULL;
    room->objectList = NULL;
    room->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
+
+   /* add creatures to the room */
+   for (i = 0; i < creatureNames->len; i++) {
+
+      Creature *creature = g_hash_table_lookup(g_creatures,
+         dstrview(g_array_index(creatureNames, dstring_t, i)));
+
+      room->creatureList = g_list_append(room->creatureList, creature);
+   }
 
    /* add objects to the room */
    for (i = 0; i < objectNames->len; i++) {

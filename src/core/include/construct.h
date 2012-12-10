@@ -17,6 +17,9 @@ typedef struct roomParsed {
 
    /* an array of object identifiers (dstring_t's) */
    GArray *objects;
+
+   /* names of all creatures in the room (dstring_t's) */
+   GArray *creatures;
    
 } RoomParsed;
 

@@ -43,6 +43,9 @@ typedef struct room {
       quickly operate on all objects when we enter a room. */
    GList *objectList;
 
+   /* List of all creatures in a room */
+   GList *creatureList;
+
 } Room;
 
 #include "object.h"

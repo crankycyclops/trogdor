@@ -590,6 +590,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
    room->east = NULL;
    room->west = NULL;
    room->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t *), 5);
+   room->creatures = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t *), 5);
 
    /* record the room's name */
    roomName = xmlTextReaderGetAttribute(reader, "name");
@@ -654,11 +655,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("object", tagname)) {
 
          const char *objectName = getNodeValue(reader);
-         dstring_t object = NULL;
-
-         if (DSTR_SUCCESS != dstralloc(&object)) {
-            PRINT_OUT_OF_MEMORY_ERROR;
-         }
+         dstring_t object = createDstring();
 
          /* make sure the object exists */
          if (NULL == g_hash_table_lookup(objectParsedTable, objectName)) {
@@ -674,6 +671,28 @@ static void parseRoom(xmlTextReaderPtr reader) {
 
          /* make sure we have a valid closing tag */
          checkClosingTag("object", reader);
+      }
+
+      /* creature gets placed in this room */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("creature", tagname)) {
+
+         const char *creatureName = getNodeValue(reader);
+         dstring_t creature = createDstring();
+
+         /* make sure the creature exists */
+         if (NULL == g_hash_table_lookup(creatureParsedTable, creatureName)) {
+            g_outputError("creature '%s' in room '%s' doesn't exist\n",
+               creatureName, roomName);
+            exit(EXIT_FAILURE);
+         }
+
+         /* add creature to the room */
+         cstrtodstr(creature, creatureName);
+         dstrtrim(creature);
+         g_array_append_val(room->creatures, creature);
+
+         /* make sure we have a valid closing tag */
+         checkClosingTag("creature", reader);
       }
 
       /* an unknown tag was found */
