@@ -15,20 +15,20 @@
 /* entry point for parsing the game file */
 int parseGame();
 
+/* initialize game objects in a room from parsed data */
+static void initObjects();
+
+/* builds creature structures */
+static void initCreatures();
+
 /* initializes the rooms */
 static void initRooms();
 
 /* called by initRooms(); builds the structure for a room */
 static Room *initRoom(RoomParsed *roomParsed);
 
-/* builds creature structures */
-static void initCreatures();
-
 /* creates individual creature structures; called by initCreatures() */
 static Creature *initCreature(CreatureParsed *creatureParsed);
-
-/* initialize game objects in a room from parsed data */
-static void initObjects(Room *room, GArray *objectNames);
 
 /* called by initObjects(); builds the structure for an object */
 static Object *initObject(ObjectParsed *objectParsed);
@@ -74,10 +74,8 @@ int parseGame(const char *filename) {
       return 0;
    }
 
-   // TODO: refactor initObjects() to do all objects and call it here
+   initObjects();
    initCreatures();
-   // TODO: should insert objects already existing in global once we refactor
-   // TODO: add code to add creatures to room
    initRooms();
 
    /* make sure we didn't have any issues parsing Lua scripts */
@@ -190,7 +188,13 @@ static void initRooms() {
 
 static Room *initRoom(RoomParsed *roomParsed) {
 
-   Room *room = roomAlloc();  /* actual room object */
+   int i;
+
+   GArray *objectNames = roomParsed->objects;  /* objects in the room */
+   Room *room = roomAlloc();                   /* actual room object */
+
+   /* list of objects referenced by a name */
+   GList *synonymList;
 
    /* don't free these dstring_t objects when we free the parsed rooms table! */
    room->name = roomParsed->name;
@@ -204,59 +208,53 @@ static Room *initRoom(RoomParsed *roomParsed) {
    room->west  = NULL;
 
    room->objectList = NULL;
-   room->objectByName = NULL;
-   initObjects(room, roomParsed->objects);
-
-   return room;
-}
-
-/******************************************************************************/
-
-static void initObjects(Room *room, GArray *objectNames) {
-
-   int    i;
-   Object *object;  /* actual object structure */
-
-   // TODO: check to make sure these calls succeed
    room->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
-   room->objectList = NULL;
 
-   /* instantiate each object in the room */
+   /* add objects to the room */
    for (i = 0; i < objectNames->len; i++) {
 
-      int   j;
-      GList *synonymList;
+      int j;
 
-      dstring_t name = g_array_index(objectNames, dstring_t, i);
-      ObjectParsed *curParsedObject = g_hash_table_lookup(objectParsedTable,
-         dstrview(name));
+      Object *object = g_hash_table_lookup(g_objects,
+         dstrview(g_array_index(objectNames, dstring_t, i)));
 
-      /* build the object */
-      object = initObject(curParsedObject);
-
-      /* add object to our global list */
-      g_hash_table_insert(g_objects, (char *)dstrview(object->name), object);
-
-      /* add object to whatever room it belongs in */
+      /* add object to the room */
       room->objectList = g_list_append(room->objectList, object);
 
-      /* add object to list of objects with same name / synonym */
+      /* make sure object can be referenced by name */
       synonymList = g_hash_table_lookup(room->objectByName,
          (char *)dstrview(object->name));
       synonymList = g_list_append(synonymList, object);
       g_hash_table_insert(room->objectByName, (char *)dstrview(object->name),
          synonymList);
 
-      /* we also want to index the object by its synonyms */
-      for (j = 0; j < curParsedObject->synonyms->len; j++) {
+      /* also reference objects in room by synonyms */
+      for (j = 0; j < object->synonyms->len; j++) {
+         #define OBJ_SYNONYM g_array_index(object->synonyms, dstring_t, j)
          synonymList = g_hash_table_lookup(room->objectByName,
-            (char *)dstrview(g_array_index(curParsedObject->synonyms, dstring_t,
-            j)));
+            (char *)dstrview(OBJ_SYNONYM));
          synonymList = g_list_append(synonymList, object);
-         g_hash_table_insert(room->objectByName,
-            (char *)dstrview(g_array_index(curParsedObject->synonyms, dstring_t,
-            j)), synonymList);
+         g_hash_table_insert(room->objectByName, (char *)dstrview(OBJ_SYNONYM),
+            synonymList);
+         #undef OBJ_SYNONYM
       }
+   }
+
+   return room;
+}
+
+/******************************************************************************/
+
+static void initObjects() {
+
+   GList *objects = g_hash_table_get_values(objectParsedTable);
+   GList *nextObj = objects;
+
+
+   while (NULL != nextObj) {
+      Object *object = initObject((ObjectParsed *)nextObj->data);
+      g_hash_table_insert(g_objects, (char *)dstrview(object->name), object);
+      nextObj = nextObj->next;
    }
 
    return;
