@@ -15,6 +15,9 @@
 #define DROP_OBJECT  2
 
 
+/* frees memory associated with an object */
+void destroyObject(Object *object);
+
 /* called everytime a player "sees" the object */
 void displayObject(Player *player, Object *object, int showLongDescription);
 
@@ -33,6 +36,19 @@ static void transferObject(Player *player, Object *object, int action);
 
 /* disambiguates in the case where a name refers to more than one object */
 Object *clarifyObject(GList *objects, int objectCount);
+
+/******************************************************************************/
+
+void destroyObject(Object *object) {
+
+   // TODO: don't free object here, just dstring_t's inside it!
+
+   if (object->lua != NULL) {
+      lua_close(object->lua);
+   }
+
+   return;
+}
 
 /******************************************************************************/
 

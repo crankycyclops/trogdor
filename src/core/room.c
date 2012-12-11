@@ -17,6 +17,9 @@
 /* allocates memory for a room */
 Room *roomAlloc();
 
+/* frees memory associated with a room */
+void destroyRoom(Room *room);
+
 /* sets a player's current location in the game */
 void setLocation(Player *player, Room *room, int triggerEvents);
 
@@ -42,6 +45,28 @@ Room *roomAlloc() {
    newroom->state.visitedByAPlayer = 0;
 
    return newroom;
+}
+
+/******************************************************************************/
+
+void destroyRoom(Room *room) {
+
+   int i;
+
+   if (NULL != room->objectList) {
+      g_list_free(room->objectList);
+   }
+
+   if (NULL != room->objectByName) {
+      // TODO: we have to destroy each GList inside objectByName first!
+      g_hash_table_destroy(room->objectByName);
+   }
+
+   dstrfree(&room->name);
+   dstrfree(&room->title);
+   dstrfree(&room->description);
+
+   free(room);
 }
 
 /******************************************************************************/

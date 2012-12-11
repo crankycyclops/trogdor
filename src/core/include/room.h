@@ -58,6 +58,9 @@ typedef struct room {
 /* allocates memory for a new room */
 extern Room *roomAlloc();
 
+/* frees memory associated with a room */
+extern void destroyRoom(Room *room);
+
 /* sets a player's current location in the game */
 extern void setLocation(Player *player, Room *room, int triggerEvents);
 

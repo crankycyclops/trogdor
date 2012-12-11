@@ -24,15 +24,11 @@ void destroyData();
 /* iterates over all rooms, calling destroyRoom() on each */
 static void destroyRooms();
 
-/* frees memory associated with a room */
-static void destroyRoom(Room *room);
-
 /* iterates over all objects, calling destroyObject() on each */
 static void destroyObjects();
 
-/* frees memory associated with an object */
-static void destroyObject(Object *object);
-
+/* iterates over all creatures and calls their destructor */
+static void destroyCreatures();
 
 /* Points to whatever function we should use to read input from the user. */
 dstring_t (*g_readCommand)();
@@ -113,36 +109,9 @@ static void destroyObjects() {
 
 /******************************************************************************/
 
-static void destroyRoom(Room *room) {
+static void destroyCreatures() {
 
-   int i;
-
-   if (NULL != room->objectList) {
-      g_list_free(room->objectList);
-   }
-
-   if (NULL != room->objectByName) {
-      // TODO: we have to destroy each GList inside objectByName first!
-      g_hash_table_destroy(room->objectByName);
-   }
-
-   dstrfree(&room->name);
-   dstrfree(&room->title);
-   dstrfree(&room->description);
-
-   free(room);
-}
-
-/******************************************************************************/
-
-static void destroyObject(Object *object) {
-
-   // TODO: don't free object here, just dstring_t's inside it!
-
-   if (object->lua != NULL) {
-      lua_close(object->lua);
-   }
-
+   // TODO
    return;
 }
 

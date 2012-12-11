@@ -44,6 +44,9 @@ typedef struct object {
 #include "room.h"
 #include "player.h"
 
+/* frees memory associated with an object */
+extern void destroyObject(Object *object);
+
 /* allows a player to describe an object */
 extern void displayObject(Player *player, Object *object, int showLongDescription);
 
