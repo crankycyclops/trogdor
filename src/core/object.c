@@ -16,7 +16,7 @@
 
 
 /* allocates memory for a new game object */
-Object *objectAlloc();
+Object *createObject();
 
 /* frees memory associated with an object */
 void destroyObject(Object *object);
@@ -42,7 +42,7 @@ Object *clarifyObject(GList *objects, int objectCount);
 
 /******************************************************************************/
 
-Object *objectAlloc() {
+Object *createObject() {
 
    Object *newobject;
 

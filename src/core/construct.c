@@ -125,7 +125,7 @@ static void initCreatures() {
 
 static Creature *initCreature(CreatureParsed *creatureParsed) {
 
-   Creature *creature = creatureAlloc();
+   Creature *creature = createCreature();
 
    int i;
    lua_State *L;
@@ -193,7 +193,7 @@ static Room *initRoom(RoomParsed *roomParsed) {
 
    GArray *creatureNames = roomParsed->creatures; /* creatures in the room */
    GArray *objectNames = roomParsed->objects;     /* objects in the room */
-   Room *room = roomAlloc();                      /* actual room object */
+   Room *room = createRoom();                     /* actual room object */
 
    /* list of objects referenced by a name */
    GList *synonymList;
@@ -278,7 +278,7 @@ static Object *initObject(ObjectParsed *objectParsed) {
 
    int i;
    lua_State *L = NULL;
-   Object *object = objectAlloc();
+   Object *object = createObject();
 
    object->name = objectParsed->name;
    object->description = objectParsed->description;

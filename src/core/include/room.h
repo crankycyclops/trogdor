@@ -56,7 +56,7 @@ typedef struct room {
 #include "player.h"
 
 /* allocates memory for a new room */
-extern Room *roomAlloc();
+extern Room *createRoom();
 
 /* frees memory associated with a room */
 extern void destroyRoom(Room *room);

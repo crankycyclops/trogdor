@@ -302,7 +302,7 @@ static int l_createRoom(lua_State *L) {
          return 2;
    }
 
-   newroom = roomAlloc();
+   newroom = createRoom();
 
    cstrtodstr(newroom->name, name);
    cstrtodstr(newroom->title, title);
@@ -311,7 +311,7 @@ static int l_createRoom(lua_State *L) {
    newroom->north = north;
    newroom->south = south;
    newroom->east = east;
-   newroom->west = west;   
+   newroom->west = west;
 
    g_hash_table_insert(g_rooms, name, newroom);
    lua_pushboolean(L, 1);

@@ -14,7 +14,7 @@
 #include "include/event.h"
 
 /* allocates memory for a creature */
-Creature *creatureAlloc();
+Creature *createCreature();
 
 /* displays a creature (long or short) */
 void displayCreature(Player *player, Creature *creature,
@@ -25,7 +25,7 @@ static void describeCreature(Creature *creature);
 
 /******************************************************************************/
 
-Creature *creatureAlloc() {
+Creature *createCreature() {
 
    Creature *newcreature;
 

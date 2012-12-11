@@ -15,7 +15,7 @@
 #define ROOM_C
 
 /* allocates memory for a room */
-Room *roomAlloc();
+Room *createRoom();
 
 /* frees memory associated with a room */
 void destroyRoom(Room *room);
@@ -31,7 +31,7 @@ static void describeRoom(Room *room);
 
 /******************************************************************************/
 
-Room *roomAlloc() {
+Room *createRoom() {
 
    Room *newroom;
 
