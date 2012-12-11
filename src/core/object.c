@@ -154,8 +154,9 @@ void takeObject(Player *player, Object *object) {
    }
 
    else {
-      g_outputString("%s is too heavy.  Try dropping something first.\n",
-         dstrview(object->name));
+      g_outputString("%s weighs %d and you can only hold %d more.  Try "
+         "dropping something first.\n", dstrview(object->name), object->weight,
+         player->inventory.maxWeight - player->inventory.weight);
       event(player, "takeObjectTooHeavy", object);
    }
 }
