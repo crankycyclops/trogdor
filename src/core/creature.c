@@ -47,11 +47,9 @@ Creature *creatureAlloc() {
 void displayCreature(Player *player, Creature *creature,
 int showLongDescription) {
 
-   /* TODO: implement this
    if (ALLOW_ACTION != event(player, "beforeDisplayCreature", creature)) {
       return;
    }
-   */
 
    if (TRUE == showLongDescription ||
    NULL == g_hash_table_lookup(creature->state.seenByPlayers,
@@ -71,9 +69,7 @@ int showLongDescription) {
          dstrview(creature->title));
    }
 
-   /* TODO: implement this
-   event(player, "afterDisplayObject", object);
-   */
+   event(player, "afterDisplayCreature", creature);
 }
 
 /******************************************************************************/

@@ -6,6 +6,7 @@
 #include "include/trogdor.h"
 #include "include/object.h"
 #include "include/room.h"
+#include "include/creature.h"
 #include "include/state.h"
 #include "include/player.h"
 #include "include/event.h"
@@ -71,6 +72,12 @@ static int beforeSetLocation(Player *player, void *data);
 /* called after setting a new location - data = room we're setting (type Room *) */
 static int afterSetLocation(Player *player, void *data);
 
+/* called before displaying a creature - data = creature (Creature *) */
+static int beforeDisplayCreature(Player *player, void *data);
+
+/* called after displaying a creature - data = creature (Creature *) */
+static int afterDisplayCreature(Player *player, void *data);
+
 /* utilized by individual event handlers and returns one of:
    SUPPRESS_ACTION - don't allow the action immediately following the event
    ALLOW_ACTION    - allow the action following the event to continue */
@@ -92,6 +99,7 @@ void initEvent() {
    registerEvent("afterRoomDisplay",      &afterRoomDisplay);
    registerEvent("beforeSetLocation",     &beforeSetLocation);
    registerEvent("afterSetLocation",      &afterSetLocation);
+
    registerEvent("beforeTakeObject",      &beforeTakeObject);
    registerEvent("afterTakeObject",       &afterTakeObject);
    registerEvent("beforeDropObject",      &beforeDropObject);
@@ -101,6 +109,9 @@ void initEvent() {
    registerEvent("takeObjectTooHeavy",    &takeObjectTooHeavy);
    registerEvent("takeObjectUntakeable",  &takeObjectUntakeable);
    registerEvent("dropObjectUndroppable", &dropObjectUndroppable);
+
+   registerEvent("beforeDisplayCreature", &beforeDisplayCreature);
+   registerEvent("afterDisplayCreature",  &afterDisplayCreature);
 }
 
 /******************************************************************************/
@@ -281,6 +292,29 @@ static int dropObjectUndroppable(Player *player, void *data) {
 
    callLuaEventHandler(L, "dropObjectUndroppable", dstrview(player->name),
       dstrview(object->name), 0);
+   return ALLOW_ACTION;
+}
+
+/******************************************************************************/
+
+static int beforeDisplayCreature(Player *player, void *data) {
+
+   Creature *creature = data;
+   lua_State *L = creature->lua;
+
+   return callLuaEventHandler(L, "beforeDisplayCreature", dstrview(player->name),
+      dstrview(creature->name), 1);
+}
+
+/******************************************************************************/
+
+static int afterDisplayCreature(Player *player, void *data) {
+
+   Creature *creature = data;
+   lua_State *L = creature->lua;
+
+   callLuaEventHandler(L, "afterDisplayCreature", dstrview(player->name),
+      dstrview(creature->name), 0);
    return ALLOW_ACTION;
 }
 
