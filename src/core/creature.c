@@ -16,6 +16,12 @@
 /* allocates memory for a creature */
 Creature *creatureAlloc();
 
+/* displays a creature (long or short) */
+void displayCreature(Player *player, Creature *creature,
+int showLongDescription);
+
+/* describes a creature in detail */
+static void describeCreature(Creature *creature);
 
 /******************************************************************************/
 
@@ -34,5 +40,48 @@ Creature *creatureAlloc() {
    newcreature->state.seenByAPlayer = 0;
 
    return newcreature;
+}
+
+/******************************************************************************/
+
+void displayCreature(Player *player, Creature *creature,
+int showLongDescription) {
+
+   /* TODO: implement this
+   if (ALLOW_ACTION != event(player, "beforeDisplayCreature", creature)) {
+      return;
+   }
+   */
+
+   if (TRUE == showLongDescription ||
+   NULL == g_hash_table_lookup(creature->state.seenByPlayers,
+   (char *)dstrview(player->name))) {
+
+      creature->state.seenByAPlayer = 1;
+
+      g_hash_table_insert(creature->state.seenByPlayers,
+         (char *)dstrview(player->name), player);
+
+      describeCreature(creature);
+   }
+
+   else {
+      /* TODO: distinguish between alive and dead */
+      g_outputString("\nYou see %s.\n",
+         dstrview(creature->title));
+   }
+
+   /* TODO: implement this
+   event(player, "afterDisplayObject", object);
+   */
+}
+
+/******************************************************************************/
+
+static void describeCreature(Creature *creature) {
+
+   /* TODO: distinguish between alive and dead for descriptions */
+   g_outputString("\nYou see %s.  %s\n", dstrview(creature->title),
+      dstrview(creature->description));
 }
 

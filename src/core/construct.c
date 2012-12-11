@@ -113,10 +113,11 @@ static void initCreatures() {
    GList *next = creatures;
 
    while (NULL != next) {
-      Creature *creature = (Creature *)next->data;
+      CreatureParsed *creatureDef = (CreatureParsed *)next->data;
+      Creature *creature = initCreature(creatureDef);
       g_hash_table_insert(g_creatures, (char *)dstrview(creature->name),
          creature);
-      next = next->next;
+      next = g_list_next(next);
    }
 }
 
@@ -124,7 +125,7 @@ static void initCreatures() {
 
 static Creature *initCreature(CreatureParsed *creatureParsed) {
 
-   Creature *creature = creatureAlloc();;
+   Creature *creature = creatureAlloc();
 
    int i;
    lua_State *L;

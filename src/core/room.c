@@ -5,6 +5,7 @@
 #include "include/trogdor.h"
 #include "include/object.h"
 #include "include/room.h"
+#include "include/creature.h"
 #include "include/data.h"
 #include "include/state.h"
 #include "include/player.h"
@@ -68,6 +69,7 @@ void setLocation(Player *player, Room *room, int triggerEvents) {
 
 void displayRoom(Player *player, Room *room, int showLongDescription) {
 
+   GList *creatureList = room->creatureList;
    GList *objectList = room->objectList;
 
    if (ALLOW_ACTION != event(player, "beforeRoomDisplay", room)) {
@@ -85,6 +87,12 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
    while (objectList != NULL) {
       displayObject(player, (Object *)objectList->data, FALSE);
       objectList = g_list_next(objectList);
+   }
+
+   /* display creatures in the room if they haven't already been seen */
+   while (creatureList != NULL) {
+      displayCreature(player, (Creature *)creatureList->data, FALSE);
+      creatureList = g_list_next(creatureList);
    }
 
    event(player, "afterRoomDisplay", room);

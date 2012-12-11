@@ -38,6 +38,10 @@ typedef struct creature {
 /* allocates memory for a creature */
 extern Creature *creatureAlloc();
 
+/* displays a creature (long or short) */
+extern void displayCreature(Player *player, Creature *creature,
+int showLongDescription);
+
 #endif
 
 
