@@ -16,6 +16,9 @@
 /* allocates memory for a creature */
 Creature *createCreature();
 
+/* frees all memory allocated for a creature */
+void destroyCreature(Creature *creature);
+
 /* displays a creature (long or short) */
 void displayCreature(Player *player, Creature *creature,
 int showLongDescription);
@@ -42,6 +45,26 @@ Creature *createCreature() {
    newcreature->state.seenByAPlayer = 0;
 
    return newcreature;
+}
+
+/******************************************************************************/
+
+void destroyCreature(Creature *creature) {
+
+   dstrfree(&creature->name);
+   dstrfree(&creature->title);
+   dstrfree(&creature->description);
+   dstrfree(&creature->deadDesc);
+
+   g_list_free(creature->objects);
+   g_hash_table_destroy(creature->state.seenByPlayers);
+
+   if (creature->lua != NULL) {
+      lua_close(creature->lua);
+   }
+
+   free(creature);
+   return;
 }
 
 /******************************************************************************/

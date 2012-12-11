@@ -72,6 +72,7 @@ void initData() {
 void destroyData() {
 
    destroyRooms();
+   destroyCreatures();
    destroyObjects();
 }
 
@@ -111,7 +112,15 @@ static void destroyObjects() {
 
 static void destroyCreatures() {
 
-   // TODO
-   return;
+   GList *gCreatureList = g_hash_table_get_values(g_creatures);
+   GList *curCreature = gCreatureList;
+
+   /* free all creatures */
+   while (NULL != curCreature) {
+      destroyCreature((Creature *)curCreature->data);
+      curCreature = g_list_next(curCreature);
+   }
+
+   g_list_free(gCreatureList);
 }
 

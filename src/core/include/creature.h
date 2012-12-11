@@ -38,6 +38,9 @@ typedef struct creature {
 /* allocates memory for a creature */
 extern Creature *createCreature();
 
+/* frees all memory allocated for a creature */
+extern void destroyCreature(Creature *creature);
+
 /* displays a creature (long or short) */
 extern void displayCreature(Player *player, Creature *creature,
 int showLongDescription);
