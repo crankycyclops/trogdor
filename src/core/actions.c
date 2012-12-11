@@ -380,7 +380,7 @@ int actionProfanity(Player *player, Command command) {
       "Such language!\n",
       "You, sir, have a foul mouth!\n",
       "Well, ?&*@! to you too!\n",
-      "Do you miss your mother with that mouth?\n",
+      "Do you kiss your mother with that mouth?\n",
       "Classy.\n"
    };
 
