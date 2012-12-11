@@ -74,6 +74,10 @@ void destroyData() {
    destroyRooms();
    destroyCreatures();
    destroyObjects();
+
+   g_hash_table_destroy(g_rooms);
+   g_hash_table_destroy(g_objects);
+   g_hash_table_destroy(g_creatures);
 }
 
 /******************************************************************************/
