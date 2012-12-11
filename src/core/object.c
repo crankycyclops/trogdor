@@ -52,6 +52,8 @@ Object *createObject() {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
 
+   newobject->lua = NULL;
+
    /* initialize the object's state */
    newobject->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
    newobject->state.takenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);

@@ -128,7 +128,7 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    Creature *creature = createCreature();
 
    int i;
-   lua_State *L;
+   lua_State *L = NULL;
 
    // TODO: set alive or dead here (default set in alloc() is alive)
 

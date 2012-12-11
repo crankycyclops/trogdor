@@ -34,6 +34,8 @@ Creature *createCreature() {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
 
+   newcreature->lua = NULL;
+
    /* initialize the creature's state */
    newcreature->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
    newcreature->state.alive = 1;
