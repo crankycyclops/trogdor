@@ -44,6 +44,9 @@ typedef struct object {
 #include "room.h"
 #include "player.h"
 
+/* allocates memory for a new game object */
+extern Object *objectAlloc();
+
 /* frees memory associated with an object */
 extern void destroyObject(Object *object);
 

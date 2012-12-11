@@ -278,13 +278,7 @@ static Object *initObject(ObjectParsed *objectParsed) {
 
    int i;
    lua_State *L = NULL;
-   Object *object;
-
-   /* initialize new object structure */
-   object = malloc(sizeof(Object));
-   if (NULL == object) {
-      PRINT_OUT_OF_MEMORY_ERROR;
-   }
+   Object *object = objectAlloc();
 
    object->name = objectParsed->name;
    object->description = objectParsed->description;
@@ -293,14 +287,6 @@ static Object *initObject(ObjectParsed *objectParsed) {
    object->droppable = atoi(dstrview(objectParsed->droppable));
 
    object->synonyms = objectParsed->synonyms;
-
-   object->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
-   object->state.takenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
-   object->state.droppedByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
-
-   object->state.seenByPlayer = 0;
-   object->state.takenByPlayer = 0;
-   object->state.droppedByPlayer = 0;
 
    /* initialize any scripts attached to the object */
    for (i = 0; i < objectParsed->scripts->len; i++) {

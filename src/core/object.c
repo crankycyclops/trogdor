@@ -15,6 +15,9 @@
 #define DROP_OBJECT  2
 
 
+/* allocates memory for a new game object */
+Object *objectAlloc();
+
 /* frees memory associated with an object */
 void destroyObject(Object *object);
 
@@ -36,6 +39,30 @@ static void transferObject(Player *player, Object *object, int action);
 
 /* disambiguates in the case where a name refers to more than one object */
 Object *clarifyObject(GList *objects, int objectCount);
+
+/******************************************************************************/
+
+Object *objectAlloc() {
+
+   Object *newobject;
+
+   /* initialize new object structure */
+   newobject = malloc(sizeof(Object));
+   if (NULL == newobject) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   /* initialize the object's state */
+   newobject->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
+   newobject->state.takenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
+   newobject->state.droppedByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
+
+   newobject->state.seenByPlayer = 0;
+   newobject->state.takenByPlayer = 0;
+   newobject->state.droppedByPlayer = 0;
+
+   return newobject;
+}
 
 /******************************************************************************/
 
