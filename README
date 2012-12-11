@@ -16,6 +16,9 @@ To compile standalone, just type (so far, only tested on Ubuntu 12.04):
 
 make
 
+There's a slightly more complex magic incantation for building with Cygwin on Windows:
+C_INCLUDE_PATH=/usr/include/libxml2 LIBRARY_PATH=/usr/local/lib make
+
 Or, if you're on FreeBSD (until I have a more elegant build system):
 gcc -L/usr/local/lib -I/usr/local/include -I/usr/local/include/libxml2 \
 -I/usr/local/include/lua51 -ldstring -lxml2 `pkg-config -cflags \
