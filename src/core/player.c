@@ -13,8 +13,11 @@
 #include "include/player.h"
 
 
-/* creates a new player */
+/* player constructor */
 Player *createPlayer(char *name);
+
+/* player destructor */
+void destroyPlayer(Player *player);
 
 
 /* contains the default configuration for all newly initialized players */
@@ -49,4 +52,12 @@ Player *createPlayer(char *name) {
 
    g_hash_table_insert(g_players, name, newplayer);
    return newplayer;
+}
+
+/******************************************************************************/
+
+void destroyPlayer(Player *player) {
+
+   dstrfree(&player->name);
+   free(player);
 }

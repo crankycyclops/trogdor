@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
       executeCommand(player);
    }
 
+   destroyPlayer(player);
    return EXIT_SUCCESS;
 }
 

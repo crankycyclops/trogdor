@@ -21,8 +21,11 @@ typedef struct player {
 /* used to model a new player's default settings */
 extern Player g_playerConfig;
 
-/* creates a new player */
+/* player constructor */
 extern Player *createPlayer(char *name);
+
+/* player destructor */
+extern void destroyPlayer(Player *player);
 
 #endif
 
