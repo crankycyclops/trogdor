@@ -54,6 +54,11 @@ static void parseCreature(xmlTextReaderPtr reader);
 /* parses a room */
 static void parseRoom(xmlTextReaderPtr reader);
 
+/* list of invalid names for rooms, creatures, etc. */
+char *invalidNames[] = {
+   "room", "object", "player", "creature", NULL
+};
+
 /******************************************************************************/
 
 int parseGameFile(const char *filename) {
@@ -229,6 +234,7 @@ static void parseObjectSection(xmlTextReaderPtr reader) {
 
 static void parseObject(xmlTextReaderPtr reader) {
 
+   int i;
    int parseStatus;        /* whether or not the parser could extract another node */
    int synonymCount = 0;   /* number of synonyms for an object */
 
@@ -264,6 +270,15 @@ static void parseObject(xmlTextReaderPtr reader) {
    if (NULL == objectName || 0 == strlen(objectName)) {
       g_outputError("Error: objects must be assigned a unique name\n");
       exit(EXIT_FAILURE);
+   }
+
+   /* makes sure object's name is valid */
+   for (i = 0; invalidNames[i] != NULL; i++) {
+      if (0 == strcmp(invalidNames[i], objectName)) {
+         g_outputError("error: '%s' is an invalid object name\n",
+            invalidNames[i]);
+         exit(EXIT_FAILURE);
+      }
    }
 
    /* make sure the object doesn't already exist */
@@ -422,6 +437,7 @@ static void parseCreatureSection(xmlTextReaderPtr reader) {
 
 static void parseCreature(xmlTextReaderPtr reader) {
 
+   int i;
    int parseStatus;          /* whether the parser could extract another node */
 
    const char *creatureName; /* name of the creature */
@@ -447,19 +463,18 @@ static void parseCreature(xmlTextReaderPtr reader) {
       exit(EXIT_FAILURE);
    }
 
+   /* makes sure creature's name is valid */
+   for (i = 0; invalidNames[i] != NULL; i++) {
+      if (0 == strcmp(invalidNames[i], creatureName)) {
+         g_outputError("error: '%s' is an invalid creature name\n",
+            invalidNames[i]);
+         exit(EXIT_FAILURE);
+      }
+   }
+
    /* make sure the creature doesn't already exist */
    if (NULL != g_hash_table_lookup(creatureParsedTable, creatureName)) {
       g_outputError("creature '%s' must be unique\n", creatureName);
-      exit(EXIT_FAILURE);
-   }
-
-   if (0 == strcmp("room", creatureName)) {
-      g_outputError("error: 'room' is an invalid creature name\n");
-      exit(EXIT_FAILURE);
-   }
-
-   else if (0 == strcmp("object", creatureName)) {
-      g_outputError("error: 'object' is an invalid creature name\n");
       exit(EXIT_FAILURE);
    }
 
@@ -572,6 +587,7 @@ static void parseRoomSection(xmlTextReaderPtr reader) {
 
 static void parseRoom(xmlTextReaderPtr reader) {
 
+   int i;
    int parseStatus;      /* whether or not the parser could extract another node */
 
    const char *roomName; /* name of the room */
@@ -598,6 +614,15 @@ static void parseRoom(xmlTextReaderPtr reader) {
    if (NULL == roomName || 0 == strlen(roomName)) {
       g_outputError("Error: rooms must be assigned a name\n");
       exit(EXIT_FAILURE);
+   }
+
+   /* makes sure room's name is valid */
+   for (i = 0; invalidNames[i] != NULL; i++) {
+      if (0 == strcmp(invalidNames[i], roomName)) {
+         g_outputError("error: '%s' is an invalid room name\n",
+            invalidNames[i]);
+         exit(EXIT_FAILURE);
+      }
    }
 
    /* make sure the room doesn't already exist */
