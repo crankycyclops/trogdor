@@ -42,6 +42,9 @@ int (*g_outputString)(const char *format, ...);
 int (*g_outputError)(const char *format, ...);
 
 
+/* an index-by-name list of all players in the game */
+GHashTable *g_players = NULL;
+
 /* all rooms in the game, indexed by name */
 GHashTable *g_rooms = NULL;
 

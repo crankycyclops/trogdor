@@ -7,6 +7,9 @@
 #include "parsexml.h"
 
 
+/* an index-by-name list of all players in the game */
+extern GHashTable *g_players;
+
 /* all rooms in the game, indexed by name */
 extern GHashTable *g_rooms;
 

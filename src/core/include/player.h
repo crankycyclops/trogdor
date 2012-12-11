@@ -16,10 +16,7 @@ typedef struct player {
 
 } Player;
 
-#ifndef STATE_C
-
-/* index-by-name list of all players in the game */
-extern GHashTable *g_players;
+#ifndef PLAYER_C
 
 /* used to model a new player's default settings */
 extern Player g_playerConfig;
@@ -28,7 +25,6 @@ extern Player g_playerConfig;
 extern Player *createPlayer(char *name);
 
 #endif
-
 
 #endif
 
