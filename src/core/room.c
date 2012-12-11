@@ -66,6 +66,8 @@ void destroyRoom(Room *room) {
    dstrfree(&room->title);
    dstrfree(&room->description);
 
+   g_hash_table_destroy(room->state.players);
+
    free(room);
 }
 

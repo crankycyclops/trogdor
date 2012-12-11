@@ -70,12 +70,20 @@ Object *createObject() {
 
 void destroyObject(Object *object) {
 
-   // TODO: don't free object here, just dstring_t's inside it!
+   dstrfree(&object->name);
+   dstrfree(&object->description);
+
+   g_array_free(object->synonyms, TRUE);
+
+   g_hash_table_destroy(object->state.seenByPlayers);
+   g_hash_table_destroy(object->state.takenByPlayers);
+   g_hash_table_destroy(object->state.droppedByPlayers);
 
    if (object->lua != NULL) {
       lua_close(object->lua);
    }
 
+   free(object);
    return;
 }
 
