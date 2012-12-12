@@ -33,6 +33,9 @@ static Creature *initCreature(CreatureParsed *creatureParsed);
 /* called by initObjects(); builds the structure for an object */
 static Object *initObject(ObjectParsed *objectParsed);
 
+/* initializes a room's, object's or creature's Lua state */
+static lua_State *initLuaState(GArray *scriptList);
+
 /* connect rooms so that users can navigate north, south, etc. */
 static void connectRooms();
 
@@ -127,36 +130,13 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
 
    Creature *creature = createCreature();
 
-   int i;
-   lua_State *L = NULL;
-
-   // TODO: set alive or dead here (default set in alloc() is alive)
-
    creature->name = creatureParsed->name;
    creature->title = creatureParsed->title;
    creature->description = creatureParsed->description;
    creature->deadDesc = creatureParsed->deadDesc;
 
    creature->objects = NULL;
-
-   // TODO: make this common function and replace code in initObject() with it too
-   /* initialize any scripts attached to the creature */
-   for (i = 0; i < creatureParsed->scripts->len; i++) {
-
-      /* only initialize lua state if we have something to execute */
-      if (NULL == L) {
-         L = luaL_newstate();
-         initLua(L);
-      }
-
-      #define SCRIPT_FILE (char *)dstrview(g_array_index(creatureParsed->scripts, dstring_t, i))
-      if (loadScript(L, SCRIPT_FILE)) {
-         primeLua(L);
-      }
-      #undef SCRIPT_FILE
-   }
-
-   creature->lua = L;
+   creature->lua = initLuaState(creatureParsed->scripts);
 
    return creature;
 }
@@ -276,8 +256,6 @@ static void initObjects() {
 
 static Object *initObject(ObjectParsed *objectParsed) {
 
-   int i;
-   lua_State *L = NULL;
    Object *object = createObject();
 
    object->name = objectParsed->name;
@@ -288,8 +266,19 @@ static Object *initObject(ObjectParsed *objectParsed) {
 
    object->synonyms = objectParsed->synonyms;
 
-   /* initialize any scripts attached to the object */
-   for (i = 0; i < objectParsed->scripts->len; i++) {
+   object->lua = initLuaState(objectParsed->scripts);
+
+   return object;
+}
+
+/******************************************************************************/
+
+static lua_State *initLuaState(GArray *scriptList) {
+
+   int i;
+   lua_State *L = NULL;
+
+   for (i = 0; i < scriptList->len; i++) {
 
       /* only initialize lua state if we have something to execute */
       if (NULL == L) {
@@ -297,15 +286,14 @@ static Object *initObject(ObjectParsed *objectParsed) {
          initLua(L);
       }
 
-      #define SCRIPT_FILE (char *)dstrview(g_array_index(objectParsed->scripts, dstring_t, i))
+      #define SCRIPT_FILE (char *)dstrview(g_array_index(scriptList, dstring_t, i))
       if (loadScript(L, SCRIPT_FILE)) {
          primeLua(L);
       }
       #undef SCRIPT_FILE
    }
 
-   object->lua = L;
-   return object;
+   return L;
 }
 
 /******************************************************************************/
