@@ -44,8 +44,8 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
               engine or custom for scripts)
          -->
          <messages>
-            <message name="take">The candle jumps, does a backflip and turns into a spoon.</message>
-            <message name="drop">You begrudgingly drop this awesome cylinder of waxy goodness.</message>
+            <message name="take">The candle jumps up into the air, does a backflip and turns into a spoon.</message>
+            <message name="drop">You hesitate before dropping that awesome waxy goodness.</message>
          </messages>
 
          <!-- one or more scripts can be attached to an object, which define

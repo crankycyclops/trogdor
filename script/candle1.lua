@@ -3,8 +3,6 @@
 function beforeTakeObject(player, object)
 
    -- this is just a placeholder for now
-   outputString("The candle jumps up in the air, does a backflip and transforms into a spoon. ");
-
    return ALLOW_ACTION
 
 end

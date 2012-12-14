@@ -161,7 +161,16 @@ void takeObject(Player *player, Object *object) {
          (char *)dstrview(player->name), player);
       object->state.takenByPlayer = 1;
 
-      g_outputString("You take the %s.\n", dstrview(object->name));
+      dstring_t message = getMessage(object->messages, "take");
+
+      if (NULL != message) {
+         g_outputString("%s\n", dstrview(message));
+      }
+
+      else {
+         g_outputString("You take the %s.\n", dstrview(object->name));
+      }
+
       event(player, "afterTakeObject", object);
    }
 
@@ -195,7 +204,15 @@ void dropObject(Player *player, Object *object) {
       (char *)dstrview(player->name), player);
    object->state.droppedByPlayer = 1;
 
-   g_outputString("You drop the %s.\n", dstrview(object->name));
+   dstring_t message = getMessage(object->messages, "drop");
+
+   if (NULL != message) {
+      g_outputString("%s\n", dstrview(message));
+   }
+
+   else {
+      g_outputString("You drop the %s.\n", dstrview(object->name));
+   }
 
    event(player, "afterDropObject", object);
 }
