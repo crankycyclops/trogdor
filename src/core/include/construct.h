@@ -5,6 +5,9 @@
 #include <dstring.h>
 #include <glib.h>
 
+#include "messages.h"
+
+
 typedef struct roomParsed {
 
    dstring_t name;
@@ -14,6 +17,9 @@ typedef struct roomParsed {
    dstring_t south;
    dstring_t east;
    dstring_t west;
+
+   /* hash table of custom messages */
+   Messages messages;
 
    /* an array of object identifiers (dstring_t's) */
    GArray *objects;
@@ -31,6 +37,9 @@ typedef struct objectParsed {
    dstring_t takeable;
    dstring_t droppable;
 
+   /* hash table of custom messages */
+   Messages messages;
+
    /* an array of synonyms (dstring_t's) */
    GArray *synonyms;
 
@@ -45,6 +54,9 @@ typedef struct creatureParsed {
    dstring_t title;
    dstring_t description;
    dstring_t deadDesc;
+
+   /* hash table of custom messages */
+   Messages messages;
 
    /* array of filenames containing Lua scripts */
    GArray *scripts;

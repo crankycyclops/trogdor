@@ -10,6 +10,7 @@
 #include "include/construct.h"
 #include "include/script.h"
 #include "include/event.h"
+#include "include/messages.h"
 
 
 /* entry point for parsing the game file */
@@ -134,6 +135,7 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    creature->title = creatureParsed->title;
    creature->description = creatureParsed->description;
    creature->deadDesc = creatureParsed->deadDesc;
+   creature->messages = creatureParsed->messages;
 
    creature->objects = NULL;
    creature->lua = initLuaState(creatureParsed->scripts);
@@ -189,6 +191,7 @@ static Room *initRoom(RoomParsed *roomParsed) {
    room->east  = NULL;
    room->west  = NULL;
 
+   room->messages = roomParsed->messages;
    room->creatureList = NULL;
    room->objectList = NULL;
    room->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
@@ -263,6 +266,7 @@ static Object *initObject(ObjectParsed *objectParsed) {
    object->weight = atoi(dstrview(objectParsed->weight));
    object->takeable = atoi(dstrview(objectParsed->takeable));
    object->droppable = atoi(dstrview(objectParsed->droppable));
+   object->messages = objectParsed->messages;
 
    object->synonyms = objectParsed->synonyms;
 

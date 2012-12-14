@@ -13,6 +13,7 @@
 #include "include/object.h"
 #include "include/room.h"
 #include "include/player.h"
+#include "include/messages.h"
 
 
 /* returns true if the document was parsed successfully and false otherwise */
@@ -53,6 +54,13 @@ static void parseCreature(xmlTextReaderPtr reader);
 
 /* parses a room */
 static void parseRoom(xmlTextReaderPtr reader);
+
+/* parses the custom messages section */
+static Messages parseMessages(xmlTextReaderPtr reader);
+
+/* parses a custom message */
+static dstring_t parseMessage(xmlTextReaderPtr reader);
+
 
 /* list of invalid names for rooms, creatures, etc. */
 char *invalidNames[] = {
@@ -251,6 +259,7 @@ static void parseObject(xmlTextReaderPtr reader) {
    object->weight = createDstring();
    object->takeable = createDstring();
    object->droppable = createDstring();
+   object->messages = NULL;
 
    /* by default, an object has no weight */
    cstrtodstr(object->weight, "0");
@@ -384,6 +393,11 @@ static void parseObject(xmlTextReaderPtr reader) {
          checkClosingTag("script", reader);
       }
 
+      /* parse custom messages */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("messages", tagname)) {
+         object->messages = parseMessages(reader);
+      }
+
       /* an unknown tag was found */
       else {
          g_outputError("Illegal tag <%s> found in object definition",
@@ -452,6 +466,7 @@ static void parseCreature(xmlTextReaderPtr reader) {
    creature->title = NULL;
    creature->description = NULL;
    creature->deadDesc = NULL;
+   creature->messages = NULL;
 
    creature->scripts = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
 
@@ -534,6 +549,11 @@ static void parseCreature(xmlTextReaderPtr reader) {
          checkClosingTag("script", reader);
       }
 
+      /* parse custom messages */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("messages", tagname)) {
+         creature->messages = parseMessages(reader);
+      }
+
       /* an unknown tag was found */
       else {
          g_outputError("Illegal tag <%s> found in creature definition",
@@ -605,6 +625,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
    room->south = NULL;
    room->east = NULL;
    room->west = NULL;
+   room->messages = NULL;
    room->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t *), 5);
    room->creatures = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t *), 5);
 
@@ -720,6 +741,11 @@ static void parseRoom(xmlTextReaderPtr reader) {
          checkClosingTag("creature", reader);
       }
 
+      /* parse custom messages */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("messages", tagname)) {
+         room->messages = parseMessages(reader);
+      }
+
       /* an unknown tag was found */
       else {
          g_outputError("Illegal tag <%s> found in room definition",
@@ -751,6 +777,63 @@ static void parseRoom(xmlTextReaderPtr reader) {
    g_hash_table_insert(roomParsedTable, (gpointer)roomName, room);
 
    return;
+}
+
+/******************************************************************************/
+
+static Messages parseMessages(xmlTextReaderPtr reader) {
+
+   int i;
+   int parseStatus;   /* whether or not the parser could extract another node */
+   const char *name;  /* message's name (hash key) */
+
+   Messages msgs = createMessages();
+
+   /* parse all messages */
+   while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
+   xmlTextReaderDepth(reader) > 3
+   ) {
+      int        tagtype  = xmlTextReaderNodeType(reader);
+      const char *tagname = xmlTextReaderConstName(reader);
+
+      /* ignore XML comment */
+      if (XML_COMMENT_NODE == tagtype) {
+         continue;
+      }
+
+      /* we're parsing a message */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("message", tagname)) {
+
+         dstring_t message;
+
+         name = xmlTextReaderGetAttribute(reader, "name");
+         message = parseMessage(reader);
+         g_hash_table_insert(msgs, (char *)name, message);
+         checkClosingTag("message", reader);
+      }
+
+      else {
+         g_outputError("Illegal tag <%s> found in messages section",
+            xmlTextReaderConstName(reader));
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   if (parseStatus < 0) {
+      g_outputError("There was an error parsing game XML file\n");
+      exit(EXIT_FAILURE);
+   }
+
+   return msgs;
+}
+
+/******************************************************************************/
+
+static dstring_t parseMessage(xmlTextReaderPtr reader) {
+
+   dstring_t message = createDstring();
+   cstrtodstr(message, getNodeValue(reader));
+   return message;
 }
 
 /******************************************************************************/
