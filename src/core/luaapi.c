@@ -302,7 +302,7 @@ static int l_createRoom(lua_State *L) {
          return 2;
    }
 
-   newroom = createRoom();
+   newroom = createRoom(TRUE);
 
    cstrtodstr(newroom->name, name);
    cstrtodstr(newroom->title, title);

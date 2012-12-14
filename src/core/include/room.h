@@ -5,6 +5,9 @@
 #include <glib.h>
 #include <dstring.h>
 
+#include "messages.h"
+
+
 /* Represents the state of a single room */
 typedef struct roomState {
 
@@ -27,6 +30,8 @@ typedef struct room {
    struct room *south;
    struct room *east;
    struct room *west;
+
+   Messages messages;      /* hash table of custom messages */
 
    RoomState state;
 
@@ -55,8 +60,9 @@ typedef struct room {
 
 #include "player.h"
 
-/* allocates memory for a new room */
-extern Room *createRoom();
+/* Allocates memory for a room.  If initMessages is true, we allocate memory
+   for the messages structure.  Otherwise, just set it to NULL. */
+extern Room *createRoom(int initMessages);
 
 /* frees memory associated with a room */
 extern void destroyRoom(Room *room);

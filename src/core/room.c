@@ -1,4 +1,6 @@
 
+#define ROOM_C
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -11,11 +13,12 @@
 #include "include/player.h"
 #include "include/command.h"
 #include "include/event.h"
+#include "include/messages.h"
 
-#define ROOM_C
 
-/* allocates memory for a room */
-Room *createRoom();
+/* Allocates memory for a room.  If initMessages is true, we allocate memory
+   for the messages structure.  Otherwise, just set it to NULL. */
+Room *createRoom(int initMessages);
 
 /* frees memory associated with a room */
 void destroyRoom(Room *room);
@@ -31,7 +34,7 @@ static void describeRoom(Room *room);
 
 /******************************************************************************/
 
-Room *createRoom() {
+Room *createRoom(int initMessages) {
 
    Room *newroom;
 
@@ -43,6 +46,11 @@ Room *createRoom() {
    /* initialize the room's state */
    newroom->state.players = g_hash_table_new(g_str_hash, g_str_equal);
    newroom->state.visitedByAPlayer = 0;
+
+   newroom->messages = NULL;
+   if (initMessages) {
+      newroom->messages = createMessages();
+   }
 
    return newroom;
 }

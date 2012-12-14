@@ -12,9 +12,12 @@
 #include "include/state.h"
 #include "include/command.h"
 #include "include/event.h"
+#include "include/messages.h"
 
-/* allocates memory for a creature */
-Creature *createCreature();
+
+/* Allocates memory for a creature.  If initMessages is true, we allocate memory
+   for the messages structure.  Otherwise, just set it to NULL. */
+Creature *createCreature(int initMessages);
 
 /* frees all memory allocated for a creature */
 void destroyCreature(Creature *creature);
@@ -28,7 +31,7 @@ static void describeCreature(Creature *creature);
 
 /******************************************************************************/
 
-Creature *createCreature() {
+Creature *createCreature(int initMessages) {
 
    Creature *newcreature;
 
@@ -43,6 +46,11 @@ Creature *createCreature() {
    newcreature->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
    newcreature->state.alive = 1;
    newcreature->state.seenByAPlayer = 0;
+
+   newcreature->messages = NULL;
+   if (initMessages) {
+      newcreature->messages = createMessages();
+   }
 
    return newcreature;
 }

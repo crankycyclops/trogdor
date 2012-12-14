@@ -128,7 +128,7 @@ static void initCreatures() {
 
 static Creature *initCreature(CreatureParsed *creatureParsed) {
 
-   Creature *creature = createCreature();
+   Creature *creature = createCreature(FALSE);
 
    creature->name = creatureParsed->name;
    creature->title = creatureParsed->title;
@@ -173,7 +173,7 @@ static Room *initRoom(RoomParsed *roomParsed) {
 
    GArray *creatureNames = roomParsed->creatures; /* creatures in the room */
    GArray *objectNames = roomParsed->objects;     /* objects in the room */
-   Room *room = createRoom();                     /* actual room object */
+   Room *room = createRoom(FALSE);                /* actual room object */
 
    /* list of objects referenced by a name */
    GList *synonymList;
@@ -256,7 +256,7 @@ static void initObjects() {
 
 static Object *initObject(ObjectParsed *objectParsed) {
 
-   Object *object = createObject();
+   Object *object = createObject(FALSE);
 
    object->name = objectParsed->name;
    object->description = objectParsed->description;

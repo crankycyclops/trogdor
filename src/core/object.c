@@ -1,3 +1,6 @@
+
+#define OBJECT_C
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,15 +11,15 @@
 #include "include/state.h"
 #include "include/player.h"
 #include "include/event.h"
-
-#define OBJECT_C
+#include "include/messages.h"
 
 #define TAKE_OBJECT  1
 #define DROP_OBJECT  2
 
 
-/* allocates memory for a new game object */
-Object *createObject();
+/* Allocates memory for a new game object.  If initMessages is true, we allocate
+   memory for the messages structure.  Otherwise, just set it to NULL. */
+Object *createObject(int initMessages);
 
 /* frees memory associated with an object */
 void destroyObject(Object *object);
@@ -42,7 +45,7 @@ Object *clarifyObject(GList *objects, int objectCount);
 
 /******************************************************************************/
 
-Object *createObject() {
+Object *createObject(int initMessages) {
 
    Object *newobject;
 
@@ -62,6 +65,11 @@ Object *createObject() {
    newobject->state.seenByPlayer = 0;
    newobject->state.takenByPlayer = 0;
    newobject->state.droppedByPlayer = 0;
+
+   newobject->messages = NULL;
+   if (initMessages) {
+      newobject->messages = createMessages();
+   }
 
    return newobject;
 }

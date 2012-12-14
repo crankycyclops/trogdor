@@ -5,6 +5,8 @@
 #include <dstring.h>
 #include <lua.h>
 
+#include "messages.h"
+
 
 /* represents the state of a creature */
 typedef struct creatureState {
@@ -23,8 +25,9 @@ typedef struct creature {
    dstring_t description;  /* description of the creature */
    dstring_t deadDesc;     /* description of the creature when dead (optional) */
 
-   CreatureState state;    /* creature's state */
+   Messages messages;      /* hash table of custom messages */
 
+   CreatureState state;    /* creature's state */
    GList *objects;         /* objects owned by the creature */
 
    /* Lua state containing scripted functions */
@@ -35,8 +38,9 @@ typedef struct creature {
 
 #ifndef CREATURE_C
 
-/* allocates memory for a creature */
-extern Creature *createCreature();
+/* Allocates memory for a creature.  If initMessages is true, we allocate memory
+   for the messages structure.  Otherwise, just set it to NULL. */
+extern Creature *createCreature(int initMessages);
 
 /* frees all memory allocated for a creature */
 extern void destroyCreature(Creature *creature);
