@@ -71,6 +71,10 @@ void destroyCreature(Creature *creature) {
       lua_close(creature->lua);
    }
 
+   if (NULL != creature->messages) {
+      destroyMessages(creature->messages);
+   }
+
    free(creature);
    return;
 }

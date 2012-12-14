@@ -36,6 +36,15 @@ Messages createMessages() {
 
 void destroyMessages(Messages messages) {
 
+   GList *allMsgs = g_hash_table_get_values(messages);
+   GList *nextMsg = allMsgs;
+
+   while (NULL != nextMsg) {
+      dstrfree(&nextMsg->data);
+      nextMsg = g_list_next(nextMsg);
+   }
+
+   g_list_free(allMsgs);
    g_hash_table_destroy(messages);
    return;
 }

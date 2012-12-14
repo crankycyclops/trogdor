@@ -91,6 +91,10 @@ void destroyObject(Object *object) {
       lua_close(object->lua);
    }
 
+   if (NULL != object->messages) {
+      destroyMessages(object->messages);
+   }
+
    free(object);
    return;
 }

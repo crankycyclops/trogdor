@@ -76,6 +76,10 @@ void destroyRoom(Room *room) {
 
    g_hash_table_destroy(room->state.players);
 
+   if (NULL != room->messages) {
+      destroyMessages(room->messages);
+   }
+
    free(room);
 }
 
