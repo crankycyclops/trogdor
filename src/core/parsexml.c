@@ -59,7 +59,7 @@ static void parseRoom(xmlTextReaderPtr reader);
 static Messages parseMessages(xmlTextReaderPtr reader);
 
 /* parses a custom message */
-static dstring_t parseMessage(xmlTextReaderPtr reader);
+static const char *parseMessage(xmlTextReaderPtr reader);
 
 
 /* list of invalid names for rooms, creatures, etc. */
@@ -804,11 +804,11 @@ static Messages parseMessages(xmlTextReaderPtr reader) {
       /* we're parsing a message */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("message", tagname)) {
 
-         dstring_t message;
+         const char *message;
 
          name = xmlTextReaderGetAttribute(reader, "name");
          message = parseMessage(reader);
-         g_hash_table_insert(msgs, (char *)name, message);
+         setMessage(msgs, name, message);
          checkClosingTag("message", reader);
       }
 
@@ -829,11 +829,9 @@ static Messages parseMessages(xmlTextReaderPtr reader) {
 
 /******************************************************************************/
 
-static dstring_t parseMessage(xmlTextReaderPtr reader) {
+static const char *parseMessage(xmlTextReaderPtr reader) {
 
-   dstring_t message = createDstring();
-   cstrtodstr(message, getNodeValue(reader));
-   return message;
+   return getNodeValue(reader);
 }
 
 /******************************************************************************/
