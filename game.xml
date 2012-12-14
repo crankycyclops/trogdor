@@ -40,6 +40,14 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
               0, which means it has no weight. -->
          <weight>1</weight>
 
+         <!-- messages for various events are defined here (pre-defined for the
+              engine or custom for scripts)
+         -->
+         <messages>
+            <message name="take">The candle jumps, does a backflip and turns into a spoon.</message>
+            <message name="drop">You begrudgingly drop this awesome cylinder of waxy goodness.</message>
+         </messages>
+
          <!-- one or more scripts can be attached to an object, which define
               functions that get triggered by the event handler -->
          <script>script/candle1.lua</script>
