@@ -6,7 +6,6 @@
 #include "include/object.h"
 #include "include/room.h"
 #include "include/data.h"
-#include "include/state.h"
 #include "include/player.h"
 #include "include/timer.h"
 

@@ -2,6 +2,7 @@
 #define OBJECT_H
 
 
+#include <glib.h>
 #include <dstring.h>
 #include <lua.h>
 
@@ -42,6 +43,21 @@ typedef struct object {
    lua_State *lua;
 
 } Object;
+
+/* represents a creature's or a player's inventory */
+typedef struct inventory {
+
+   /* list and by-name index of object pointers */
+   GHashTable  *byName;
+   GList       *list;
+
+   /* current weight of inventory */
+   int weight;
+
+   /* inventory can't weight more than this value (if 0, unlimited) */
+   int maxWeight;
+
+} Inventory;
 
 
 #ifndef OBJECT_C
