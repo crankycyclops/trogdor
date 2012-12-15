@@ -5,6 +5,7 @@
 #include <dstring.h>
 #include <lua.h>
 
+#include "object.h"
 #include "messages.h"
 
 
@@ -26,9 +27,8 @@ typedef struct creature {
    dstring_t deadDesc;     /* description of the creature when dead (optional) */
 
    Messages messages;      /* hash table of custom messages */
-
    CreatureState state;    /* creature's state */
-   GList *objects;         /* objects owned by the creature */
+   Inventory inventory;    /* objects owned by the creature */
 
    /* Lua state containing scripted functions */
    lua_State *lua;

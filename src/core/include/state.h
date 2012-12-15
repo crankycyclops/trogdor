@@ -3,9 +3,6 @@
 #define STATE_H
 
 
-#include <glib.h>
-#include <dstring.h>
-
 #include "trogdor.h"
 
 

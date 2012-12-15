@@ -47,6 +47,10 @@ Creature *createCreature(int initMessages) {
    newcreature->state.alive = 1;
    newcreature->state.seenByAPlayer = 0;
 
+   /* initialize creature's inventory */
+   newcreature->inventory.byName = g_hash_table_new(g_str_hash, g_str_equal);
+   newcreature->inventory.list = NULL;
+
    newcreature->messages = NULL;
    if (initMessages) {
       newcreature->messages = createMessages();
@@ -64,7 +68,9 @@ void destroyCreature(Creature *creature) {
    dstrfree(&creature->description);
    dstrfree(&creature->deadDesc);
 
-   g_list_free(creature->objects);
+   g_hash_table_destroy(creature->inventory.byName);
+   g_list_free(creature->inventory.list);
+
    g_hash_table_destroy(creature->state.seenByPlayers);
 
    if (creature->lua != NULL) {

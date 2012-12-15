@@ -55,3 +55,4 @@ void destroyGame() {
    pthread_mutex_destroy(&resourceMutex);
    return;
 }
+
