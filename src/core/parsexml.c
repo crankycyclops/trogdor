@@ -308,6 +308,7 @@ static void parseObject(xmlTextReaderPtr reader) {
 
    cstrtodstr(object->name, objectName);
    dstrtrim(object->name);
+   dstrtolower(object->name, 0);
 
    /* parse all of the object's elements */
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
@@ -367,6 +368,7 @@ static void parseObject(xmlTextReaderPtr reader) {
          /* add to the object's list of synonyms */
          cstrtodstr(synonym, getNodeValue(reader));
          dstrtrim(synonym);
+         dstrtolower(synonym, 0);
          g_array_append_val(object->synonyms, synonym);
 
          /* 'room' is an invalid synonym */
@@ -412,7 +414,8 @@ static void parseObject(xmlTextReaderPtr reader) {
    }
 
    /* add the object to the objects parsed table for lookup later */
-   g_hash_table_insert(objectParsedTable, (gpointer)objectName, object);
+   g_hash_table_insert(objectParsedTable, (gpointer)dstrview(object->name),
+      object);
 
    return;
 }
@@ -496,6 +499,7 @@ static void parseCreature(xmlTextReaderPtr reader) {
 
    cstrtodstr(creature->name, creatureName);
    dstrtrim(creature->name);
+   dstrtolower(creature->name, 0);
 
    /* parse all of the creature's elements */
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
@@ -591,7 +595,8 @@ static void parseCreature(xmlTextReaderPtr reader) {
    }
 
    /* add the creature to the creatures parsed table for lookup later */
-   g_hash_table_insert(creatureParsedTable, (gpointer)creatureName, creature);
+   g_hash_table_insert(creatureParsedTable, (gpointer)dstrview(creature->name),
+      creature);
 
    return;
 }
@@ -677,6 +682,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
 
    cstrtodstr(room->name, roomName);
    dstrtrim(room->name);
+   dstrtolower(room->name, 0);
 
    /* parse all of the room's elements */
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
@@ -797,7 +803,7 @@ static void parseRoom(xmlTextReaderPtr reader) {
    }
 
    /* add the room to the rooms parsed lookup table */
-   g_hash_table_insert(roomParsedTable, (gpointer)roomName, room);
+   g_hash_table_insert(roomParsedTable, (gpointer)dstrview(room->name), room);
 
    return;
 }
