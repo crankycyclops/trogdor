@@ -40,6 +40,9 @@ static lua_State *initLuaState(GArray *scriptList);
 /* connect rooms so that users can navigate north, south, etc. */
 static void connectRooms();
 
+/* adds an object to a linked list and a hash table (by name and synonym) */
+static GList *addObject(GList *list, GHashTable *byName, dstring_t name);
+
 /* prints parsed data for a room */
 static void printParsedRoom(RoomParsed *room);
 
@@ -143,33 +146,8 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
 
    /* add objects to the creature's inventory */
    for (i = 0; i < objects->len; i++) {
-
-      int j;
-      GList *synonymList;
-
-      Object *object = g_hash_table_lookup(g_objects,
-         dstrview(g_array_index(objects, dstring_t, i)));
-
-      /* add object to the creature's inventory */
-      creature->inventory.list = g_list_append(creature->inventory.list, object);
-
-      /* make sure object can be referenced by name */
-      synonymList = g_hash_table_lookup(creature->inventory.byName,
-         (char *)dstrview(object->name));
-      synonymList = g_list_append(synonymList, object);
-      g_hash_table_insert(creature->inventory.byName,
-         (char *)dstrview(object->name), synonymList);
-
-      /* also reference objects in creature's inventory by synonyms */
-      for (j = 0; j < object->synonyms->len; j++) {
-         #define OBJ_SYNONYM g_array_index(object->synonyms, dstring_t, j)
-         synonymList = g_hash_table_lookup(creature->inventory.byName,
-            (char *)dstrview(OBJ_SYNONYM));
-         synonymList = g_list_append(synonymList, object);
-         g_hash_table_insert(creature->inventory.byName,
-            (char *)dstrview(OBJ_SYNONYM), synonymList);
-         #undef OBJ_SYNONYM
-      }
+      creature->inventory.list = addObject(creature->inventory.list,
+         creature->inventory.byName, g_array_index(objects, dstring_t, i));
    }
 
    return creature;
@@ -239,32 +217,8 @@ static Room *initRoom(RoomParsed *roomParsed) {
 
    /* add objects to the room */
    for (i = 0; i < objectNames->len; i++) {
-
-      int j;
-
-      Object *object = g_hash_table_lookup(g_objects,
-         dstrview(g_array_index(objectNames, dstring_t, i)));
-
-      /* add object to the room */
-      room->objectList = g_list_append(room->objectList, object);
-
-      /* make sure object can be referenced by name */
-      synonymList = g_hash_table_lookup(room->objectByName,
-         (char *)dstrview(object->name));
-      synonymList = g_list_append(synonymList, object);
-      g_hash_table_insert(room->objectByName, (char *)dstrview(object->name),
-         synonymList);
-
-      /* also reference objects in room by synonyms */
-      for (j = 0; j < object->synonyms->len; j++) {
-         #define OBJ_SYNONYM g_array_index(object->synonyms, dstring_t, j)
-         synonymList = g_hash_table_lookup(room->objectByName,
-            (char *)dstrview(OBJ_SYNONYM));
-         synonymList = g_list_append(synonymList, object);
-         g_hash_table_insert(room->objectByName, (char *)dstrview(OBJ_SYNONYM),
-            synonymList);
-         #undef OBJ_SYNONYM
-      }
+      room->objectList = addObject(room->objectList, room->objectByName,
+         g_array_index(objectNames, dstring_t, i));
    }
 
    return room;
@@ -408,6 +362,34 @@ static void connectRooms() {
 
    g_list_free(roomNames);
    return;
+}
+
+/******************************************************************************/
+
+static GList *addObject(GList *list, GHashTable *byName, dstring_t name) {
+
+   int i;
+   GList *synonymList;
+   Object *object = g_hash_table_lookup(g_objects, dstrview(name));
+
+   /* add object to the linked list for iteration */
+   list = g_list_append(list, object);
+
+   /* make sure object can also be referenced by name */
+   synonymList = g_hash_table_lookup(byName, (char *)dstrview(name));
+   synonymList = g_list_append(synonymList, object);
+   g_hash_table_insert(byName, (char *)dstrview(name), synonymList);
+
+   /* also reference objects by synonyms */
+   for (i = 0; i < object->synonyms->len; i++) {
+      #define OBJ_SYNONYM g_array_index(object->synonyms, dstring_t, i)
+      synonymList = g_hash_table_lookup(byName, (char *)dstrview(OBJ_SYNONYM));
+      synonymList = g_list_append(synonymList, object);
+      g_hash_table_insert(byName, (char *)dstrview(OBJ_SYNONYM), synonymList);
+      #undef OBJ_SYNONYM
+   }
+
+   return list;
 }
 
 /******************************************************************************/
