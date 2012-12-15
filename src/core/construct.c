@@ -129,7 +129,9 @@ static void initCreatures() {
 
 static Creature *initCreature(CreatureParsed *creatureParsed) {
 
+   int i;
    Creature *creature = createCreature(FALSE);
+   GArray *objects = creatureParsed->objects;
 
    creature->name = creatureParsed->name;
    creature->title = creatureParsed->title;
@@ -138,6 +140,37 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    creature->messages = creatureParsed->messages;
 
    creature->lua = initLuaState(creatureParsed->scripts);
+
+   /* add objects to the creature's inventory */
+   for (i = 0; i < objects->len; i++) {
+
+      int j;
+      GList *synonymList;
+
+      Object *object = g_hash_table_lookup(g_objects,
+         dstrview(g_array_index(objects, dstring_t, i)));
+
+      /* add object to the creature's inventory */
+      creature->inventory.list = g_list_append(creature->inventory.list, object);
+
+      /* make sure object can be referenced by name */
+      synonymList = g_hash_table_lookup(creature->inventory.byName,
+         (char *)dstrview(object->name));
+      synonymList = g_list_append(synonymList, object);
+      g_hash_table_insert(creature->inventory.byName,
+         (char *)dstrview(object->name), synonymList);
+
+      /* also reference objects in creature's inventory by synonyms */
+      for (j = 0; j < object->synonyms->len; j++) {
+         #define OBJ_SYNONYM g_array_index(object->synonyms, dstring_t, j)
+         synonymList = g_hash_table_lookup(creature->inventory.byName,
+            (char *)dstrview(OBJ_SYNONYM));
+         synonymList = g_list_append(synonymList, object);
+         g_hash_table_insert(creature->inventory.byName,
+            (char *)dstrview(OBJ_SYNONYM), synonymList);
+         #undef OBJ_SYNONYM
+      }
+   }
 
    return creature;
 }

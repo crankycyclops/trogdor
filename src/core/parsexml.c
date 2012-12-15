@@ -469,6 +469,7 @@ static void parseCreature(xmlTextReaderPtr reader) {
    creature->messages = NULL;
 
    creature->scripts = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
+   creature->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
 
    /* record the creature's name */
    creatureName = xmlTextReaderGetAttribute(reader, "name");
@@ -533,6 +534,28 @@ static void parseCreature(xmlTextReaderPtr reader) {
          cstrtodstr(creature->deadDesc, getNodeValue(reader));
          dstrtrim(creature->deadDesc);
          checkClosingTag("deaddesc", reader);
+      }
+
+      /* we're parsing an object owned by the creature */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("object", tagname)) {
+
+         const char *objectName = getNodeValue(reader);
+         dstring_t object = createDstring();
+
+         /* make sure the object exists */
+         if (NULL == g_hash_table_lookup(objectParsedTable, objectName)) {
+            g_outputError("object '%s' belonging to creature '%s' doesn't exist\n",
+               objectName, creatureName);
+            exit(EXIT_FAILURE);
+         }
+
+         /* add object to the creature */
+         cstrtodstr(object, objectName);
+         dstrtrim(object);
+         g_array_append_val(creature->objects, object);
+
+         /* make sure we have a valid closing tag */
+         checkClosingTag("object", reader);
       }
 
       /* we're parsing a script tag */

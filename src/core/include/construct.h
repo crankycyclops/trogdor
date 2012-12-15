@@ -58,6 +58,9 @@ typedef struct creatureParsed {
    /* hash table of custom messages */
    Messages messages;
 
+   /* an array of object identifiers (dstring_t's) */
+   GArray *objects;
+
    /* array of filenames containing Lua scripts */
    GArray *scripts;
 
