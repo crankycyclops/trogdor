@@ -165,7 +165,8 @@ int actionList(Player *player, Command command) {
 
 int actionMove(Player *player, Command command) {
 
-   dstring_t direction;
+   Room       *goHere;
+   dstring_t  direction;
 
    /* user entered navigation command in the verb + direction format */
    if (
@@ -199,113 +200,51 @@ int actionMove(Player *player, Command command) {
    }
 
    if (0 == strcmp("north", dstrview(direction))) {
-
-         if (NULL != player->location->north) {
-            setLocation(player, player->location->north, 1);
-         }
-
-         else {
-            g_outputString("You can't go that way!\n");
-         }
-
-         return 1;
+      goHere = player->location->north;
    }
 
    else if (0 == strcmp("south", dstrview(direction))) {
-
-         if (NULL != player->location->south) {
-            setLocation(player, player->location->south, 1);
-         }
-
-         else {
-            g_outputString("You can't go that way!\n");
-         }
-
-         return 1;
+      goHere = player->location->south;
    }
 
    else if (0 == strcmp("east", dstrview(direction))) {
-
-         if (NULL != player->location->east) {
-            setLocation(player, player->location->east, 1);
-         }
-
-         else {
-            g_outputString("You can't go that way!\n");
-         }
-
-         return 1;
+      goHere = player->location->east;
    }
 
    else if (0 == strcmp("west", dstrview(direction))) {
-
-         if (NULL != player->location->west) {
-            setLocation(player, player->location->west, 1);
-         }
-
-         else {
-            g_outputString("You can't go that way!\n");
-         }
-
-         return 1;
+      goHere = player->location->west;
    }
 
    else if (0 == strcmp("in", dstrview(direction))) {
-
-         if (NULL != player->location->in) {
-            setLocation(player, player->location->in, 1);
-         }
-
-         else {
-            g_outputString("You can't go that way!\n");
-         }
-
-         return 1;
+      goHere = player->location->in;
    }
 
    else if (0 == strcmp("out", dstrview(direction))) {
-
-         if (NULL != player->location->out) {
-            setLocation(player, player->location->out, 1);
-         }
-
-         else {
-            g_outputString("You can't go that way!\n");
-         }
-
-         return 1;
+      goHere = player->location->out;
    }
 
    else if (0 == strcmp("up", dstrview(direction))) {
-
-         if (NULL != player->location->up) {
-            setLocation(player, player->location->up, 1);
-         }
-
-         else {
-            g_outputString("You can't go that way!\n");
-         }
-
-         return 1;
+      goHere = player->location->up;
    }
 
    else if (0 == strcmp("down", dstrview(direction))) {
-
-         if (NULL != player->location->down) {
-            setLocation(player, player->location->down, 1);
-         }
-
-         else {
-            g_outputString("You can't go that way!\n");
-         }
-
-         return 1;
+      goHere = player->location->down;
    }
 
-   // syntax error: no such direction
+   /* syntax error: no such direction */
    else {
       return 0;
    }
+
+   if (NULL == goHere) {
+      g_outputString("You can't go that way!\n");
+   }
+
+   else {
+      setLocation(player, goHere, 1);
+   }
+
+   return 1;
 }
 
 /******************************************************************************/
