@@ -43,6 +43,16 @@ Room *createRoom(int initMessages) {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
 
+   newroom->north = NULL;
+   newroom->south = NULL;
+   newroom->east = NULL;
+   newroom->west = NULL;
+
+   newroom->in = NULL;
+   newroom->out = NULL;
+   newroom->up = NULL;
+   newroom->down = NULL;
+
    /* initialize the room's state */
    newroom->state.players = g_hash_table_new(g_str_hash, g_str_equal);
    newroom->state.visitedByAPlayer = 0;

@@ -653,6 +653,10 @@ static void parseRoom(xmlTextReaderPtr reader) {
    room->south = NULL;
    room->east = NULL;
    room->west = NULL;
+   room->in = NULL;
+   room->out = NULL;
+   room->up = NULL;
+   room->down = NULL;
    room->messages = NULL;
    room->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t *), 5);
    room->creatures = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t *), 5);
@@ -724,6 +728,26 @@ static void parseRoom(xmlTextReaderPtr reader) {
       /* get the room west of this one */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("west", tagname)) {
          GET_XML_TAG(west, room)
+      }
+
+      /* get the room we go to by going "in" */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("in", tagname)) {
+         GET_XML_TAG(in, room)
+      }
+
+      /* get the room we go to by going "out" */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("out", tagname)) {
+         GET_XML_TAG(out, room)
+      }
+
+      /* get the room we go to by going "up" */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("up", tagname)) {
+         GET_XML_TAG(up, room)
+      }
+
+      /* get the room we go to by going "down" */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("down", tagname)) {
+         GET_XML_TAG(down, room)
       }
 
       /* an object gets placed in this room */

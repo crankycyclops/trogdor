@@ -13,10 +13,16 @@ typedef struct roomParsed {
    dstring_t name;
    dstring_t title;
    dstring_t description;
+
    dstring_t north;
    dstring_t south;
    dstring_t east;
    dstring_t west;
+
+   dstring_t in;
+   dstring_t out;
+   dstring_t up;
+   dstring_t down;
 
    /* hash table of custom messages */
    Messages messages;

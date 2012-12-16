@@ -31,6 +31,11 @@ typedef struct room {
    struct room *east;
    struct room *west;
 
+   struct room *in;
+   struct room *out;
+   struct room *up;
+   struct room *down;
+
    Messages messages;      /* hash table of custom messages */
 
    RoomState state;
