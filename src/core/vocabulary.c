@@ -80,6 +80,10 @@ Verb *getVerbs() {
       {"south", &actionMove},
       {"east",  &actionMove},
       {"west",  &actionMove},
+      {"in",    &actionMove},
+      {"out",   &actionMove},
+      {"up",    &actionMove},
+      {"down",  &actionMove},
 
       /* verbs for picking up an object (requires a direct object) */
       {"take",  &actionPickupObject},

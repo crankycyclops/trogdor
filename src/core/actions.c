@@ -172,7 +172,11 @@ int actionMove(Player *player, Command command) {
       0 != strcmp("north", dstrview(command.verb)) &&
       0 != strcmp("south", dstrview(command.verb)) &&
       0 != strcmp("east",  dstrview(command.verb)) &&
-      0 != strcmp("west",  dstrview(command.verb))
+      0 != strcmp("west",  dstrview(command.verb)) &&
+      0 != strcmp("in",    dstrview(command.verb)) &&
+      0 != strcmp("out",   dstrview(command.verb)) &&
+      0 != strcmp("up",    dstrview(command.verb)) &&
+      0 != strcmp("down",  dstrview(command.verb))
    ) {
 
       if (NULL != command.directObject) {
@@ -237,6 +241,58 @@ int actionMove(Player *player, Command command) {
 
          if (NULL != player->location->west) {
             setLocation(player, player->location->west, 1);
+         }
+
+         else {
+            g_outputString("You can't go that way!\n");
+         }
+
+         return 1;
+   }
+
+   else if (0 == strcmp("in", dstrview(direction))) {
+
+         if (NULL != player->location->in) {
+            setLocation(player, player->location->in, 1);
+         }
+
+         else {
+            g_outputString("You can't go that way!\n");
+         }
+
+         return 1;
+   }
+
+   else if (0 == strcmp("out", dstrview(direction))) {
+
+         if (NULL != player->location->out) {
+            setLocation(player, player->location->out, 1);
+         }
+
+         else {
+            g_outputString("You can't go that way!\n");
+         }
+
+         return 1;
+   }
+
+   else if (0 == strcmp("up", dstrview(direction))) {
+
+         if (NULL != player->location->up) {
+            setLocation(player, player->location->up, 1);
+         }
+
+         else {
+            g_outputString("You can't go that way!\n");
+         }
+
+         return 1;
+   }
+
+   else if (0 == strcmp("down", dstrview(direction))) {
+
+         if (NULL != player->location->down) {
+            setLocation(player, player->location->down, 1);
          }
 
          else {

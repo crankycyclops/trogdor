@@ -200,6 +200,10 @@ static Room *initRoom(RoomParsed *roomParsed) {
    room->south = NULL;
    room->east  = NULL;
    room->west  = NULL;
+   room->in    = NULL;
+   room->out   = NULL;
+   room->up    = NULL;
+   room->down  = NULL;
 
    room->messages = roomParsed->messages;
    room->creatureList = NULL;
@@ -355,6 +359,62 @@ static void connectRooms() {
          }
 
          room->west = connected;
+      }
+
+      if (NULL != roomDefinition->in) {
+
+         connected = g_hash_table_lookup(g_rooms, dstrview(roomDefinition->in));
+
+         if (NULL == connected) {
+            g_outputError("error: room '%s' connects to room '%s', but "
+               "room '%s' doesn't exist!\n", dstrview(room->name),
+               dstrview(roomDefinition->in), dstrview(roomDefinition->in));
+            exit(EXIT_FAILURE);
+         }
+
+         room->in = connected;
+      }
+
+      if (NULL != roomDefinition->out) {
+
+         connected = g_hash_table_lookup(g_rooms, dstrview(roomDefinition->out));
+
+         if (NULL == connected) {
+            g_outputError("error: room '%s' connects to room '%s', but "
+               "room '%s' doesn't exist!\n", dstrview(room->name),
+               dstrview(roomDefinition->out), dstrview(roomDefinition->out));
+            exit(EXIT_FAILURE);
+         }
+
+         room->out = connected;
+      }
+
+      if (NULL != roomDefinition->up) {
+
+         connected = g_hash_table_lookup(g_rooms, dstrview(roomDefinition->up));
+
+         if (NULL == connected) {
+            g_outputError("error: room '%s' connects to room '%s', but "
+               "room '%s' doesn't exist!\n", dstrview(room->name),
+               dstrview(roomDefinition->up), dstrview(roomDefinition->up));
+            exit(EXIT_FAILURE);
+         }
+
+         room->up = connected;
+      }
+
+      if (NULL != roomDefinition->down) {
+
+         connected = g_hash_table_lookup(g_rooms, dstrview(roomDefinition->down));
+
+         if (NULL == connected) {
+            g_outputError("error: room '%s' connects to room '%s', but "
+               "room '%s' doesn't exist!\n", dstrview(room->name),
+               dstrview(roomDefinition->down), dstrview(roomDefinition->down));
+            exit(EXIT_FAILURE);
+         }
+
+         room->down = connected;
       }
 
       currentRoomName = currentRoomName->next;
