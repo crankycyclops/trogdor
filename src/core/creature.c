@@ -66,7 +66,6 @@ void destroyCreature(Creature *creature) {
    dstrfree(&creature->name);
    dstrfree(&creature->title);
    dstrfree(&creature->description);
-   dstrfree(&creature->deadDesc);
 
    g_hash_table_destroy(creature->inventory.byName);
    g_list_free(creature->inventory.list);

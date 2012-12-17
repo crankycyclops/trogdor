@@ -24,7 +24,6 @@ typedef struct creature {
    dstring_t name;         /* unique identifier */
    dstring_t title;        /* what the creature is called */
    dstring_t description;  /* description of the creature */
-   dstring_t deadDesc;     /* description of the creature when dead (optional) */
 
    Messages messages;      /* hash table of custom messages */
    CreatureState state;    /* creature's state */

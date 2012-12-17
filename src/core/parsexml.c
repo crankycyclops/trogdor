@@ -468,7 +468,6 @@ static void parseCreature(xmlTextReaderPtr reader) {
    creature->name = createDstring();
    creature->title = NULL;
    creature->description = NULL;
-   creature->deadDesc = NULL;
    creature->messages = NULL;
 
    creature->scripts = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
@@ -521,23 +520,6 @@ static void parseCreature(xmlTextReaderPtr reader) {
       /* we're parsing the creature's description */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("description", tagname)) {
          GET_XML_TAG(description, creature)
-      }
-
-      /* we're parsing the creature's description when dead */
-      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("deaddesc", tagname)) {
-
-         if (NULL != creature->deadDesc) {
-            fprintf(stderr, "Warning: \"deadDesc\" declared twice. \n"
-               "Overwriting the first.\n");
-         }
-
-         else {
-            creature->deadDesc = createDstring();
-         }
-
-         cstrtodstr(creature->deadDesc, getNodeValue(reader));
-         dstrtrim(creature->deadDesc);
-         checkClosingTag("deaddesc", reader);
       }
 
       /* we're parsing an object owned by the creature */

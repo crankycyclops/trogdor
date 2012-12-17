@@ -139,7 +139,6 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    creature->name = creatureParsed->name;
    creature->title = creatureParsed->title;
    creature->description = creatureParsed->description;
-   creature->deadDesc = creatureParsed->deadDesc;
    creature->messages = creatureParsed->messages;
 
    creature->lua = initLuaState(creatureParsed->scripts);

@@ -59,7 +59,6 @@ typedef struct creatureParsed {
    dstring_t name;
    dstring_t title;
    dstring_t description;
-   dstring_t deadDesc;
 
    /* hash table of custom messages */
    Messages messages;
