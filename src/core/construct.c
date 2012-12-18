@@ -144,6 +144,28 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    creature->description = creatureParsed->description;
    creature->messages = creatureParsed->messages;
 
+   if (NULL != creatureParsed->allegiance) {
+
+      if (0 == strcmp(dstrview(creatureParsed->allegiance), "neutral")) {
+         creature->allegiance = CREATURE_ALLEGIANCE_NEUTRAL;
+      }
+      
+      else if (0 == strcmp(dstrview(creatureParsed->allegiance), "friend")) {
+         creature->allegiance = CREATURE_ALLEGIANCE_FRIEND;
+      }
+      
+      else if (0 == strcmp(dstrview(creatureParsed->allegiance), "enemy")) {
+         creature->allegiance = CREATURE_ALLEGIANCE_ENEMY;
+      }
+      
+      else {
+         g_outputError("%s is not a valid allegiance for creature '%s'!\n",
+            dstrview(creatureParsed->allegiance),
+            dstrview(creatureParsed->name));
+         exit(EXIT_FAILURE);
+      }
+   }
+
    creature->lua = initLuaState(creatureParsed->scripts);
 
    /* add objects to the creature's inventory */

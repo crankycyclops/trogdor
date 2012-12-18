@@ -472,6 +472,9 @@ static void parseCreature(xmlTextReaderPtr reader) {
    creature->messages = NULL;
    creature->used = 0;
 
+   /* by default, a creature is neutral */
+   creature->allegiance = NULL;
+
    creature->scripts = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
    creature->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
 
@@ -522,6 +525,13 @@ static void parseCreature(xmlTextReaderPtr reader) {
       /* we're parsing the creature's description */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("description", tagname)) {
          GET_XML_TAG(description, creature)
+      }
+
+      /* we're parsing the creature's allegiance */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("allegiance", tagname)) {
+         GET_XML_TAG(allegiance, creature)
+         dstrtrim(creature->allegiance);
+         dstrtolower(creature->allegiance, 0);
       }
 
       /* we're parsing an object owned by the creature */

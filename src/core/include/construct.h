@@ -62,6 +62,7 @@ typedef struct creatureParsed {
    dstring_t name;
    dstring_t title;
    dstring_t description;
+   dstring_t allegiance;
 
    /* how many times the creature was placed in a room */
    int used;

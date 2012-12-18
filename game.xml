@@ -105,6 +105,8 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
             He stands 8 feet tall and breathes fire from his nostrils.
          </description>
 
+         <allegiance>enemy</allegiance>
+
          <messages>
             <message name="dead">Trogdor is very much dead.</message>
          </messages>
