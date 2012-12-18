@@ -51,6 +51,9 @@ Creature *createCreature(int initMessages) {
    newcreature->inventory.byName = g_hash_table_new(g_str_hash, g_str_equal);
    newcreature->inventory.list = NULL;
 
+   /* by default, creatures are neutral */
+   newcreature->allegiance = CREATURE_ALLEGIANCE_NEUTRAL;
+
    newcreature->messages = NULL;
    if (initMessages) {
       newcreature->messages = createMessages();

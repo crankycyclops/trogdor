@@ -9,6 +9,10 @@
 #include "messages.h"
 
 
+#define CREATURE_ALLEGIANCE_FRIEND  0
+#define CREATURE_ALLEGIANCE_ENEMY   1
+#define CREATURE_ALLEGIANCE_NEUTRAL 2
+
 /* represents the state of a creature */
 typedef struct creatureState {
 
@@ -28,6 +32,7 @@ typedef struct creature {
    Messages messages;      /* hash table of custom messages */
    CreatureState state;    /* creature's state */
    Inventory inventory;    /* objects owned by the creature */
+   int allegiance;         /* whether the creature is a friend, enemy or neutral */
 
    /* Lua state containing scripted functions */
    lua_State *lua;
