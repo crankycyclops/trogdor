@@ -43,6 +43,9 @@ static void connectRooms();
 /* adds an object to a linked list and a hash table (by name and synonym) */
 static GList *addObject(GList *list, GHashTable *byName, dstring_t name);
 
+/* adds a creature to a linked list and a hash table (by name and synonym) */
+static GList *addCreature(GList *list, GHashTable *byName, dstring_t name);
+
 /* prints parsed data for a room */
 static void printParsedRoom(RoomParsed *room);
 
@@ -205,17 +208,11 @@ static Room *initRoom(RoomParsed *roomParsed) {
    room->down  = NULL;
 
    room->messages = roomParsed->messages;
-   room->creatureList = NULL;
-   room->objectList = NULL;
-   room->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
 
    /* add creatures to the room */
    for (i = 0; i < creatureNames->len; i++) {
-
-      Creature *creature = g_hash_table_lookup(g_creatures,
-         dstrview(g_array_index(creatureNames, dstring_t, i)));
-
-      room->creatureList = g_list_append(room->creatureList, creature);
+      room->creatureList = addCreature(room->creatureList, room->creatureByName,
+         g_array_index(creatureNames, dstring_t, i));
    }
 
    /* add objects to the room */
@@ -447,6 +444,25 @@ static GList *addObject(GList *list, GHashTable *byName, dstring_t name) {
       g_hash_table_insert(byName, (char *)dstrview(OBJ_SYNONYM), synonymList);
       #undef OBJ_SYNONYM
    }
+
+   return list;
+}
+
+/******************************************************************************/
+
+static GList *addCreature(GList *list, GHashTable *byName, dstring_t name) {
+
+   int i;
+   GList *synonymList;
+   Creature *creature = g_hash_table_lookup(g_creatures, dstrview(name));
+
+   /* add creature to the linked list for iteration */
+   list = g_list_append(list, creature);
+
+   /* make sure object can also be referenced by name */
+   synonymList = g_hash_table_lookup(byName, (char *)dstrview(name));
+   synonymList = g_list_append(synonymList, creature);
+   g_hash_table_insert(byName, (char *)dstrview(name), synonymList);
 
    return list;
 }

@@ -12,6 +12,7 @@
 #include "include/player.h"
 #include "include/command.h"
 #include "include/object.h"
+#include "include/creature.h"
 #include "include/room.h"
 
 #define OBJ_FROM_ROOM       1
@@ -43,7 +44,10 @@ int actionJump(Player *player, Command command);
 /* responds to profanity */
 int actionProfanity(Player *player, Command command);
 
-/* returns object referenced by name, and disambiguates between synonyms if 
+/* returns creature referenced by the given name */
+static Creature *getCreature(Player *player, dstring_t name);
+
+/* returns object referenced by the name, and disambiguates between synonyms if 
    necessary */
 static Object *getObject(Player *player, dstring_t name, int objectSource);
 
@@ -80,10 +84,11 @@ int actionLook(Player *player, Command command) {
       object = NULL;
    }
 
-   /* user is looking at an object */
+   /* user is looking at an object or a creature */
    if (NULL != object) {
 
-      Object *thing;
+      Creature *being = NULL;
+      Object   *thing = NULL;
 
       /* objects in the room have precedence over objects in the inventory
          -- no good reason to do this, except that it makes the code easier :) */
@@ -93,12 +98,23 @@ int actionLook(Player *player, Command command) {
          thing = getObject(player, object, OBJ_FROM_INVENTORY);
       }
 
+      /* couldn't find the referenced item in the room or inventory - is it a
+         creature? */
       if (NULL == thing) {
-         g_outputString("There is no %s here!\n", dstrview(object));
+         being = getCreature(player, object);
+      }
+
+      /* objects take precedence over creatures */
+      if (NULL != thing) {
+         displayObject(player, thing, TRUE);
+      }
+
+      else if (NULL != being) {
+         displayCreature(player, being, TRUE);
       }
 
       else {
-         displayObject(player, thing, TRUE);
+         g_outputString("There is no %s here!\n", dstrview(object));
       }
    }
 
@@ -245,6 +261,20 @@ int actionMove(Player *player, Command command) {
    }
 
    return 1;
+}
+
+/******************************************************************************/
+
+static Creature *getCreature(Player *player, dstring_t name) {
+
+   GList *matches;
+   GList *curMatch;
+
+   matches = g_hash_table_lookup(player->location->creatureByName,
+      dstrview(name));
+
+   // TODO: clarify between synonyms (right now, there aren't any...)
+   return NULL == matches ? NULL : (Creature *)matches->data;
 }
 
 /******************************************************************************/

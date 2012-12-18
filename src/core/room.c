@@ -53,6 +53,11 @@ Room *createRoom(int initMessages) {
    newroom->up = NULL;
    newroom->down = NULL;
 
+   newroom->creatureList = NULL;
+   newroom->creatureByName = g_hash_table_new(g_str_hash, g_str_equal);
+   newroom->objectList = NULL;
+   newroom->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
+
    /* initialize the room's state */
    newroom->state.players = g_hash_table_new(g_str_hash, g_str_equal);
    newroom->state.visitedByAPlayer = 0;
@@ -78,6 +83,15 @@ void destroyRoom(Room *room) {
    if (NULL != room->objectByName) {
       // TODO: we have to destroy each GList inside objectByName first!
       g_hash_table_destroy(room->objectByName);
+   }
+
+   if (NULL != room->creatureList) {
+      g_list_free(room->creatureList);
+   }
+
+   if (NULL != room->creatureByName) {
+      // TODO: we have to destroy each GList inside objectByName first!
+      g_hash_table_destroy(room->creatureByName);
    }
 
    dstrfree(&room->name);

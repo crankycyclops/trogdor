@@ -53,7 +53,10 @@ typedef struct room {
       quickly operate on all objects when we enter a room. */
    GList *objectList;
 
-   /* List of all creatures in a room */
+   /* maps creature names to creature objects */
+   GHashTable *creatureByName;
+
+   /* Iterable list of all creatures in a room */
    GList *creatureList;
 
 } Room;
