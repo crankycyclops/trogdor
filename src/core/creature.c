@@ -118,8 +118,28 @@ int showLongDescription) {
 
 static void describeCreature(Creature *creature) {
 
-   /* TODO: distinguish between alive and dead for descriptions */
+   const char *description;
+
+   /* creature is alive */
+   if (creature->state.alive) {
+      description = dstrview(creature->description);
+   }
+
+   /* creature is dead */
+   else {
+
+      dstring_t message = getMessage(creature->messages, "dead");
+
+      if (NULL == message) {
+         description = "It lays crumpled and lifeless on the ground.";
+      }
+
+      else {
+         description = dstrview(message);
+      }
+   }
+
    g_outputString("\nYou see %s.  %s\n", dstrview(creature->title),
-      dstrview(creature->description));
+      description);
 }
 
