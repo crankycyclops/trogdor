@@ -43,6 +43,9 @@ typedef struct objectParsed {
    dstring_t takeable;
    dstring_t droppable;
 
+   /* how many times the object was placed in a room or inventory */
+   int used;
+
    /* hash table of custom messages */
    Messages messages;
 
@@ -59,6 +62,9 @@ typedef struct creatureParsed {
    dstring_t name;
    dstring_t title;
    dstring_t description;
+
+   /* how many times the creature was placed in a room */
+   int used;
 
    /* hash table of custom messages */
    Messages messages;

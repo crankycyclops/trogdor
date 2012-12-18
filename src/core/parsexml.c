@@ -260,6 +260,7 @@ static void parseObject(xmlTextReaderPtr reader) {
    object->takeable = createDstring();
    object->droppable = createDstring();
    object->messages = NULL;
+   object->used = 0;
 
    /* by default, an object has no weight */
    cstrtodstr(object->weight, "0");
@@ -469,6 +470,7 @@ static void parseCreature(xmlTextReaderPtr reader) {
    creature->title = NULL;
    creature->description = NULL;
    creature->messages = NULL;
+   creature->used = 0;
 
    creature->scripts = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
    creature->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);

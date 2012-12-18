@@ -426,7 +426,17 @@ static GList *addObject(GList *list, GHashTable *byName, dstring_t name) {
 
    int i;
    GList *synonymList;
+   ObjectParsed *objDefinition = g_hash_table_lookup(objectParsedTable,
+      dstrview(name));
    Object *object = g_hash_table_lookup(g_objects, dstrview(name));
+
+   /* make sure object isn't going into more than one location */
+   objDefinition->used++;
+   if (objDefinition->used > 1) {
+      fprintf(stderr, "error: object '%s' exists in more than one location!\n",
+         dstrview(name));
+      exit(EXIT_FAILURE);
+   }
 
    /* add object to the linked list for iteration */
    list = g_list_append(list, object);
@@ -454,7 +464,17 @@ static GList *addCreature(GList *list, GHashTable *byName, dstring_t name) {
 
    int i;
    GList *synonymList;
+   CreatureParsed *creatureDef = g_hash_table_lookup(creatureParsedTable,
+      dstrview(name));
    Creature *creature = g_hash_table_lookup(g_creatures, dstrview(name));
+
+   /* make sure object isn't going into more than one location */
+   creatureDef->used++;
+   if (creatureDef->used > 1) {
+      fprintf(stderr, "error: creature '%s' exists in more than one location!\n",
+         dstrview(name));
+      exit(EXIT_FAILURE);
+   }
 
    /* add creature to the linked list for iteration */
    list = g_list_append(list, creature);
