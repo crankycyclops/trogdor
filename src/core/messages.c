@@ -53,14 +53,14 @@ void destroyMessages(Messages messages) {
 
 dstring_t getMessage(Messages messages, const char *name) {
 
-   return g_hash_table_lookup(messages, name);
+   return NULL == messages ? NULL : g_hash_table_lookup(messages, name);
 }
 
 /******************************************************************************/
 
 void displayMessage(Messages messages, const char *name) {
 
-   dstring_t message = g_hash_table_lookup(messages, name);
+   dstring_t message = NULL == messages ? NULL : g_hash_table_lookup(messages, name);
 
    if (NULL != message) {
       g_outputString("%s\n", dstrview(message));

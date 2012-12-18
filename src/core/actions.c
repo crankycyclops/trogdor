@@ -184,6 +184,10 @@ int actionMove(Player *player, Command command) {
    Room       *goHere;
    dstring_t  direction;
 
+   /* transition messages (if defined) */
+   dstring_t  transitionIn;
+   dstring_t  transitionOut;
+
    /* user entered navigation command in the verb + direction format */
    if (
       0 != strcmp("north", dstrview(command.verb)) &&
@@ -216,34 +220,58 @@ int actionMove(Player *player, Command command) {
    }
 
    if (0 == strcmp("north", dstrview(direction))) {
+      transitionOut = getMessage(player->location->messages, "goNorth");
+      transitionIn  = NULL != player->location->north ?
+         getMessage(player->location->north->messages, "fromSouth") : NULL;
       goHere = player->location->north;
    }
 
    else if (0 == strcmp("south", dstrview(direction))) {
+      transitionOut = getMessage(player->location->messages, "goSouth");
+      transitionIn  = NULL != player->location->south ?
+         getMessage(player->location->south->messages, "fromNorth") : NULL;
       goHere = player->location->south;
    }
 
    else if (0 == strcmp("east", dstrview(direction))) {
+      transitionOut = getMessage(player->location->messages, "goEast");
+      transitionIn  = NULL != player->location->east ?
+         getMessage(player->location->east->messages, "fromWest") : NULL;
       goHere = player->location->east;
    }
 
    else if (0 == strcmp("west", dstrview(direction))) {
+      transitionOut = getMessage(player->location->messages, "goWest");
+      transitionIn  = NULL != player->location->west ?
+         getMessage(player->location->west->messages, "fromEast") : NULL;
       goHere = player->location->west;
    }
 
    else if (0 == strcmp("in", dstrview(direction))) {
+      transitionOut = getMessage(player->location->messages, "goIn");
+      transitionIn  = NULL != player->location->in ?
+         getMessage(player->location->in->messages, "fromOut") : NULL;
       goHere = player->location->in;
    }
 
    else if (0 == strcmp("out", dstrview(direction))) {
+      transitionOut = getMessage(player->location->messages, "goOut");
+      transitionIn  = NULL != player->location->out ?
+         getMessage(player->location->out->messages, "fromIn") : NULL;
       goHere = player->location->out;
    }
 
    else if (0 == strcmp("up", dstrview(direction))) {
+      transitionOut = getMessage(player->location->messages, "goUp");
+      transitionIn  = NULL != player->location->up ?
+         getMessage(player->location->up->messages, "fromDown") : NULL;
       goHere = player->location->up;
    }
 
    else if (0 == strcmp("down", dstrview(direction))) {
+      transitionOut = getMessage(player->location->messages, "goDown");
+      transitionIn  = NULL != player->location->down ?
+         getMessage(player->location->down->messages, "fromUp") : NULL;
       goHere = player->location->down;
    }
 
@@ -257,6 +285,15 @@ int actionMove(Player *player, Command command) {
    }
 
    else {
+
+      if (NULL != transitionOut) {
+         g_outputString("\n%s\n", dstrview(transitionOut));
+      }
+
+      if (NULL != transitionIn) {
+         g_outputString("\n%s\n", dstrview(transitionIn));
+      }
+
       setLocation(player, goHere, 1);
    }
 

@@ -144,6 +144,13 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
 
          <object>candle</object>
 
+         <!-- you can define transition messages when you come to or go from
+              specific directions (two possible messages for each direction) -->
+         <messages>
+            <message name="fromNorth">Back to start from the cave!</message>
+            <message name="goNorth">Transitioning to the cave!</message>
+         </messages>
+
       </room>
 
       <room name="cave">
