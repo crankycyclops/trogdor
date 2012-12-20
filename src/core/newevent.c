@@ -43,6 +43,21 @@ const char *event, const char *function, lua_State *L);
 int event(const char *name, Player *player, void *entity,
 EntityType entityType, int numArgs, ...);
 
+/* called by event: execute global handlers for an event */
+static int globalEvent(const char *name, va_list args, int numArgs);
+
+/* called by event: execute player-specific handlers for an event */
+static int playerEvent(const char *name, Player *player, va_list args,
+int numArgs);
+
+/* called by event: execute entity-specific handlers for an event */
+static int entityEvent(const char *name, Player *player, void *entity,
+EntityType entityType, va_list args, int numArgs);
+
+/* called by global, player and entityEvent: executes an event handler */
+static int executeEvent(EventHandler handler);
+
+
 static unsigned long nextGlobalEventId = 0;
 static unsigned long nextPlayerEventId = 0;
 static unsigned long nextEntityEventId = 0;
@@ -200,6 +215,61 @@ const char *event, const char *function, lua_State *L) {
 
 int event(const char *name, Player *player, void *entity, EntityType entityType,
 int numArgs, ...) {
+
+   va_list args;
+   va_start(args, numArgs);
+
+   /* execute global event handlers */
+   if (!globalEvent(name, args, numArgs)) {
+      return FALSE;
+   }
+
+   /* execute player-specific event handlers */
+   else if (!playerEvent(name, player, args, numArgs)) {
+      return FALSE;
+   }
+
+   /* finally, execute entity-specific event handlers */
+   else if (!entityEvent(name, player, entity, entityType, args, numArgs)) {
+      return FALSE;
+   }
+
+   /* return true if we chose to execute all three and want to allow the action
+      that triggered the event */
+   else {
+      return TRUE;
+   }
+}
+
+/******************************************************************************/
+
+static int globalEvent(const char *name, va_list args, int numArgs) {
+
+   // TODO
+   return TRUE;
+}
+
+/******************************************************************************/
+
+static int playerEvent(const char *name, Player *player, va_list args,
+int numArgs) {
+
+   // TODO
+   return TRUE;
+}
+
+/******************************************************************************/
+
+static int entityEvent(const char *name, Player *player, void *entity,
+EntityType entityType, va_list args, int numArgs) {
+
+   // TODO
+   return TRUE;
+}
+
+/******************************************************************************/
+
+static int executeEvent(EventHandler handler) {
 
 }
 
