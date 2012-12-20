@@ -20,6 +20,9 @@ void initEvents();
 /* destructor for the global event handler */
 void destroyEvents();
 
+/* called by destroyEvents() to destroy a hash table of event-handler maps */
+static static void destroyEventsList(GHashTable *table);
+
 /* binds an event handler to a global event */
 unsigned long addGlobalEventHandler(const char *event, const char *function,
 lua_State *L);
@@ -32,25 +35,57 @@ const char *function, lua_State *L);
 unsigned long addEntityEventHandler(const char *event, Player *player,
 void *entity, EntityType type, const char *function, lua_State *L);
 
+/* does the actual work of registering an event handler */
+static void addEventHandler(GHashTable *eventsTable, unsigned long id,
+const char *event, const char *function, lua_State *L);
+
 /* Triggers an event.  Accepts variable number of EventArgument parameters. */
-extern int event(const char *name, Player *player, void *entity,
+int event(const char *name, Player *player, void *entity,
 EntityType entityType, int numArgs, ...);
 
-static unsigned long nextEventId = 0;
+static unsigned long nextGlobalEventId = 0;
+static unsigned long nextPlayerEventId = 0;
+static unsigned long nextEntityEventId = 0;
+
 static GHashTable *globalEvents;
+static GHashTable *playerEvents;
+
+/* entity-specific events */
+static GHashTable *roomEvents;
+static GHashTable *objectEvents;
+static GHashTable *creatureEvents;
 
 /******************************************************************************/
 
 void initEvents() {
 
-   globalEvents = g_hash_table_new(g_str_hash, g_str_equal);
+   globalEvents   = g_hash_table_new(g_str_hash, g_str_equal);
+   playerEvents   = g_hash_table_new(g_str_hash, g_str_equal);
+   roomEvents     = g_hash_table_new(g_str_hash, g_str_equal);
+   objectEvents   = g_hash_table_new(g_str_hash, g_str_equal);
+   creatureEvents = g_hash_table_new(g_str_hash, g_str_equal);
+
+   return;
 }
 
 /******************************************************************************/
 
 void destroyEvents() {
 
-   GList *events = g_hash_table_get_values(globalEvents);
+   destroyEventsList(globalEvents);
+   destroyEventsList(playerEvents);
+   destroyEventsList(roomEvents);
+   destroyEventsList(objectEvents);
+   destroyEventsList(creatureEvents);
+
+   return;
+}
+
+/******************************************************************************/
+
+static void destroyEventsList(GHashTable *table) {
+
+   GList *events = g_hash_table_get_values(table);
    GList *next = events;
 
    while (next != NULL) {
@@ -59,8 +94,8 @@ void destroyEvents() {
    }
 
    g_list_destroy(events);
-   g_hash_table_destroy(globalEvents);
-   globalEvents = NULL;
+   g_hash_table_destroy(table);
+   return;
 }
 
 /******************************************************************************/
@@ -92,16 +127,9 @@ void destroyEventHandler(EventHandler *handler) {
 unsigned long addGlobalEventHandler(const char *event, const char *function,
 lua_State *L) {
 
-   /* use next available ID and increment it */
-   EventHandler *newHandler = createEventHandler(nextEventId++);
-   newHandler->function = function;
-   newHandler->L = L;
-
-   GList *handlerList = g_hash_table_lookup(globalEvents, (char *)event);
-   handlerList = g_list_append(handlerList, newHandler);
-   g_hash_table_insert(handlerList, (char *)event, handlerList);
-
-   return;
+   unsigned long id = nextGlobalEventId++;
+   addEventHandler(globalEvents, id, event, function, L);
+   return id;
 }
 
 /******************************************************************************/
@@ -109,6 +137,9 @@ lua_State *L) {
 unsigned long addPlayerEventHandler(const char *event, Player *player,
 const char *function, lua_State *L) {
 
+   unsigned long id = nextPlayerEventId++;
+   addEventHandler(playerEvents, id, event, function, L);
+   return id;
 }
 
 /******************************************************************************/
@@ -116,6 +147,53 @@ const char *function, lua_State *L) {
 unsigned long addEntityEventHandler(const char *event, Player *player,
 void *entity, EntityType type, const char *function, lua_State *L) {
 
+   unsigned long id = nextEntityEventId++;
+
+   switch (type) {
+
+      case room:
+         addEventHandler(roomEvents, id, event, function, L);
+         break;
+
+      case object:
+         addEventHandler(objectEvents, id, event, function, L);
+         break;
+
+      case creature:
+         addEventHandler(creatureEvents, id, event, function, L);
+         break;
+
+      case player:
+         g_outputError("ERROR: Use addPlayerEventHander to attach an event "
+            "to a player. This is a bug.");
+         break;
+
+      default:
+         g_outputError("ERROR: Invalid entity type passed to "
+            "addEntityEventHandler. This is a bug.");
+         break;
+   }
+
+   return id;
+}
+
+/******************************************************************************/
+
+static void addEventHandler(GHashTable *eventsTable, unsigned long id,
+const char *event, const char *function, lua_State *L) {
+
+   GList        *handlerList;
+   EventHandler *newHandler;
+
+   newHandler = createEventHandler(id);
+   newHandler->function = function;
+   newHandler->L = L;
+
+   handlerList = g_hash_table_lookup(eventsTable, (char *)event);
+   handlerList = g_list_append(handlerList, newHandler);
+   g_hash_table_insert(eventsTable, (char *)event, handlerList);
+
+   return;
 }
 
 /******************************************************************************/
