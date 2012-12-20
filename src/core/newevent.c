@@ -14,10 +14,10 @@
 #include "include/data.h"
 
 
-/* initializes the global event handler */
+/* initializes the event handling system */
 void initEvents();
 
-/* destructor for the global event handler */
+/* frees memory associated with the event handling system */
 void destroyEvents();
 
 /* called by destroyEvents() to destroy a hash table of event-handler maps */
