@@ -13,6 +13,9 @@
 #include "include/event.h"
 #include "include/messages.h"
 
+/* TODO: will be event.h! */
+#include "include/newevent.h"
+
 #define TAKE_OBJECT  1
 #define DROP_OBJECT  2
 
@@ -66,6 +69,10 @@ Object *createObject(int initMessages) {
    newobject->state.takenByPlayer = 0;
    newobject->state.droppedByPlayer = 0;
 
+   /* event handlers */
+   newobject->nextEventId = 0;
+   newobject->events = createEventsList();
+
    newobject->messages = NULL;
    if (initMessages) {
       newobject->messages = createMessages();
@@ -94,6 +101,9 @@ void destroyObject(Object *object) {
    if (NULL != object->messages) {
       destroyMessages(object->messages);
    }
+
+   /* event handlers */
+   destroyEventsList(object->events);
 
    free(object);
    return;

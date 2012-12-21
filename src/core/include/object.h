@@ -33,7 +33,6 @@ typedef struct object {
    int droppable;          /* whether or not object can be dropped */
 
    Messages messages;      /* hash table of custom messages */
-
    ObjectState state;
 
    /* an array of synonyms (dstring_t's) */
@@ -41,6 +40,10 @@ typedef struct object {
 
    /* Lua state containing scripted functions */
    lua_State *lua;
+
+   /* event handlers */
+   unsigned long  nextEventId;
+   GHashTable     *events;
 
 } Object;
 

@@ -34,6 +34,10 @@ typedef struct creature {
    Inventory inventory;    /* objects owned by the creature */
    int allegiance;         /* whether the creature is a friend, enemy or neutral */
 
+   /* event handlers */
+   unsigned long  nextEventId;
+   GHashTable     *events;
+
    /* Lua state containing scripted functions */
    lua_State *lua;
 

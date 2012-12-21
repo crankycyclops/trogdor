@@ -59,6 +59,10 @@ typedef struct room {
    /* Iterable list of all creatures in a room */
    GList *creatureList;
 
+   /* event handlers */
+   unsigned long  nextEventId;
+   GHashTable     *events;
+
 } Room;
 
 #include "object.h"

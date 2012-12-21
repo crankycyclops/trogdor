@@ -15,6 +15,9 @@
 #include "include/event.h"
 #include "include/messages.h"
 
+/* TODO: will be event.h! */
+#include "include/newevent.h"
+
 
 /* Allocates memory for a room.  If initMessages is true, we allocate memory
    for the messages structure.  Otherwise, just set it to NULL. */
@@ -57,6 +60,10 @@ Room *createRoom(int initMessages) {
    newroom->creatureByName = g_hash_table_new(g_str_hash, g_str_equal);
    newroom->objectList = NULL;
    newroom->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
+
+   /* event handlers */
+   newroom->nextEventId = 0;
+   newroom->events = createEventsList();
 
    /* initialize the room's state */
    newroom->state.players = g_hash_table_new(g_str_hash, g_str_equal);
@@ -103,6 +110,9 @@ void destroyRoom(Room *room) {
    if (NULL != room->messages) {
       destroyMessages(room->messages);
    }
+
+   /* event handlers */
+   destroyEventsList(room->events);
 
    free(room);
 }

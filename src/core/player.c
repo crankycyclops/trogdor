@@ -12,6 +12,9 @@
 #include "include/data.h"
 #include "include/player.h"
 
+/* TODO: change to event.h! */
+#include "include/newevent.h"
+
 
 /* player constructor */
 Player *createPlayer(char *name);
@@ -50,6 +53,10 @@ Player *createPlayer(char *name) {
    newplayer->inventory.list = NULL;
    newplayer->inventory.byName = g_hash_table_new(g_str_hash, g_str_equal);
 
+   /* event handlers */
+   newplayer->nextEventId = 0;
+   newplayer->events = createEventsList();
+
    g_hash_table_insert(g_players, name, newplayer);
    return newplayer;
 }
@@ -59,5 +66,6 @@ Player *createPlayer(char *name) {
 void destroyPlayer(Player *player) {
 
    dstrfree(&player->name);
+   destroyEventsList(player->events);
    free(player);
 }

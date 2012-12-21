@@ -14,6 +14,9 @@
 #include "include/event.h"
 #include "include/messages.h"
 
+/* TODO: will be event.h! */
+#include "include/newevent.h"
+
 
 /* Allocates memory for a creature.  If initMessages is true, we allocate memory
    for the messages structure.  Otherwise, just set it to NULL. */
@@ -54,6 +57,10 @@ Creature *createCreature(int initMessages) {
    /* by default, creatures are neutral */
    newcreature->allegiance = CREATURE_ALLEGIANCE_NEUTRAL;
 
+   /* event handlers */
+   newcreature->nextEventId = 0;
+   newcreature->events = createEventsList();
+
    newcreature->messages = NULL;
    if (initMessages) {
       newcreature->messages = createMessages();
@@ -82,6 +89,9 @@ void destroyCreature(Creature *creature) {
    if (NULL != creature->messages) {
       destroyMessages(creature->messages);
    }
+
+   /* event handlers */
+   destroyEventsList(creature->events);
 
    free(creature);
    return;

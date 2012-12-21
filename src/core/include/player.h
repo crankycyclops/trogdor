@@ -14,6 +14,10 @@ typedef struct player {
    Room       *location;
    Inventory   inventory;
 
+   /* event handlers */
+   unsigned long  nextEventId;
+   GHashTable     *events;
+
 } Player;
 
 #ifndef PLAYER_C
