@@ -15,9 +15,6 @@
 #include "include/event.h"
 #include "include/messages.h"
 
-/* TODO: will be event.h! */
-#include "include/newevent.h"
-
 
 /* Allocates memory for a room.  If initMessages is true, we allocate memory
    for the messages structure.  Otherwise, just set it to NULL. */

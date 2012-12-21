@@ -13,8 +13,6 @@
 #include "include/event.h"
 #include "include/messages.h"
 
-/* TODO: will be event.h! */
-#include "include/newevent.h"
 
 #define TAKE_OBJECT  1
 #define DROP_OBJECT  2

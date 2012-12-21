@@ -11,9 +11,7 @@
 #include "include/creature.h"
 #include "include/data.h"
 #include "include/player.h"
-
-/* TODO: change to event.h! */
-#include "include/newevent.h"
+#include "include/event.h"
 
 
 /* player constructor */
