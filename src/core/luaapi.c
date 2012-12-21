@@ -32,12 +32,6 @@ static int l_createRoom(lua_State *L);
 
 void initLuaApi(lua_State *L) {
 
-   /* possible return values (see event.h and event.c for more details) */
-   lua_pushboolean(L, SUPPRESS_ACTION);
-   lua_setglobal(L, "SUPPRESS_ACTION");
-   lua_pushboolean(L, ALLOW_ACTION);
-   lua_setglobal(L, "ALLOW_ACTION");
-
    /* register C-Lua API functions */
    lua_register(L, "outputString", &l_outputString);
    lua_register(L, "outputError",  &l_outputError);

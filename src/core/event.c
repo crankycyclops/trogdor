@@ -2,6 +2,7 @@
 #define EVENT_C
 
 #include <stdlib.h>
+#include <glib.h>
 
 #include "include/trogdor.h"
 #include "include/object.h"
@@ -110,11 +111,11 @@ void destroyEventsList(GHashTable *table) {
    GList *next = events;
 
    while (next != NULL) {
-      g_list_destroy(next->data);
+      g_list_free(next->data);
       next = next->next;
    }
 
-   g_list_destroy(events);
+   g_list_free(events);
    g_hash_table_destroy(table);
    return;
 }

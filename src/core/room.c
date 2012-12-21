@@ -118,7 +118,7 @@ void destroyRoom(Room *room) {
 
 void setLocation(Player *player, Room *room, int triggerEvents) {
 
-   if (ALLOW_ACTION != event(player, "beforeSetLocation", room)) {
+   if (!event("beforeSetLocation", player, room, entity_room, 0)) {
       return;
    }
 
@@ -132,7 +132,7 @@ void setLocation(Player *player, Room *room, int triggerEvents) {
    g_hash_table_insert(room->state.players, (char *)dstrview(player->name),
       player);
 
-   event(player, "afterSetLocation", room);
+   event("afterSetLocation", player, room, entity_room, 0);
 }
 
 /******************************************************************************/
@@ -142,7 +142,7 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
    GList *creatureList = room->creatureList;
    GList *objectList = room->objectList;
 
-   if (ALLOW_ACTION != event(player, "beforeRoomDisplay", room)) {
+   if (!event("beforeRoomDisplay", player, room, entity_room, 0)) {
       return;
    }
 
@@ -165,7 +165,7 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
       creatureList = g_list_next(creatureList);
    }
 
-   event(player, "afterRoomDisplay", room);
+   event("afterRoomDisplay", player, room, entity_room, 0);
 }
 
 /******************************************************************************/

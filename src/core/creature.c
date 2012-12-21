@@ -99,7 +99,7 @@ void destroyCreature(Creature *creature) {
 void displayCreature(Player *player, Creature *creature,
 int showLongDescription) {
 
-   if (ALLOW_ACTION != event(player, "beforeDisplayCreature", creature)) {
+   if (!event("beforeDisplayCreature", player, creature, entity_creature, 0)) {
       return;
    }
 
@@ -121,7 +121,7 @@ int showLongDescription) {
          dstrview(creature->title));
    }
 
-   event(player, "afterDisplayCreature", creature);
+   event("afterDisplayCreature", player, creature, entity_creature, 0);
 }
 
 /******************************************************************************/
