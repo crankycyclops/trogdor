@@ -71,11 +71,12 @@ static void removeEventHandler(GHashTable *table, const char *event,
 unsigned long id);
 
 /* called by event: execute global handlers for an event */
-static int globalEvent(const char *name, int numArgs, va_list args);
+static int globalEvent(const char *name, Player *player, void *entity,
+enum EntityType entityType, int numArgs, va_list args);
 
 /* called by event: execute player-specific handlers for an event */
-static int playerEvent(const char *name, Player *player, int numArgs,
-va_list args);
+static int playerEvent(const char *name, Player *player, void *entity,
+enum EntityType entityType, int numArgs, va_list args);
 
 /* called by event: execute entity-specific handlers for an event */
 static int entityEvent(const char *name, Player *player, void *entity,
@@ -84,8 +85,8 @@ enum EntityType entityType, int numArgs, va_list args);
 /* called by global, player and entityEvent: executes event handlers associated
    with an event.  entityName is the name of the entity or player that owns the
    event handler (or NULL for global events.) */
-static int executeEvent(GList *handlers, const char *entityName, int numArgs,
-va_list args);
+static int executeEvent(GList *handlers, Player *player, void *entity,
+enum EntityType entityType, int numArgs, va_list args);
 
 /******************************************************************************/
 
@@ -283,13 +284,13 @@ enum EntityType entityType, int numArgs, ...) {
    va_start(args, numArgs);
 
    /* execute global event handlers */
-   globalStatus = globalEvent(name, numArgs, args);
+   globalStatus = globalEvent(name, player, entity, entityType, numArgs, args);
    if (!(CONTINUE_HANDLERS & globalStatus)) {
       return CONTINUE_ACTION & globalStatus;
    }
 
    /* execute player-specific event handlers */
-   playerStatus = playerEvent(name, player, numArgs, args);
+   playerStatus = playerEvent(name, player, entity, entityType, numArgs, args);
    if (!(CONTINUE_HANDLERS & playerStatus)) {
       return CONTINUE_ACTION & globalStatus && CONTINUE_ACTION & playerStatus;
    }
@@ -303,19 +304,20 @@ enum EntityType entityType, int numArgs, ...) {
 
 /******************************************************************************/
 
-static int globalEvent(const char *name, int numArgs, va_list args) {
+static int globalEvent(const char *name, Player *player, void *entity,
+enum EntityType entityType, int numArgs, va_list args) {
 
    GList *handlers = g_hash_table_lookup(globalEvents, name);
-   return executeEvent(handlers, NULL, numArgs, args);
+   return executeEvent(handlers, player, entity, entityType, numArgs, args);
 }
 
 /******************************************************************************/
 
-static int playerEvent(const char *name, Player *player, int numArgs,
-va_list args) {
+static int playerEvent(const char *name, Player *player, void *entity,
+enum EntityType entityType, int numArgs, va_list args) {
 
    GList *handlers = g_hash_table_lookup(player->events, name);
-   return executeEvent(handlers, player->name, numArgs, args);
+   return executeEvent(handlers, player, entity, entityType, numArgs, args);
 }
 
 /******************************************************************************/
@@ -324,22 +326,18 @@ static int entityEvent(const char *name, Player *player, void *entity,
 enum EntityType entityType, int numArgs, va_list args) {
 
    GList     *handlers;
-   dstring_t  entityName;
 
    switch (entityType) {
 
       case entity_room:
-         entityName = ((Room *)entity)->name;
          handlers = g_hash_table_lookup(((Room *)entity)->events, name);
          break;
 
       case entity_object:
-         entityName = ((Object *)entity)->name;
          handlers = g_hash_table_lookup(((Object *)entity)->events, name);
          break;
 
       case entity_creature:
-         entityName = ((Creature *)entity)->name;
          handlers = g_hash_table_lookup(((Creature *)entity)->events, name);
          break;
 
@@ -354,13 +352,13 @@ enum EntityType entityType, int numArgs, va_list args) {
          break;
    }
 
-   return executeEvent(handlers, dstrview(entityName), numArgs, args);
+   return executeEvent(handlers, player, entity, entityType, numArgs, args);
 }
 
 /******************************************************************************/
 
-static int executeEvent(GList *handlers, const char *entityName, int numArgs,
-va_list args) {
+static int executeEvent(GList *handlers, Player *player, void *entity,
+enum EntityType entityType, int numArgs, va_list args) {
 
    /* lowest two bits are flags (see event.h) */
    int status = 0;
