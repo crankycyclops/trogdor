@@ -10,6 +10,14 @@
 #include "player.h"
 
 
+/* Bit flags we can set on the return value of an event handler.
+   CONTINUE_HANDLERS - continue executing other event handlers
+   CONTINUE_ACTION   - allow the action that triggered the event
+*/
+#define CONTINUE_HANDLERS 0x01
+#define CONTINUE_ACTION   0x02
+
+
 /* every event handler consists of a Lua state and a function to call */
 typedef struct {
    unsigned long id;

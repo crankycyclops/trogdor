@@ -273,29 +273,32 @@ unsigned long id) {
 int event(const char *name, Player *player, void *entity,
 enum EntityType entityType, int numArgs, ...) {
 
+   /* whether or not to continue executing event handlers AND whether or not
+      to allow the action that triggered the event to continue */
+   int globalStatus;
+   int playerStatus;
+   int entityStatus;
+
    va_list args;
    va_start(args, numArgs);
 
    /* execute global event handlers */
-   if (!globalEvent(name, numArgs, args)) {
-      return FALSE;
+   globalStatus = globalEvent(name, numArgs, args);
+   if (!(CONTINUE_HANDLERS & globalStatus)) {
+      return CONTINUE_ACTION & globalStatus;
    }
 
    /* execute player-specific event handlers */
-   else if (!playerEvent(name, player, numArgs, args)) {
-      return FALSE;
+   playerStatus = playerEvent(name, player, numArgs, args);
+   if (!(CONTINUE_HANDLERS & playerStatus)) {
+      return CONTINUE_ACTION & globalStatus && CONTINUE_ACTION & playerStatus;
    }
 
    /* finally, execute entity-specific event handlers */
-   else if (!entityEvent(name, player, entity, entityType, numArgs, args)) {
-      return FALSE;
-   }
+   entityStatus = entityEvent(name, player, entity, entityType, numArgs, args);
 
-   /* return true if we chose to execute all three and want to allow the action
-      that triggered the event */
-   else {
-      return TRUE;
-   }
+   return CONTINUE_ACTION & globalStatus && CONTINUE_ACTION & playerStatus &&
+      CONTINUE_ACTION & entityStatus;
 }
 
 /******************************************************************************/
@@ -359,7 +362,11 @@ enum EntityType entityType, int numArgs, va_list args) {
 static int executeEvent(GList *handlers, const char *entityName, int numArgs,
 va_list args) {
 
+   /* lowest two bits are flags (see event.h) */
+   int status = 0;
+
    // TODO: if no handlers, return true, else, execute while return true and return error or true
-   return TRUE;
+   status |= CONTINUE_HANDLERS | CONTINUE_ACTION;
+   return status;
 }
 
