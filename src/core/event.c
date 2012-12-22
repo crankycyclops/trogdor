@@ -47,7 +47,7 @@ void removePlayerEventHandler(Player *player, const char *event,
 unsigned long id);
 
 /* removes an entity-specific event handler */
-void removeEntityEventHandler(enum EntityType type, void *entity,
+void removeEntityEventHandler(enum EntityType entityType, void *entity,
 const char *event, unsigned long id);
 
 /* Triggers an event.  Accepts variable number of EventArgument parameters. */
@@ -247,16 +247,43 @@ void removeGlobalEventHandler(const char *event, unsigned long id) {
 void removePlayerEventHandler(Player *player, const char *event,
 unsigned long id) {
 
-   // TODO
+   removeEventHandler(player->events, event, id);
    return;
 }
 
 /******************************************************************************/
 
-void removeEntityEventHandler(enum EntityType type, void *entity,
+void removeEntityEventHandler(enum EntityType entityType, void *entity,
 const char *event, unsigned long id) {
 
-   // TODO
+   GHashTable *events;
+
+   switch (entityType) {
+
+      case entity_room:
+         events = ((Room *)entity)->events;
+         break;
+
+      case entity_object:
+         events = ((Object *)entity)->events;
+         break;
+
+      case entity_creature:
+         events = ((Creature *)entity)->events;
+         break;
+
+      case entity_player:
+         g_outputError("ERROR: Use removePlayerEventHander to remove an event "
+            "handler from a player. This is a bug.");
+         break;
+
+      default:
+         g_outputError("ERROR: Invalid entity type passed to "
+            "removeEntityEventHandler. This is a bug.");
+         break;
+   }
+
+   removeEventHandler(events, event, id);
    return;
 }
 
