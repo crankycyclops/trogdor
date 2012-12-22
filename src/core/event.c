@@ -360,5 +360,6 @@ static int executeEvent(GList *handlers, const char *entityName, int numArgs,
 va_list args) {
 
    // TODO: if no handlers, return true, else, execute while return true and return error or true
+   return TRUE;
 }
 
