@@ -292,7 +292,21 @@ const char *event, unsigned long id) {
 static void removeEventHandler(GHashTable *table, const char *event,
 unsigned long id) {
 
-   // TODO
+   GList *eventList = g_hash_table_lookup(table, event);
+
+   if (NULL != eventList) {
+
+      GList *next = eventList;
+
+      while (next != NULL) {
+         if (((EventHandler *)next->data)->id == id) {
+            eventList = g_list_remove_link(eventList, next);
+            g_hash_table_insert(table, (char *)event, eventList);
+            return;
+         }
+      }
+   }
+
    return;
 }
 
