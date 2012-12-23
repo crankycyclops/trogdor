@@ -29,9 +29,6 @@ typedef struct {
    event handler (global, player and entity) */
 typedef struct {
 
-   /* variable name */
-   const char *name;
-
    /* data type */
    enum {
       scriptval_number,

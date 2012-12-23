@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
 
    destroyPlayer(player);
    destroyGlobalEvents();
+   printf("Goodbye!\n\n");
 
    return EXIT_SUCCESS;
 }

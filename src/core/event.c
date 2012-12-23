@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <glib.h>
 
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+
 #include "include/trogdor.h"
 #include "include/object.h"
 #include "include/room.h"
@@ -87,6 +91,9 @@ enum EntityType entityType, int numArgs, va_list args);
    event handler (or NULL for global events.) */
 static int executeEvent(GList *handlers, Player *player, void *entity,
 enum EntityType entityType, int numArgs, va_list args);
+
+/* passes an EventArgument to a script function */
+static void eventPassArgument(lua_State *L, EventArgument arg);
 
 /******************************************************************************/
 
@@ -401,11 +408,119 @@ enum EntityType entityType, int numArgs, va_list args) {
 static int executeEvent(GList *handlers, Player *player, void *entity,
 enum EntityType entityType, int numArgs, va_list args) {
 
-   /* lowest two bits are flags (see event.h) */
-   int status = 0;
+   GList *nextHandler = handlers;
+   int status = CONTINUE_HANDLERS | CONTINUE_ACTION;
 
-   // TODO: if no handlers, return true, else, execute while return true and return error or true
-   status |= CONTINUE_HANDLERS | CONTINUE_ACTION;
+   while (NULL != nextHandler && CONTINUE_HANDLERS & status) {
+
+      int i;
+      EventHandler *handler = (EventHandler *)nextHandler->data;
+
+      if (NULL != handler->L) {
+
+         lua_getglobal(handler->L, handler->function);
+
+         /* only call function if it exists */
+         if (lua_isfunction(handler->L, lua_gettop(handler->L))) {
+
+            char *entityName = "";
+
+            if (NULL != entity) {
+
+               switch (entityType) {
+
+                  case entity_room:
+                     entityName = ((Room *)entity)->name;
+                     break;
+
+                  case entity_object:
+                     entityName = ((Object *)entity)->name;
+                     break;
+
+                  case entity_creature:
+                     entityName = ((Creature *)entity)->name;
+                     break;
+
+                  case entity_player:
+                  default:
+                     g_outputError("entity passed to executeEvent must be of "
+                        "type room, object or creature.  This is a bug.");
+                     break;
+               }
+            }
+
+            lua_pushstring(handler->L, NULL == player ? "" : player->name);
+            lua_pushstring(handler->L, entityName);
+
+            /* pass any extra arguments that might've been specified */
+            for (i = 0; i < numArgs; i++) {
+               EventArgument arg = va_arg(args, EventArgument);
+               eventPassArgument(handler->L, arg);
+            }
+
+            /* function should return two arguments, CONTINUE_HANDLERS and
+               CONTINUE_ACTION */
+            if (lua_pcall(handler->L, numArgs + 2, 2, 0)) {
+               g_outputError("Script error: %s\n", lua_tostring(handler->L, -1));
+            }
+
+            else {
+
+               if (!lua_isboolean(handler->L, -1) ||
+               !lua_isboolean(handler->L, -2)) {
+                  g_outputError("Script error: %s must return a boolean!\n",
+                     handler->function);
+               }
+
+               status = lua_toboolean(handler->L, -1) ?
+                  status | CONTINUE_HANDLERS : status & ~CONTINUE_HANDLERS;
+               status = lua_toboolean(handler->L, -2) ?
+                  status | CONTINUE_ACTION : status & ~CONTINUE_ACTION;
+            }
+         }
+      }
+
+      nextHandler = g_list_next(nextHandler);
+   }
+
    return status;
+}
+
+/******************************************************************************/
+
+static void eventPassArgument(lua_State *L, EventArgument arg) {
+
+   switch (arg.type) {
+
+      scriptval_number:
+         lua_pushnumber(L, arg.value.number);
+         break;
+
+      scriptval_string:
+         lua_pushstring(L, arg.value.string);
+         break;
+
+      scriptval_player:
+         lua_pushstring(L, arg.value.player->name);
+         break;
+
+      scriptval_room:
+         lua_pushstring(L, arg.value.room->name);
+         break;
+
+      scriptval_object:
+         lua_pushstring(L, arg.value.object->name);
+         break;
+
+      scriptval_creature:
+         lua_pushstring(L, arg.value.creature->name);
+         break;
+
+      default:
+         g_outputString("Invalid type for EventArgument.  This is a bug.\n");
+         break;
+   }
+
+   return;
 }
 
