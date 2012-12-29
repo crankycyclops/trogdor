@@ -234,8 +234,9 @@ const char *event, const char *function, lua_State *L) {
    newHandler->function = function;
    newHandler->L = L;
 
+   /* events will be executed in LIFO order */
    handlerList = g_hash_table_lookup(eventsTable, (char *)event);
-   handlerList = g_list_append(handlerList, newHandler);
+   handlerList = g_list_prepend(handlerList, newHandler);
    g_hash_table_insert(eventsTable, (char *)event, handlerList);
 
    return;
