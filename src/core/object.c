@@ -56,8 +56,6 @@ Object *createObject(int initMessages) {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
 
-   newobject->lua = NULL;
-
    /* initialize the object's state */
    newobject->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
    newobject->state.takenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
@@ -68,6 +66,7 @@ Object *createObject(int initMessages) {
    newobject->state.droppedByPlayer = 0;
 
    /* event handlers */
+   newobject->L = NULL;
    newobject->nextEventId = 0;
    newobject->events = createEventsList();
 
@@ -92,8 +91,8 @@ void destroyObject(Object *object) {
    g_hash_table_destroy(object->state.takenByPlayers);
    g_hash_table_destroy(object->state.droppedByPlayers);
 
-   if (object->lua != NULL) {
-      lua_close(object->lua);
+   if (object->L != NULL) {
+      lua_close(object->L);
    }
 
    if (NULL != object->messages) {

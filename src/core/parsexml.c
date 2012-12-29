@@ -383,6 +383,7 @@ static void parseObject(xmlTextReaderPtr reader) {
 
    object->synonyms = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 5);
    object->scripts = NULL;
+   object->eventHandlers = NULL;
 
    /* record the object's name */
    objectName = xmlTextReaderGetAttribute(reader, "name");
@@ -492,18 +493,16 @@ static void parseObject(xmlTextReaderPtr reader) {
          checkClosingTag("synonym", reader);
       }
 
-      /* we're parsing a script tag */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("script", tagname)) {
-
-         dstring_t file = createDstring();
-
-         cstrtodstr(file, getNodeValue(reader));
-         if (0 == dstrlen(file)) {
-            g_outputError("error: <script> has blank value!\n");
+         dstring_t scriptfile = parseScriptTag(reader);
+         if (NULL != scriptfile) {
+            object->scripts = g_list_append(object->scripts, scriptfile);
          }
+      }
 
-         object->scripts = g_list_append(object->scripts, file);
-         checkClosingTag("script", reader);
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("event", tagname)) {
+         EventHandlerParsed *handler = parseEventTag(reader);
+         object->eventHandlers = g_list_append(object->eventHandlers, handler);
       }
 
       /* parse custom messages */

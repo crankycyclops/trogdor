@@ -61,8 +61,12 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
 
          <!-- one or more scripts can be attached to an object, which define
               functions that get triggered by the event handler -->
-         <script>script/candle1.lua</script>
-         <script>script/candle2.lua</script>
+         <script src="script/object/candle.lua"></script>
+
+         <!-- event handlers (make sure functions are defined in scripts specific
+              to this object -->
+         <event name="beforeTakeObject">beforeTakeCandle</event>
+         <event name="beforeDropObject">beforeDropCandle</event>
 
          <synonym>fire</synonym>
          <synonym>flame</synonym>

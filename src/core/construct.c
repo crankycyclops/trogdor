@@ -304,6 +304,7 @@ static void initObjects() {
 
 static Object *initObject(ObjectParsed *objectParsed) {
 
+   GList *nextEventHandler;
    Object *object = createObject(FALSE);
 
    object->name = objectParsed->name;
@@ -315,7 +316,17 @@ static Object *initObject(ObjectParsed *objectParsed) {
 
    object->synonyms = objectParsed->synonyms;
 
-   object->lua = initLuaState(objectParsed->scripts);
+   /* initialize lua state for object */
+   object->L = initLuaState(objectParsed->scripts);
+
+   /* initialize entity-specific event handlers */
+   nextEventHandler = objectParsed->eventHandlers;
+   while (NULL != nextEventHandler) {
+      EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
+      addEntityEventHandler(dstrview(handler->event), object, entity_object,
+         dstrview(handler->function), object->L);
+      nextEventHandler = g_list_next(nextEventHandler);
+   }
 
    return object;
 }

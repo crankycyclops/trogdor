@@ -41,7 +41,7 @@ typedef struct {
    /* list of parsed global script names */
    GList *scripts;
 
-   /* list of parsed global event handlers */
+   /* list of parsed event handlers */
    GList *eventHandlers;
 
 } RoomParsed;
@@ -63,8 +63,11 @@ typedef struct {
    /* an array of synonyms (dstring_t's) */
    GArray *synonyms;
 
-   /* list of filenames containing Lua scripts */
+   /* list of parsed global script names */
    GList *scripts;
+
+   /* list of parsed event handlers */
+   GList *eventHandlers;
 
 } ObjectParsed;
 

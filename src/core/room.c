@@ -59,6 +59,7 @@ Room *createRoom(int initMessages) {
    newroom->objectByName = g_hash_table_new(g_str_hash, g_str_equal);
 
    /* event handlers */
+   newroom->L = NULL;
    newroom->nextEventId = 0;
    newroom->events = createEventsList();
 
@@ -110,6 +111,10 @@ void destroyRoom(Room *room) {
 
    /* event handlers */
    destroyEventsList(room->events);
+
+   if (room->L != NULL) {
+      lua_close(room->L);
+   }
 
    free(room);
 }
