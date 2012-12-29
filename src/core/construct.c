@@ -19,6 +19,9 @@ int parseGame();
 /* initialize game objects in a room from parsed data */
 static void initObjects();
 
+/* initialize global event handlers */
+static void initEvents();
+
 /* builds creature structures */
 static void initCreatures();
 
@@ -35,7 +38,7 @@ static Creature *initCreature(CreatureParsed *creatureParsed);
 static Object *initObject(ObjectParsed *objectParsed);
 
 /* initializes a room's, object's or creature's Lua state */
-static lua_State *initLuaState(GArray *scriptList);
+static lua_State *initLuaState(GList *scriptList);
 
 /* connect rooms so that users can navigate north, south, etc. */
 static void connectRooms();
@@ -67,6 +70,12 @@ GHashTable *roomParsedTable = NULL;
 /* a lookup table for creatures being parsed */
 GHashTable *creatureParsedTable = NULL;
 
+/* list of parsed global script names */
+GList *globalScriptsParsed = NULL;
+
+/* list of parsed global event handlers */
+GList *globalEventHandlersParsed = NULL;
+
 /******************************************************************************/
 
 int parseGame(const char *filename) {
@@ -84,6 +93,7 @@ int parseGame(const char *filename) {
       return 0;
    }
 
+   initEvents();
    initObjects();
    initCreatures();
    initRooms();
@@ -113,6 +123,21 @@ static void destroyParser() {
    g_hash_table_destroy(objectParsedTable);
    g_hash_table_destroy(roomParsedTable);
    g_hash_table_destroy(creatureParsedTable);
+}
+
+/******************************************************************************/
+
+static void initEvents() {
+
+   GList *nextEventHandler = globalEventHandlersParsed;
+
+   globalL = initLuaState(globalScriptsParsed);
+
+   while (nextEventHandler != NULL) {
+      EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
+      addGlobalEventHandler(handler->event, handler->function);
+      nextEventHandler = g_list_next(nextEventHandler);
+   }
 }
 
 /******************************************************************************/
@@ -253,7 +278,6 @@ static void initObjects() {
    GList *objects = g_hash_table_get_values(objectParsedTable);
    GList *nextObj = objects;
 
-
    while (NULL != nextObj) {
       Object *object = initObject((ObjectParsed *)nextObj->data);
       g_hash_table_insert(g_objects, (char *)dstrview(object->name), object);
@@ -285,12 +309,12 @@ static Object *initObject(ObjectParsed *objectParsed) {
 
 /******************************************************************************/
 
-static lua_State *initLuaState(GArray *scriptList) {
+static lua_State *initLuaState(GList *scriptList) {
 
-   int i;
+   GList *nextScript = scriptList;
    lua_State *L = NULL;
 
-   for (i = 0; i < scriptList->len; i++) {
+   while (NULL != nextScript) {
 
       /* only initialize lua state if we have something to execute */
       if (NULL == L) {
@@ -298,11 +322,11 @@ static lua_State *initLuaState(GArray *scriptList) {
          initLua(L);
       }
 
-      #define SCRIPT_FILE (char *)dstrview(g_array_index(scriptList, dstring_t, i))
-      if (loadScript(L, SCRIPT_FILE)) {
+      if (loadScript(L, (char *)dstrview((dstring_t)nextScript->data))) {
          primeLua(L);
       }
-      #undef SCRIPT_FILE
+
+      nextScript = g_list_next(nextScript);
    }
 
    return L;

@@ -19,6 +19,9 @@
 /* returns true if the document was parsed successfully and false otherwise */
 int parseGameFile(const char *filename);
 
+/* parse the global event handling section */
+static void parseEventSection(xmlTextReaderPtr reader);
+
 /* parse the player configuration section */
 static void parsePlayerSection(xmlTextReaderPtr reader);
 
@@ -36,6 +39,12 @@ static const char *getNodeValue(xmlTextReaderPtr reader);
 
 /* make sure the specified closing tag is the next node */
 static void checkClosingTag(const char *tag, xmlTextReaderPtr reader);
+
+/* parse a script tag */
+static dstring_t parseScriptTag(xmlTextReaderPtr reader);
+
+/* parse an event tag */
+static EventHandlerParsed *parseEventTag(xmlTextReaderPtr reader);
 
 /* parse the objects section */
 static void parseObjectSection(xmlTextReaderPtr reader);
@@ -95,6 +104,10 @@ int parseGameFile(const char *filename) {
                continue;
             }
 
+            else if (0 == strcmp("events", name)) {
+               parseEventSection(reader);
+            }
+
             else if (0 == strcmp("player", name)) {
                parsePlayerSection(reader);
             }
@@ -126,6 +139,103 @@ int parseGameFile(const char *filename) {
    else {
       return 1;
    }
+}
+
+/******************************************************************************/
+
+static void parseEventSection(xmlTextReaderPtr reader) {
+
+   int parseStatus;
+
+   while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
+   xmlTextReaderDepth(reader) > 1
+   ) {
+
+      if (XML_COMMENT_NODE == xmlTextReaderNodeType(reader)) {
+         continue;
+      }
+
+      else if (0 == strcmp("script", xmlTextReaderConstName(reader))) {
+         dstring_t scriptfile = parseScriptTag(reader);
+         if (NULL != scriptfile) {
+            globalScriptsParsed = g_list_append(globalScriptsParsed, scriptfile);
+         }
+      }
+
+      else if (0 == strcmp("event", xmlTextReaderConstName(reader))) {
+         EventHandlerParsed *handler = parseEventTag(reader);
+         globalEventHandlersParsed = g_list_append(globalEventHandlersParsed,
+            handler);
+      }
+
+      else {
+         g_outputError("error: invalid <%s> tag in <events> section\n",
+            xmlTextReaderConstName(reader));
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   if (parseStatus < 0) {
+      g_outputError("There was an error parsing game XML file\n");
+      exit(EXIT_FAILURE);
+   }
+
+   return;
+}
+
+/******************************************************************************/
+
+static dstring_t parseScriptTag(xmlTextReaderPtr reader) {
+
+   dstring_t filename = NULL;
+
+   /* get the script's filename */
+   const char *src = xmlTextReaderGetAttribute(reader, "src");
+
+   if (NULL != src) {
+      filename = createDstring();
+      cstrtodstr(filename, src);
+   }
+
+   // TODO: here's where we would parse the text inside a script tag
+   checkClosingTag("script", reader);
+   return filename;
+}
+
+/******************************************************************************/
+
+static EventHandlerParsed *parseEventTag(xmlTextReaderPtr reader) {
+
+   const char *eventName;
+
+   dstring_t event = createDstring();
+   dstring_t function = createDstring();
+
+   EventHandlerParsed *handler = malloc(sizeof(EventHandlerParsed));
+   if (NULL == handler) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   eventName = xmlTextReaderGetAttribute(reader, "name");
+   if (NULL == eventName) {
+      g_outputError("error: <event> tag requires name attribute\n");
+      exit(EXIT_FAILURE);
+   }
+
+   cstrtodstr(event, eventName);
+   cstrtodstr(function, getNodeValue(reader));
+   dstrtrim(function);
+
+   if (dstrlen(function) < 1) {
+      g_outputError("error: <event> tag requires a function name\n");
+      exit(EXIT_FAILURE);
+   }
+
+   handler->event = event;
+   handler->function = function;
+
+   checkClosingTag("event", reader);
+   return handler;
 }
 
 /******************************************************************************/
@@ -272,7 +382,7 @@ static void parseObject(xmlTextReaderPtr reader) {
    cstrtodstr(object->droppable, "1");
 
    object->synonyms = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 5);
-   object->scripts  = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
+   object->scripts = NULL;
 
    /* record the object's name */
    objectName = xmlTextReaderGetAttribute(reader, "name");
@@ -392,7 +502,7 @@ static void parseObject(xmlTextReaderPtr reader) {
             g_outputError("error: <script> has blank value!\n");
          }
 
-         g_array_append_val(object->scripts, file);
+         object->scripts = g_list_append(object->scripts, file);
          checkClosingTag("script", reader);
       }
 
@@ -475,8 +585,8 @@ static void parseCreature(xmlTextReaderPtr reader) {
    /* by default, a creature is neutral */
    creature->allegiance = NULL;
 
-   creature->scripts = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
    creature->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
+   creature->scripts = NULL;
 
    /* record the creature's name */
    creatureName = xmlTextReaderGetAttribute(reader, "name");
@@ -566,7 +676,7 @@ static void parseCreature(xmlTextReaderPtr reader) {
             g_outputError("error: <script> has blank value!\n");
          }
 
-         g_array_append_val(creature->scripts, file);
+         creature->scripts = g_list_append(creature->scripts, file);
          checkClosingTag("script", reader);
       }
 

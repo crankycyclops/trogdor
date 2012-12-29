@@ -3,6 +3,10 @@
 
 #include <glib.h>
 
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+
 #include "trogdor.h"
 #include "room.h"
 #include "object.h"
@@ -54,6 +58,10 @@ typedef struct {
 #ifndef EVENT_C
 
 
+/* lua state containing functions called by global events */
+extern lua_State *globalL;
+
+
 /* initializes global event handlers */
 extern void initGlobalEvents();
 
@@ -68,7 +76,7 @@ extern void destroyEventsList(GHashTable *table);
 
 /* binds an event handler to a global event */
 extern unsigned long addGlobalEventHandler(const char *event,
-const char *function, lua_State *L);
+const char *function);
 
 /* binds an event handler to a player-specific event */
 extern unsigned long addPlayerEventHandler(const char *event, Player *player,

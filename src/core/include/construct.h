@@ -52,8 +52,8 @@ typedef struct objectParsed {
    /* an array of synonyms (dstring_t's) */
    GArray *synonyms;
 
-   /* array of filenames containing Lua scripts */
-   GArray *scripts;
+   /* list of filenames containing Lua scripts */
+   GList *scripts;
 
 } ObjectParsed;
 
@@ -70,13 +70,18 @@ typedef struct creatureParsed {
    /* hash table of custom messages */
    Messages messages;
 
-   /* an array of object identifiers (dstring_t's) */
+   /* array of object identifiers (dstring_t's) */
    GArray *objects;
 
-   /* array of filenames containing Lua scripts */
-   GArray *scripts;
+   /* list of filenames containing Lua scripts */
+   GList *scripts;
 
 } CreatureParsed;
+
+typedef struct {
+   dstring_t event;
+   dstring_t function;
+} EventHandlerParsed;
 
 
 /* a lookup table for game objects being parsed */
@@ -87,6 +92,12 @@ extern GHashTable *roomParsedTable;
 
 /* a lookup table for creatures being parsed */
 extern GHashTable *creatureParsedTable;
+
+/* list of parsed global script names */
+extern GList *globalScriptsParsed;
+
+/* list of parsed global event handlers */
+extern GList *globalEventHandlersParsed;
 
 
 /* entry point for parsing the game file */

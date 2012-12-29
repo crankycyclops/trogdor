@@ -32,8 +32,7 @@ GHashTable *createEventsList();
 void destroyEventsList(GHashTable *table);
 
 /* binds an event handler to a global event */
-unsigned long addGlobalEventHandler(const char *event, const char *function,
-lua_State *L);
+unsigned long addGlobalEventHandler(const char *event, const char *function);
 
 /* binds an event handler to a player-specific event */
 unsigned long addPlayerEventHandler(const char *event, Player *player,
@@ -97,6 +96,11 @@ static void eventPassArgument(lua_State *L, EventArgument arg);
 
 /******************************************************************************/
 
+/* lua state containing functions called by global events */
+lua_State *globalL = NULL;
+
+/******************************************************************************/
+
 static unsigned long nextEventId = 0;
 static GHashTable *globalEvents;
 
@@ -113,6 +117,11 @@ void initGlobalEvents() {
 void destroyGlobalEvents() {
 
    destroyEventsList(globalEvents);
+
+   if (NULL != globalL) {
+      lua_close(globalL);
+   }
+
    return;
 }
 
@@ -166,11 +175,10 @@ static void destroyEventHandler(EventHandler *handler) {
 
 /******************************************************************************/
 
-unsigned long addGlobalEventHandler(const char *event, const char *function,
-lua_State *L) {
+unsigned long addGlobalEventHandler(const char *event, const char *function) {
 
    unsigned long id = nextEventId++;
-   addEventHandler(globalEvents, id, event, function, L);
+   addEventHandler(globalEvents, id, event, function, globalL);
    return id;
 }
 

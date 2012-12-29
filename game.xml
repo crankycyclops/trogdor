@@ -2,6 +2,17 @@
 
 <game>
 
+   <!-- Section 0. Global Event Handlers and Scripts (optional) -->
+   <events>
+
+      <!-- identifies one or more scripts containing event handling functions -->
+      <script src="script/global1.lua"></script>
+
+      <!-- identifies a script function to call for a given event -->
+      <event name="beforeDropObject">sampleDropObject</event>
+
+   </events>
+
    <!-- Section I. Player Configuration -->
    <player>
 
