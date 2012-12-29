@@ -135,7 +135,7 @@ static void initEvents() {
 
    while (nextEventHandler != NULL) {
       EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
-      addGlobalEventHandler(handler->event, handler->function);
+      addGlobalEventHandler(dstrview(handler->event), dstrview(handler->function));
       nextEventHandler = g_list_next(nextEventHandler);
    }
 }
