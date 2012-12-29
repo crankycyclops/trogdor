@@ -439,15 +439,15 @@ enum EntityType entityType, int numArgs, va_list args) {
                switch (entityType) {
 
                   case entity_room:
-                     entityName = ((Room *)entity)->name;
+                     entityName = (char *)dstrview(((Room *)entity)->name);
                      break;
 
                   case entity_object:
-                     entityName = ((Object *)entity)->name;
+                     entityName = (char *)dstrview(((Object *)entity)->name);
                      break;
 
                   case entity_creature:
-                     entityName = ((Creature *)entity)->name;
+                     entityName = (char *)dstrview(((Creature *)entity)->name);
                      break;
 
                   case entity_player:
@@ -458,7 +458,8 @@ enum EntityType entityType, int numArgs, va_list args) {
                }
             }
 
-            lua_pushstring(handler->L, NULL == player ? "" : player->name);
+            lua_pushstring(handler->L, NULL == player ? "" :
+               (char *)dstrview(player->name));
             lua_pushstring(handler->L, entityName);
 
             /* pass any extra arguments that might've been specified */
@@ -481,9 +482,9 @@ enum EntityType entityType, int numArgs, va_list args) {
                      handler->function);
                }
 
-               status = lua_toboolean(handler->L, -1) ?
-                  status | CONTINUE_HANDLERS : status & ~CONTINUE_HANDLERS;
                status = lua_toboolean(handler->L, -2) ?
+                  status | CONTINUE_HANDLERS : status & ~CONTINUE_HANDLERS;
+               status = lua_toboolean(handler->L, -1) ?
                   status | CONTINUE_ACTION : status & ~CONTINUE_ACTION;
             }
          }
