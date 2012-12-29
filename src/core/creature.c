@@ -40,7 +40,7 @@ Creature *createCreature(int initMessages) {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
 
-   newcreature->lua = NULL;
+   newcreature->L = NULL;
 
    /* initialize the creature's state */
    newcreature->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
@@ -79,8 +79,8 @@ void destroyCreature(Creature *creature) {
 
    g_hash_table_destroy(creature->state.seenByPlayers);
 
-   if (creature->lua != NULL) {
-      lua_close(creature->lua);
+   if (creature->L != NULL) {
+      lua_close(creature->L);
    }
 
    if (NULL != creature->messages) {

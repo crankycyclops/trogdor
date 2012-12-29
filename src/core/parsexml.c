@@ -586,6 +586,7 @@ static void parseCreature(xmlTextReaderPtr reader) {
 
    creature->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
    creature->scripts = NULL;
+   creature->eventHandlers = NULL;
 
    /* record the creature's name */
    creatureName = xmlTextReaderGetAttribute(reader, "name");
@@ -665,18 +666,16 @@ static void parseCreature(xmlTextReaderPtr reader) {
          checkClosingTag("object", reader);
       }
 
-      /* we're parsing a script tag */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("script", tagname)) {
-
-         dstring_t file = createDstring();
-
-         cstrtodstr(file, getNodeValue(reader));
-         if (0 == dstrlen(file)) {
-            g_outputError("error: <script> has blank value!\n");
+         dstring_t scriptfile = parseScriptTag(reader);
+         if (NULL != scriptfile) {
+            creature->scripts = g_list_append(creature->scripts, scriptfile);
          }
+      }
 
-         creature->scripts = g_list_append(creature->scripts, file);
-         checkClosingTag("script", reader);
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("event", tagname)) {
+         EventHandlerParsed *handler = parseEventTag(reader);
+         creature->eventHandlers = g_list_append(creature->eventHandlers, handler);
       }
 
       /* parse custom messages */

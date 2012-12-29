@@ -35,11 +35,9 @@ typedef struct creature {
    int allegiance;         /* whether the creature is a friend, enemy or neutral */
 
    /* event handlers */
+   lua_State      *L;
    unsigned long  nextEventId;
    GHashTable     *events;
-
-   /* Lua state containing scripted functions */
-   lua_State *lua;
 
 } Creature;
 

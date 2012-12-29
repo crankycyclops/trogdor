@@ -161,6 +161,7 @@ static void initCreatures() {
 static Creature *initCreature(CreatureParsed *creatureParsed) {
 
    int i;
+   GList *nextEventHandler;
    Creature *creature = createCreature(FALSE);
    GArray *objects = creatureParsed->objects;
 
@@ -191,7 +192,17 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
       }
    }
 
-   creature->lua = initLuaState(creatureParsed->scripts);
+   /* initialize lua state for creature */
+   creature->L = initLuaState(creatureParsed->scripts);
+
+   /* initialize entity-specific event handlers */
+   nextEventHandler = creatureParsed->eventHandlers;
+   while (NULL != nextEventHandler) {
+      EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
+      addEntityEventHandler(dstrview(handler->event), creature, entity_creature,
+         dstrview(handler->function), creature->L);
+      nextEventHandler = g_list_next(nextEventHandler);
+   }
 
    /* add objects to the creature's inventory */
    for (i = 0; i < objects->len; i++) {

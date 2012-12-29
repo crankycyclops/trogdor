@@ -38,7 +38,7 @@ typedef struct {
    /* names of all creatures in the room (dstring_t's) */
    GArray *creatures;
 
-   /* list of parsed global script names */
+   /* list of parsed script filenames */
    GList *scripts;
 
    /* list of parsed event handlers */
@@ -63,7 +63,7 @@ typedef struct {
    /* an array of synonyms (dstring_t's) */
    GArray *synonyms;
 
-   /* list of parsed global script names */
+   /* list of parsed script filenames */
    GList *scripts;
 
    /* list of parsed event handlers */
@@ -89,6 +89,9 @@ typedef struct {
 
    /* list of filenames containing Lua scripts */
    GList *scripts;
+
+   /* list of parsed event handlers */
+   GList *eventHandlers;
 
 } CreatureParsed;
 
