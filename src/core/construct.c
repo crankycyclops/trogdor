@@ -231,6 +231,7 @@ static void initRooms() {
 static Room *initRoom(RoomParsed *roomParsed) {
 
    int i;
+   GList *nextEventHandler;
 
    GArray *creatureNames = roomParsed->creatures; /* creatures in the room */
    GArray *objectNames = roomParsed->objects;     /* objects in the room */
@@ -266,6 +267,18 @@ static Room *initRoom(RoomParsed *roomParsed) {
    for (i = 0; i < objectNames->len; i++) {
       room->objectList = addObject(room->objectList, room->objectByName,
          g_array_index(objectNames, dstring_t, i));
+   }
+
+   /* initialize lua state for room */
+   room->L = initLuaState(roomParsed->scripts);
+
+   /* initialize entity-specific event handlers */
+   nextEventHandler = roomParsed->eventHandlers;
+   while (NULL != nextEventHandler) {
+      EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
+      addEntityEventHandler(dstrview(handler->event), room, entity_room,
+         dstrview(handler->function), room->L);
+      nextEventHandler = g_list_next(nextEventHandler);
    }
 
    return room;

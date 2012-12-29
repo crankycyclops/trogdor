@@ -764,6 +764,8 @@ static void parseRoom(xmlTextReaderPtr reader) {
    room->messages = NULL;
    room->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t *), 5);
    room->creatures = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t *), 5);
+   room->scripts = NULL;
+   room->eventHandlers = NULL;
 
    /* record the room's name */
    roomName = xmlTextReaderGetAttribute(reader, "name");
@@ -901,6 +903,18 @@ static void parseRoom(xmlTextReaderPtr reader) {
       /* parse custom messages */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("messages", tagname)) {
          room->messages = parseMessages(reader);
+      }
+
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("script", tagname)) {
+         dstring_t scriptfile = parseScriptTag(reader);
+         if (NULL != scriptfile) {
+            room->scripts = g_list_append(room->scripts, scriptfile);
+         }
+      }
+
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("event", tagname)) {
+         EventHandlerParsed *handler = parseEventTag(reader);
+         room->eventHandlers = g_list_append(room->eventHandlers, handler);
       }
 
       /* an unknown tag was found */

@@ -5,6 +5,10 @@
 #include <glib.h>
 #include <dstring.h>
 
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+
 #include "messages.h"
 
 
@@ -60,6 +64,7 @@ typedef struct room {
    GList *creatureList;
 
    /* event handlers */
+   lua_State      *L;
    unsigned long  nextEventId;
    GHashTable     *events;
 

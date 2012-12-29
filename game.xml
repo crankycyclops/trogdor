@@ -147,6 +147,9 @@ You're standing in the middle of a sprawling white marble castle, the walls line
 You peer off into the distance and notice a dark hole in the wall a little ways to the north.
          </description>
 
+         <script src="script/room/start.lua"></script>
+         <event name="beforeRoomDisplay">beforeRoomSample</event>
+
          <!-- name of the room north of this one -->
          <north>cave</north>
          <!-- we place the object "candle" in this room.  Note that an object cannot

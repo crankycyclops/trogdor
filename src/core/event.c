@@ -39,8 +39,8 @@ unsigned long addPlayerEventHandler(const char *event, Player *player,
 const char *function, lua_State *L);
 
 /* binds an event handler to an entity-specific event */
-unsigned long addEntityEventHandler(const char *event, Player *player,
-void *entity, enum EntityType type, const char *function, lua_State *L);
+unsigned long addEntityEventHandler(const char *event, void *entity,
+enum EntityType type, const char *function, lua_State *L);
 
 /* removes a global event handler */
 void removeGlobalEventHandler(const char *event, unsigned long id);
@@ -194,8 +194,8 @@ const char *function, lua_State *L) {
 
 /******************************************************************************/
 
-unsigned long addEntityEventHandler(const char *event, Player *player,
-void *entity, enum EntityType type, const char *function, lua_State *L) {
+unsigned long addEntityEventHandler(const char *event, void *entity,
+enum EntityType type, const char *function, lua_State *L) {
 
    unsigned long id;
 

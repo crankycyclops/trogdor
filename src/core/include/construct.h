@@ -8,7 +8,12 @@
 #include "messages.h"
 
 
-typedef struct roomParsed {
+typedef struct {
+   dstring_t event;
+   dstring_t function;
+} EventHandlerParsed;
+
+typedef struct {
 
    dstring_t name;
    dstring_t title;
@@ -32,10 +37,16 @@ typedef struct roomParsed {
 
    /* names of all creatures in the room (dstring_t's) */
    GArray *creatures;
-   
+
+   /* list of parsed global script names */
+   GList *scripts;
+
+   /* list of parsed global event handlers */
+   GList *eventHandlers;
+
 } RoomParsed;
 
-typedef struct objectParsed {
+typedef struct {
 
    dstring_t name;
    dstring_t description;
@@ -57,7 +68,7 @@ typedef struct objectParsed {
 
 } ObjectParsed;
 
-typedef struct creatureParsed {
+typedef struct {
 
    dstring_t name;
    dstring_t title;
@@ -77,11 +88,6 @@ typedef struct creatureParsed {
    GList *scripts;
 
 } CreatureParsed;
-
-typedef struct {
-   dstring_t event;
-   dstring_t function;
-} EventHandlerParsed;
 
 
 /* a lookup table for game objects being parsed */
