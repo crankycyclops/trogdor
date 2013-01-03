@@ -36,7 +36,6 @@ typedef struct creature {
 
    /* event handlers */
    lua_State      *L;
-   unsigned long  nextEventId;
    GHashTable     *events;
 
 } Creature;

@@ -67,7 +67,6 @@ Object *createObject(int initMessages) {
 
    /* event handlers */
    newobject->L = NULL;
-   newobject->nextEventId = 0;
    newobject->events = createEventsList();
 
    newobject->messages = NULL;

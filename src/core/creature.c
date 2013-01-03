@@ -55,7 +55,6 @@ Creature *createCreature(int initMessages) {
    newcreature->allegiance = CREATURE_ALLEGIANCE_NEUTRAL;
 
    /* event handlers */
-   newcreature->nextEventId = 0;
    newcreature->events = createEventsList();
 
    newcreature->messages = NULL;

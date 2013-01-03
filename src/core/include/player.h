@@ -15,7 +15,6 @@ typedef struct player {
    Inventory   inventory;
 
    /* event handlers */
-   unsigned long  nextEventId;
    GHashTable     *events;
 
 } Player;

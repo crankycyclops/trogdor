@@ -32,26 +32,26 @@ GHashTable *createEventsList();
 void destroyEventsList(GHashTable *table);
 
 /* binds an event handler to a global event */
-unsigned long addGlobalEventHandler(const char *event, const char *function);
+void addGlobalEventHandler(const char *event, const char *function);
 
 /* binds an event handler to a player-specific event */
-unsigned long addPlayerEventHandler(const char *event, Player *player,
+void addPlayerEventHandler(const char *event, Player *player,
 const char *function, lua_State *L);
 
 /* binds an event handler to an entity-specific event */
-unsigned long addEntityEventHandler(const char *event, void *entity,
-enum EntityType type, const char *function, lua_State *L);
+void addEntityEventHandler(const char *event, void *entity, enum EntityType type,
+const char *function, lua_State *L);
 
 /* removes a global event handler */
-void removeGlobalEventHandler(const char *event, unsigned long id);
+void removeGlobalEventHandler(const char *event, const char *function);
 
 /* removes a player-specific event handler */
 void removePlayerEventHandler(Player *player, const char *event,
-unsigned long id);
+const char *function);
 
 /* removes an entity-specific event handler */
 void removeEntityEventHandler(enum EntityType entityType, void *entity,
-const char *event, unsigned long id);
+const char *event, const char *function);
 
 /* Triggers an event.  Accepts variable number of EventArgument parameters. */
 int event(const char *name, Player *player, void *entity,
@@ -60,18 +60,18 @@ enum EntityType entityType, int numArgs, ...);
 /******************************************************************************/
 
 /* creates an event handler object */
-static EventHandler *createEventHandler(unsigned long id);
+static EventHandler *createEventHandler();
 
 /* frees an event handler object */
 static void destroyEventHandler(EventHandler *handler);
 
 /* does the actual work of registering an event handler */
-static void addEventHandler(GHashTable *eventsTable, unsigned long id,
-const char *event, const char *function, lua_State *L);
+static void addEventHandler(GHashTable *eventsTable, const char *event,
+const char *function, lua_State *L);
 
 /* does the actual work of removing an event handler */
 static void removeEventHandler(GHashTable *table, const char *event,
-unsigned long id);
+const char *function);
 
 /* called by event: execute global handlers for an event */
 static int globalEvent(const char *name, Player *player, void *entity,
@@ -101,7 +101,6 @@ lua_State *globalL = NULL;
 
 /******************************************************************************/
 
-static unsigned long nextEventId = 0;
 static GHashTable *globalEvents;
 
 /******************************************************************************/
@@ -151,7 +150,7 @@ void destroyEventsList(GHashTable *table) {
 
 /******************************************************************************/
 
-static EventHandler *createEventHandler(unsigned long id) {
+static EventHandler *createEventHandler() {
 
    EventHandler *newHandler = malloc(sizeof(EventHandler));
 
@@ -159,7 +158,6 @@ static EventHandler *createEventHandler(unsigned long id) {
       PRINT_OUT_OF_MEMORY_ERROR;
    }
 
-   newHandler->id = id;
    newHandler->function = NULL;
    newHandler->L = NULL;
 
@@ -175,45 +173,36 @@ static void destroyEventHandler(EventHandler *handler) {
 
 /******************************************************************************/
 
-unsigned long addGlobalEventHandler(const char *event, const char *function) {
+void addGlobalEventHandler(const char *event, const char *function) {
 
-   unsigned long id = nextEventId++;
-   addEventHandler(globalEvents, id, event, function, globalL);
-   return id;
+   addEventHandler(globalEvents, event, function, globalL);
 }
 
 /******************************************************************************/
 
-unsigned long addPlayerEventHandler(const char *event, Player *player,
+void addPlayerEventHandler(const char *event, Player *player,
 const char *function, lua_State *L) {
 
-   unsigned long id = player->nextEventId++;
-   addEventHandler(player->events, id, event, function, L);
-   return id;
+   addEventHandler(player->events, event, function, L);
 }
 
 /******************************************************************************/
 
-unsigned long addEntityEventHandler(const char *event, void *entity,
-enum EntityType type, const char *function, lua_State *L) {
-
-   unsigned long id;
+void addEntityEventHandler(const char *event, void *entity, enum EntityType type,
+const char *function, lua_State *L) {
 
    switch (type) {
 
       case entity_room:
-         id = ((Room *)entity)->nextEventId++;
-         addEventHandler(((Room *)entity)->events, id, event, function, L);
+         addEventHandler(((Room *)entity)->events, event, function, L);
          break;
 
       case entity_object:
-         id = ((Object*)entity)->nextEventId++;
-         addEventHandler(((Object *)entity)->events, id, event, function, L);
+         addEventHandler(((Object *)entity)->events, event, function, L);
          break;
 
       case entity_creature:
-         id = ((Creature *)entity)->nextEventId++;
-         addEventHandler(((Creature *)entity)->events, id, event, function, L);
+         addEventHandler(((Creature *)entity)->events, event, function, L);
          break;
 
       case entity_player:
@@ -227,18 +216,18 @@ enum EntityType type, const char *function, lua_State *L) {
          break;
    }
 
-   return id;
+   return;
 }
 
 /******************************************************************************/
 
-static void addEventHandler(GHashTable *eventsTable, unsigned long id,
-const char *event, const char *function, lua_State *L) {
+static void addEventHandler(GHashTable *eventsTable, const char *event,
+const char *function, lua_State *L) {
 
    GList        *handlerList;
    EventHandler *newHandler;
 
-   newHandler = createEventHandler(id);
+   newHandler = createEventHandler();
    newHandler->function = function;
    newHandler->L = L;
 
@@ -252,25 +241,24 @@ const char *event, const char *function, lua_State *L) {
 
 /******************************************************************************/
 
-void removeGlobalEventHandler(const char *event, unsigned long id) {
+void removeGlobalEventHandler(const char *event, const char *function) {
 
-   removeEventHandler(globalEvents, event, id);
+   removeEventHandler(globalEvents, event, function);
    return;
 }
 
 /******************************************************************************/
 
 void removePlayerEventHandler(Player *player, const char *event,
-unsigned long id) {
+const char *function) {
 
-   removeEventHandler(player->events, event, id);
-   return;
+   removeEventHandler(player->events, event, function);
 }
 
 /******************************************************************************/
 
 void removeEntityEventHandler(enum EntityType entityType, void *entity,
-const char *event, unsigned long id) {
+const char *event, const char *function) {
 
    GHashTable *events;
 
@@ -299,14 +287,14 @@ const char *event, unsigned long id) {
          break;
    }
 
-   removeEventHandler(events, event, id);
+   removeEventHandler(events, event, function);
    return;
 }
 
 /******************************************************************************/
 
 static void removeEventHandler(GHashTable *table, const char *event,
-unsigned long id) {
+const char *function) {
 
    GList *eventList = g_hash_table_lookup(table, event);
 
@@ -315,7 +303,7 @@ unsigned long id) {
       GList *next = eventList;
 
       while (next != NULL) {
-         if (((EventHandler *)next->data)->id == id) {
+         if (0 == strcmp(((EventHandler *)next->data)->function, function)) {
             eventList = g_list_remove_link(eventList, next);
             g_hash_table_insert(table, (char *)event, eventList);
             return;

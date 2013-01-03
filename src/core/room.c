@@ -60,7 +60,6 @@ Room *createRoom(int initMessages) {
 
    /* event handlers */
    newroom->L = NULL;
-   newroom->nextEventId = 0;
    newroom->events = createEventsList();
 
    /* initialize the room's state */
