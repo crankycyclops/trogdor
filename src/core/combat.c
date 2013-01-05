@@ -39,7 +39,7 @@ enum EntityType defenderType, Object *weapon) {
       int damage = calcDamage(aggressor, aggressorType, defender, defenderType,
          weapon);
 
-      // TODO: subtract damage from player's or creature's health
+      removeHealth(defender, defenderType, damage, TRUE);
 
       g_outputString("You dealt a blow to %s!\n",
          dstrview(defenderType == entity_player ? ((Player *)defender)->name :
