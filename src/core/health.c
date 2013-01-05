@@ -38,7 +38,34 @@ void addHealth(void *entity, enum EntityType type, int up, int allowOverflow) {
       return;
    }
 
-   // TODO
+   if (!event("beforeAddHealth", entity_player == type ? (Player *)entity : NULL,
+   entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0)) {
+      return;
+   }
+
+   if (entity_player == type) {
+
+      Player *player = (Player *)entity;
+
+      player->state.health += up;
+      if (!allowOverflow && player->state.health > player->maxHealth) {
+         player->state.health = player->maxHealth;
+      }
+   }
+
+   else {
+
+      Creature *creature = (Creature *)entity;
+
+      creature->state.health += up;
+      if (!allowOverflow && creature->state.health > creature->maxHealth) {
+         creature->state.health = creature->maxHealth;
+      }
+   }
+
+   event("afterAddHealth", entity_player == type ? (Player *)entity : NULL,
+      entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0);
+
    return;
 }
 
@@ -98,6 +125,8 @@ void removeHealth(void *entity, enum EntityType type, int down, int allowDeath) 
 
    event("afterRemoveHealth", entity_player == type ? (Player *)entity : NULL,
       entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0);
+
+   return;
 }
 
 /******************************************************************************/
