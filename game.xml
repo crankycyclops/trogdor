@@ -142,7 +142,7 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
          <alive>1</alive>
 
          <!-- default starting health (optional: default is 0) -->
-         <health>5</health>
+         <health>2</health>
 
          <!-- a max health of 0 means the creature is immortal (optional:
               default is 0 for immortal) -->

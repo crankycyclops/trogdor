@@ -33,26 +33,36 @@ enum EntityType defenderType, Object *weapon) {
 
    // TODO: beforeAttack event
 
-   if (attackSuccess(aggressor, aggressorType, defender, defenderType)) {
-
-      // TODO: beforeAttackSuccess event
-
-      int damage = calcDamage(aggressor, aggressorType, defender, defenderType,
-         weapon);
-
-      g_outputString("You dealt a blow to %s!\n",
-         dstrview(defenderType == entity_player ? ((Player *)defender)->name :
-         ((Creature *)defender)->name));
-
-      removeHealth(defender, defenderType, damage, TRUE);
-
-      // TODO: afterAttackSuccess event
+   if (defenderType == entity_player && !((Player *)defender)->state.alive ||
+   defenderType == entity_creature && !((Creature *)defender)->state.alive) {
+      g_outputString("%s is already dead.\n",
+         dstrview(defenderType == entity_player ? ((Player *)defender)->name
+         : ((Creature *)defender)->name));
    }
 
    else {
-      // TODO: beforeAttackFailure event
-      g_outputString("Attack failed!\n");
-      // TODO: afterAttackFailure event
+
+      if (attackSuccess(aggressor, aggressorType, defender, defenderType)) {
+
+         // TODO: beforeAttackSuccess event
+
+         int damage = calcDamage(aggressor, aggressorType, defender,
+            defenderType, weapon);
+
+         g_outputString("You dealt a blow to %s!\n",
+            dstrview(defenderType == entity_player ? ((Player *)defender)->name
+            : ((Creature *)defender)->name));
+
+         removeHealth(defender, defenderType, damage, TRUE);
+
+         // TODO: afterAttackSuccess event
+      }
+
+      else {
+         // TODO: beforeAttackFailure event
+         g_outputString("Attack failed!\n");
+         // TODO: afterAttackFailure event
+      }
    }
 
    // TODO: afterAttack event
