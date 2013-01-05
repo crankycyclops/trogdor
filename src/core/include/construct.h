@@ -78,6 +78,9 @@ typedef struct {
    dstring_t description;
    dstring_t allegiance;
 
+   /* whether or not we can attack the creature */
+   int attackable;
+
    /* how many times the creature was placed in a room */
    int used;
 

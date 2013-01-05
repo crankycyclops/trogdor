@@ -33,6 +33,7 @@ typedef struct creature {
    CreatureState state;    /* creature's state */
    Inventory inventory;    /* objects owned by the creature */
    int allegiance;         /* whether the creature is a friend, enemy or neutral */
+   int attackable;         /* whether or not creature can be attacked */
 
    /* event handlers */
    lua_State      *L;

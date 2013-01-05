@@ -5,7 +5,6 @@
 
 #include "include/trogdor.h"
 #include "include/data.h"
-#include "include/data.h"
 #include "include/room.h"
 #include "include/object.h"
 #include "include/state.h"
@@ -14,6 +13,7 @@
 #include "include/object.h"
 #include "include/creature.h"
 #include "include/room.h"
+#include "include/combat.h"
 
 #define OBJ_FROM_ROOM       1
 #define OBJ_FROM_INVENTORY  2
@@ -36,6 +36,9 @@ int actionPickupObject(Player *player, Command command);
 
 /* allows the user to drop an object */
 int actionDropObject(Player *player, Command command);
+
+/* allows a player to attack a creature or another player */
+int actionAttack(Player *player, Command command);
 
 /* allows the user to jump */
 // TODO: support jumping to places, triggering jump events, etc?
@@ -418,6 +421,51 @@ int actionDropObject(Player *player, Command command) {
 
 /******************************************************************************/
 
+// TODO: add support for attacking players as well as creatures
+int actionAttack(Player *player, Command command) {
+
+   Creature *target = NULL;
+   Object   *weapon = NULL;
+
+   // TODO: add support for generic synonyms such as "creature" or "player"
+
+   // player didn't specify name of entity to attack
+   if (NULL == command.directObject) {
+      // TODO: add support for attacking whatever creature is in room
+      return 0;
+   }
+
+   if (NULL != command.indirectObject) {
+
+      weapon = getObject(player, command.indirectObject, OBJ_FROM_INVENTORY);
+
+      if (NULL == weapon) {
+         g_outputString("You don't have a %s!\n", dstrview(command.indirectObject));
+         return 1;
+      }
+
+      // TODO: if object isn't a weapon, another error
+   }
+
+   target = getCreature(player, command.directObject);
+
+   if (NULL == target) {
+      g_outputString("There is no %s to attack!\n", dstrview(command.directObject));
+   }
+
+   else if (!target->attackable) {
+      g_outputString("You cannot attack %s!\n", dstrview(command.directObject));
+   }
+
+   else {
+      attack(player, entity_player, target, entity_creature, weapon);
+   }
+
+   return 1;
+}
+
+/******************************************************************************/
+
 // TODO: support jumping to places, triggering jump events, etc?
 int actionJump(Player *player, Command command) {
 
@@ -426,11 +474,6 @@ int actionJump(Player *player, Command command) {
    }
 
    g_outputString("Weeee!\n");
-   return 1;
-}
-
-int test(Player *player, Command *command) {
-
    return 1;
 }
 

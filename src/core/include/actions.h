@@ -23,6 +23,9 @@ extern int actionPickupObject(Player *player, Command command);
 /* allows the user to drop an object */
 extern int actionDropObject(Player *player, Command command);
 
+/* allows a player to attack a creature or another player */
+extern int actionAttack(Player *player, Command command);
+
 /* allows the user to jump */
 extern int actionJump(Player *player, Command command);
 

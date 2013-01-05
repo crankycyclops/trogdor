@@ -584,6 +584,9 @@ static void parseCreature(xmlTextReaderPtr reader) {
    /* by default, a creature is neutral */
    creature->allegiance = NULL;
 
+   /* by default, we can attack a creature */
+   creature->attackable = 1;
+
    creature->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
    creature->scripts = NULL;
    creature->eventHandlers = NULL;
@@ -642,6 +645,30 @@ static void parseCreature(xmlTextReaderPtr reader) {
          GET_XML_TAG(allegiance, creature)
          dstrtrim(creature->allegiance);
          dstrtolower(creature->allegiance, 0);
+      }
+
+      /* whether or not we can attack the creature */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("attackable", tagname)) {
+
+         int attackable;
+         char *attackableStr = (char *)getNodeValue(reader);
+
+         if (!isInt(attackableStr)) {
+            g_outputError("attackable must be 0 (for false) or 1 (for true)\n");
+            exit(EXIT_FAILURE);
+         }
+
+         attackable = atoi(attackableStr);
+
+         if (attackable < 0 || attackable > 1) {
+            g_outputError("attackable must be 0 (for false) or 1 (for true)\n");
+            exit(EXIT_FAILURE);
+         }
+
+         creature->attackable = attackable;
+
+         /* make sure we have a valid closing tag */
+         checkClosingTag("attackable", reader);
       }
 
       /* we're parsing an object owned by the creature */

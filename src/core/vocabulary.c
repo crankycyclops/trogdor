@@ -101,6 +101,15 @@ Verb *getVerbs() {
       {"look",     &actionLook},
       {"examine",  &actionLook},
 
+      /* combat */
+      {"attack", &actionAttack},
+      {"hit",    &actionAttack},
+      {"harm",   &actionAttack},
+      {"kill",   &actionAttack},
+      {"injure", &actionAttack},
+      {"maim",   &actionAttack},
+      {"fight",  &actionAttack},
+
       /* list items in the user's inventory */
       {"list",      &actionList},
       {"inv",       &actionList},
@@ -110,10 +119,12 @@ Verb *getVerbs() {
       {"jump", &actionJump},
       {"leap", &actionJump},
 
-      /* fun: profanity recognition :) */
-      {"fuck", &actionProfanity},
-      {"shit", &actionProfanity},
-      {"damn", &actionProfanity},
+      /* fun: bare bones profanity recognition :) */
+      {"fuck",    &actionProfanity},
+      {"shit",    &actionProfanity},
+      {"damn",    &actionProfanity},
+      {"bitch",   &actionProfanity},
+      {"asshole", &actionProfanity},
 
       /* TODO: lose command = lose game (haha) */
       {"quit",  &actionQuit},

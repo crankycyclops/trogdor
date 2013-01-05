@@ -54,6 +54,9 @@ Creature *createCreature(int initMessages) {
    /* by default, creatures are neutral */
    newcreature->allegiance = CREATURE_ALLEGIANCE_NEUTRAL;
 
+   /* by default, creature is attackable */
+   newcreature->attackable = 1;
+
    /* event handlers */
    newcreature->events = createEventsList();
 

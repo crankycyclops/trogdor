@@ -169,6 +169,7 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    creature->title = creatureParsed->title;
    creature->description = creatureParsed->description;
    creature->messages = creatureParsed->messages;
+   creature->attackable = creatureParsed->attackable;
 
    if (NULL != creatureParsed->allegiance) {
 
