@@ -29,7 +29,11 @@ void *defender, enum EntityType defenderType, Object *weapon);
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
 enum EntityType defenderType, Object *weapon) {
 
+   // TODO: beforeAttack event
+
    if (attackSuccess(aggressor, aggressorType, defender, defenderType)) {
+
+      // TODO: beforeAttackSuccess event
 
       int damage = calcDamage(aggressor, aggressorType, defender, defenderType,
          weapon);
@@ -39,11 +43,17 @@ enum EntityType defenderType, Object *weapon) {
       g_outputString("You dealt a blow to %s!\n",
          dstrview(defenderType == entity_player ? ((Player *)defender)->name :
          ((Creature *)defender)->name));
+
+      // TODO: afterAttackSuccess event
    }
 
    else {
+      // TODO: beforeAttackFailure event
       g_outputString("Attack failed!\n");
+      // TODO: afterAttackFailure event
    }
+
+   // TODO: afterAttack event
 
    return;
 }
