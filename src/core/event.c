@@ -361,7 +361,13 @@ enum EntityType entityType, int numArgs, va_list args) {
 static int playerEvent(const char *name, Player *player, void *entity,
 enum EntityType entityType, int numArgs, va_list args) {
 
-   GList *handlers = g_hash_table_lookup(player->events, name);
+   GList *handlers;
+
+   if (NULL == player) {
+      return CONTINUE_HANDLERS | CONTINUE_ACTION;
+   }
+
+   handlers = g_hash_table_lookup(player->events, name);
    return executeEvent(handlers, player, entity, entityType, numArgs, args);
 }
 
@@ -371,6 +377,10 @@ static int entityEvent(const char *name, Player *player, void *entity,
 enum EntityType entityType, int numArgs, va_list args) {
 
    GList     *handlers;
+
+   if (NULL == entity) {
+      return CONTINUE_HANDLERS | CONTINUE_ACTION;
+   }
 
    switch (entityType) {
 

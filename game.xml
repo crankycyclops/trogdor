@@ -38,11 +38,11 @@
       <alive>1</alive>
 
       <!-- default starting health (optional: default is 0) -->
-      <health>0</health>
+      <health>10</health>
 
       <!-- a max health of 0 means the creature is immortal (optional:
            default is 0 for immortal) -->
-      <maxHealth>0</maxHealth>
+      <maxHealth>10</maxHealth>
 
    </player>
 
@@ -142,11 +142,11 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
          <alive>1</alive>
 
          <!-- default starting health (optional: default is 0) -->
-         <health>0</health>
+         <health>5</health>
 
          <!-- a max health of 0 means the creature is immortal (optional:
               default is 0 for immortal) -->
-         <maxHealth>0</maxHealth>
+         <maxHealth>25</maxHealth>
 
          <messages>
             <message name="dead">Trogdor is very much dead.</message>

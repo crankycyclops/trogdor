@@ -27,6 +27,7 @@ void *defender, enum EntityType defenderType, Object *weapon);
 
 /******************************************************************************/
 
+// TODO: don't allow if creature already dead
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
 enum EntityType defenderType, Object *weapon) {
 
@@ -39,11 +40,11 @@ enum EntityType defenderType, Object *weapon) {
       int damage = calcDamage(aggressor, aggressorType, defender, defenderType,
          weapon);
 
-      removeHealth(defender, defenderType, damage, TRUE);
-
       g_outputString("You dealt a blow to %s!\n",
          dstrview(defenderType == entity_player ? ((Player *)defender)->name :
          ((Creature *)defender)->name));
+
+      removeHealth(defender, defenderType, damage, TRUE);
 
       // TODO: afterAttackSuccess event
    }

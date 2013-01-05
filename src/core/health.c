@@ -33,6 +33,11 @@ void die(void *entity, enum EntityType type);
 
 void addHealth(void *entity, enum EntityType type, int up, int allowOverflow) {
 
+   if (entity_player != type && entity_creature != type) {
+      g_outputError("Unsupported entity type in addHealth(). This is a bug.\n");
+      return;
+   }
+
    // TODO
    return;
 }
@@ -41,8 +46,58 @@ void addHealth(void *entity, enum EntityType type, int up, int allowOverflow) {
 
 void removeHealth(void *entity, enum EntityType type, int down, int allowDeath) {
 
-   // TODO
-   return;
+   int dies = 0;
+
+   int health = entity_player == type ? ((Player *)entity)->state.health :
+      ((Creature *)entity)->state.health;
+   int maxHealth = entity_player == type ? ((Player *)entity)->maxHealth :
+      ((Creature *)entity)->maxHealth;
+   char *name = entity_player == type ? ((Player *)entity)->name :
+      ((Creature *)entity)->name;
+
+   if (entity_player != type && entity_creature != type) {
+      g_outputError("Unsupported entity type in removeHealth(). This is a bug.\n");
+      return;
+   }
+
+   if (!event("beforeRemoveHealth", entity_player == type ? (Player *)entity : NULL,
+   entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0)) {
+      return;
+   }
+
+   g_outputString("%s loses %d health points.\n", dstrview(name), down);
+
+   if (entity_player == type) {
+
+      ((Player *)entity)->state.health -= down;
+      health = ((Player *)entity)->state.health;
+
+      if (((Player *)entity)->state.health <= 0) {
+         dies = 1;
+      }
+   }
+
+   else {
+
+      ((Creature *)entity)->state.health -= down;
+      health = ((Creature *)entity)->state.health;
+
+      if (((Creature *)entity)->state.health <= 0) {
+         dies = 1;
+      }
+   }
+
+   if (dies && allowDeath) {
+      die(entity, type);
+   }
+
+   else {
+      g_outputString("%s has %d of %d possible health points.\n", dstrview(name),
+         health, maxHealth);
+   }
+
+   event("afterRemoveHealth", entity_player == type ? (Player *)entity : NULL,
+      entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0);
 }
 
 /******************************************************************************/
@@ -51,13 +106,13 @@ void die(void *entity, enum EntityType type) {
 
    dstring_t message;
 
-   if (!event("beforeDie", entity_player == type ? (Player *)entity : NULL,
-   entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0)) {
+   if (entity_player != type && entity_creature != type) {
+      g_outputError("Unsupported entity type in die(). This is a bug.\n");
       return;
    }
 
-   if (entity_player != type && entity_creature != type) {
-      g_outputError("Unsupported entity type in die().  This is a bug.\n");
+   if (!event("beforeDie", entity_player == type ? (Player *)entity : NULL,
+   entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0)) {
       return;
    }
 
@@ -78,8 +133,8 @@ void die(void *entity, enum EntityType type) {
    }
 
    else {
-      g_outputString("%s dies.\n", type == entity_player ?
-         ((Player *)entity)->name : ((Creature *)entity)->name);
+      g_outputString("%s dies.\n", dstrview(type == entity_player ?
+         ((Player *)entity)->name : ((Creature *)entity)->name));
    }
 
    event("afterDie", entity_player == type ? (Player *)entity : NULL,
