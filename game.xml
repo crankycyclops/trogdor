@@ -33,6 +33,17 @@
 
       </inventory>
 
+      <!-- whether or not creature starts out alive or dead (optional:
+           default is 1 for alive) -->
+      <alive>1</alive>
+
+      <!-- default starting health (optional: default is 0) -->
+      <health>0</health>
+
+      <!-- a max health of 0 means the creature is immortal (optional:
+           default is 0 for immortal) -->
+      <maxHealth>0</maxHealth>
+
    </player>
 
    <!-- Section II. Objects -->
@@ -125,6 +136,17 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
          <!-- even if a creature is an enemy, we may or may not be allowed to
               attack it (optional) -->
          <attackable>1</attackable>
+
+         <!-- whether or not creature starts out alive or dead (optional:
+              default is 1 for alive) -->
+         <alive>1</alive>
+
+         <!-- default starting health (optional: default is 0) -->
+         <health>0</health>
+
+         <!-- a max health of 0 means the creature is immortal (optional:
+              default is 0 for immortal) -->
+         <maxHealth>0</maxHealth>
 
          <messages>
             <message name="dead">Trogdor is very much dead.</message>

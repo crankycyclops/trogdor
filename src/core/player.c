@@ -50,6 +50,9 @@ Player *createPlayer(char *name) {
    newplayer->inventory.weight = g_playerConfig.inventory.weight;
    newplayer->inventory.list = NULL;
    newplayer->inventory.byName = g_hash_table_new(g_str_hash, g_str_equal);
+   newplayer->state.health = 0;
+   newplayer->state.alive = 0;
+   newplayer->maxHealth = 0;
 
    /* event handlers */
    newplayer->events = createEventsList();

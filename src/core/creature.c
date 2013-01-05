@@ -41,10 +41,12 @@ Creature *createCreature(int initMessages) {
    }
 
    newcreature->L = NULL;
+   newcreature->maxHealth = 0;
 
    /* initialize the creature's state */
    newcreature->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
    newcreature->state.alive = 1;
+   newcreature->state.health = 0;
    newcreature->state.seenByAPlayer = 0;
 
    /* initialize creature's inventory */

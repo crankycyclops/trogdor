@@ -171,6 +171,11 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    creature->messages = creatureParsed->messages;
    creature->attackable = creatureParsed->attackable;
 
+   /* health settings */
+   creature->maxHealth = creatureParsed->maxHealth;
+   creature->state.health = creatureParsed->health;
+   creature->state.alive = creatureParsed->alive;
+
    if (NULL != creatureParsed->allegiance) {
 
       if (0 == strcmp(dstrview(creatureParsed->allegiance), "neutral")) {

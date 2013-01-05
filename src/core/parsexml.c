@@ -25,6 +25,15 @@ static void parseEventSection(xmlTextReaderPtr reader);
 /* parse the player configuration section */
 static void parsePlayerSection(xmlTextReaderPtr reader);
 
+/* parse player's initial health setting */
+static int parseHealth(xmlTextReaderPtr reader);
+
+/* parse player's max health setting */
+static int parseMaxHealth(xmlTextReaderPtr reader);
+
+/* parse whether or not players start out dead or alive */
+static int parseAlive(xmlTextReaderPtr reader);
+
 /* parse the player's inventory settings */
 static void parseInventorySettings(xmlTextReaderPtr reader);
 
@@ -244,11 +253,31 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
 
    int parseStatus;
 
+   /* default values */
+   int health = 0;
+   int maxHealth = 0;
+   int alive = 1;
+
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
    xmlTextReaderDepth(reader) > 1
    ) {
 
       IF_COMMENT_IGNORE
+
+      /* whether new players start out alive or dead */
+      else if (0 == strcmp("alive", xmlTextReaderConstName(reader))) {
+         alive = parseAlive(reader);
+      }
+
+      /* how many health points new players start with */
+      else if (0 == strcmp("health", xmlTextReaderConstName(reader))) {
+         health = parseHealth(reader);
+      }
+
+      /* maximum health for new players (0 means immortal) */
+      else if (0 == strcmp("maxHealth", xmlTextReaderConstName(reader))) {
+         maxHealth = parseMaxHealth(reader);
+      }
 
       else if (0 == strcmp("inventory", xmlTextReaderConstName(reader))) {
          parseInventorySettings(reader);
@@ -266,7 +295,86 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
       exit(EXIT_FAILURE);
    }
 
+   g_playerConfig.state.health = health;
+   g_playerConfig.state.alive = alive;
+   g_playerConfig.maxHealth = maxHealth;
+
    return;
+}
+
+/******************************************************************************/
+
+static int parseHealth(xmlTextReaderPtr reader) {
+
+   int health;
+   char *healthStr = (char *)getNodeValue(reader);
+
+   if (!isInt(healthStr)) {
+      g_outputError("health must be integer >= 0!\n");
+      exit(EXIT_FAILURE);
+   }
+
+   health = atoi(healthStr);
+
+   if (health < 0) {
+      g_outputError("health must be integer >= 0!\n");
+      exit(EXIT_FAILURE);
+   }
+
+   /* make sure we have a valid closing tag */
+   checkClosingTag("health", reader);
+
+   return health;
+}
+
+/******************************************************************************/
+
+static int parseMaxHealth(xmlTextReaderPtr reader) {
+
+   int maxHealth;
+   char *maxHealthStr = (char *)getNodeValue(reader);
+
+   if (!isInt(maxHealthStr)) {
+      g_outputError("maxHealth must be integer >= 0!\n");
+      exit(EXIT_FAILURE);
+   }
+
+   maxHealth = atoi(maxHealthStr);
+
+   if (maxHealth < 0) {
+      g_outputError("maxHealth must be integer >= 0!\n");
+      exit(EXIT_FAILURE);
+   }
+
+   /* make sure we have a valid closing tag */
+   checkClosingTag("maxHealth", reader);
+
+   return maxHealth;
+}
+
+/******************************************************************************/
+
+static int parseAlive(xmlTextReaderPtr reader) {
+
+   int alive;
+   char *aliveStr = (char *)getNodeValue(reader);
+
+   if (!isInt(aliveStr)) {
+      g_outputError("alive must be 0 (for false) or 1 (for true)\n");
+      exit(EXIT_FAILURE);
+   }
+
+   alive = atoi(aliveStr);
+
+   if (alive < 0 || alive > 1) {
+      g_outputError("alive must be 0 (for false) or 1 (for true)\n");
+      exit(EXIT_FAILURE);
+   }
+
+   /* make sure we have a valid closing tag */
+   checkClosingTag("alive", reader);
+
+   return alive;
 }
 
 /******************************************************************************/
@@ -587,6 +695,11 @@ static void parseCreature(xmlTextReaderPtr reader) {
    /* by default, we can attack a creature */
    creature->attackable = 1;
 
+   /* default values for creature's health */
+   creature->alive = 1;
+   creature->health = 0;
+   creature->maxHealth = 0;
+
    creature->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
    creature->scripts = NULL;
    creature->eventHandlers = NULL;
@@ -669,6 +782,21 @@ static void parseCreature(xmlTextReaderPtr reader) {
 
          /* make sure we have a valid closing tag */
          checkClosingTag("attackable", reader);
+      }
+
+      /* whether or not creature starts out alive or dead */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("alive", tagname)) {
+         creature->alive = parseAlive(reader);
+      }
+
+      /* creature's initial health points */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("health", tagname)) {
+         creature->health = parseHealth(reader);
+      }
+
+      /* creature's maximum health */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("maxHealth", tagname)) {
+         creature->maxHealth = parseMaxHealth(reader);
       }
 
       /* we're parsing an object owned by the creature */

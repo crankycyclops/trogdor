@@ -78,6 +78,11 @@ typedef struct {
    dstring_t description;
    dstring_t allegiance;
 
+   /* values related to creature's health */
+   int health;
+   int maxHealth;
+   int alive;
+
    /* whether or not we can attack the creature */
    int attackable;
 

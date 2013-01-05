@@ -11,6 +11,7 @@
 #include "include/event.h"
 #include "include/messages.h"
 #include "include/data.h"
+#include "include/health.h"
 
 
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,

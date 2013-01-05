@@ -18,6 +18,7 @@ typedef struct creatureState {
 
    GHashTable *seenByPlayers;    /* all players that have seen the creature */
 
+   int health;          /* how many health points the creature has */
    int alive;           /* 1 if creature is alive and 0 if it's dead */
    int seenByAPlayer;   /* whether creature has been seen by any player */
 
@@ -34,6 +35,7 @@ typedef struct creature {
    Inventory inventory;    /* objects owned by the creature */
    int allegiance;         /* whether the creature is a friend, enemy or neutral */
    int attackable;         /* whether or not creature can be attacked */
+   int maxHealth;          /* max health points (0 means immortal) */
 
    /* event handlers */
    lua_State      *L;
