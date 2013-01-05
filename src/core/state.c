@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include <time.h>
 
 #include "include/trogdor.h"
 #include "include/utility.h"
@@ -41,6 +42,9 @@ void initGame() {
    g_players = g_hash_table_new(g_str_hash, g_str_equal);
 
    inGame = 1;
+
+   /* seed the random number generator (for various stuff) */
+   srand(time(NULL));
 }
 
 /******************************************************************************/

@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "include/trogdor.h"
 #include "include/object.h"
@@ -30,8 +29,22 @@ void *defender, enum EntityType defenderType, Object *weapon);
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
 enum EntityType defenderType, Object *weapon) {
 
-   // TODO
-   g_outputString("TODO: attack!\n");
+   if (attackSuccess(aggressor, aggressorType, defender, defenderType)) {
+
+      int damage = calcDamage(aggressor, aggressorType, defender, defenderType,
+         weapon);
+
+      // TODO: subtract damage from player's or creature's health
+
+      g_outputString("You dealt a blow to %s!\n",
+         dstrview(defenderType == entity_player ? ((Player *)defender)->name :
+         ((Creature *)defender)->name));
+   }
+
+   else {
+      g_outputString("Attack failed!\n");
+   }
+
    return;
 }
 
@@ -43,8 +56,7 @@ void *defender, enum EntityType defenderType) {
    double p;              /* probability of success */   
    double dice;           /* random number */
 
-   srand(time(NULL));
-   dice = rand() / RAND_MAX;
+   dice = (double)rand() / RAND_MAX;
 
    // TODO
    p = 0.5;
