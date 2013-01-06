@@ -5,6 +5,7 @@
 #include <glib.h>
 
 #include "object.h"
+#include "attributes.h"
 #include "state.h"
 
 typedef struct {
@@ -20,6 +21,7 @@ typedef struct player {
    Room         *location;
    Inventory    inventory;
    PlayerState  state;
+   Attributes   attributes;
 
    /* 0 means the player is immortal (unless die() is called manually...) */
    int maxHealth;

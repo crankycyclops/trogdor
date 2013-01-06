@@ -6,6 +6,7 @@
 #include <lua.h>
 
 #include "object.h"
+#include "attributes.h"
 #include "messages.h"
 
 
@@ -31,6 +32,7 @@ typedef struct creature {
    dstring_t description;  /* description of the creature */
 
    Messages messages;      /* hash table of custom messages */
+   Attributes attributes;  /* strength, dexterity, intelligence, etc. */
    CreatureState state;    /* creature's state */
    Inventory inventory;    /* objects owned by the creature */
    int allegiance;         /* whether the creature is a friend, enemy or neutral */

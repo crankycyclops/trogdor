@@ -171,6 +171,11 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    creature->messages = creatureParsed->messages;
    creature->attackable = creatureParsed->attackable;
 
+   /* creature's attributes */
+   creature->attributes.strength = creatureParsed->attributes.strength;
+   creature->attributes.dexterity = creatureParsed->attributes.dexterity;
+   creature->attributes.intelligence = creatureParsed->attributes.intelligence;
+
    /* health settings */
    creature->maxHealth = creatureParsed->maxHealth;
    creature->state.health = creatureParsed->health;

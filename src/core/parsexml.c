@@ -264,6 +264,11 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
    int maxHealth = 0;
    int alive = 1;
 
+   /* default attributes (an even spread) */
+   int strength = 10;
+   int dexterity = 10;
+   int intelligence = 10;
+
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
    xmlTextReaderDepth(reader) > 1
    ) {
@@ -304,6 +309,10 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
    g_playerConfig.state.health = health;
    g_playerConfig.state.alive = alive;
    g_playerConfig.maxHealth = maxHealth;
+
+   g_playerConfig.attributes.strength = strength;
+   g_playerConfig.attributes.dexterity = dexterity;
+   g_playerConfig.attributes.intelligence = intelligence;
 
    return;
 }
@@ -758,6 +767,11 @@ static void parseCreature(xmlTextReaderPtr reader) {
    creature->description = NULL;
    creature->messages = NULL;
    creature->used = 0;
+
+   /* default attributes (an even spread) */
+   creature->attributes.strength = 10;
+   creature->attributes.dexterity = 10;
+   creature->attributes.intelligence = 10;
 
    /* by default, a creature is neutral */
    creature->allegiance = NULL;

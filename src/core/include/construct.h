@@ -5,6 +5,7 @@
 #include <dstring.h>
 #include <glib.h>
 
+#include "attributes.h"
 #include "messages.h"
 
 
@@ -81,6 +82,8 @@ typedef struct {
    dstring_t title;
    dstring_t description;
    dstring_t allegiance;
+
+   Attributes attributes;
 
    /* values related to creature's health */
    int health;
