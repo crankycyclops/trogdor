@@ -13,6 +13,9 @@
 #include "include/command.h"
 #include "include/event.h"
 #include "include/messages.h"
+#include "include/attributes.h"
+#include "include/health.h"
+#include "include/combat.h"
 
 
 /* Allocates memory for a creature.  If initMessages is true, we allocate memory
@@ -41,17 +44,17 @@ Creature *createCreature(int initMessages) {
    }
 
    newcreature->L = NULL;
-   newcreature->maxHealth = 0;
+   newcreature->maxHealth = DEFAULT_CREATURE_MAXHEALTH;
 
    /* creature attributes */
-   newcreature->attributes.strength = 0;
-   newcreature->attributes.dexterity = 0;
-   newcreature->attributes.intelligence = 0;
+   newcreature->attributes.strength = DEFAULT_CREATURE_STRENGTH;
+   newcreature->attributes.dexterity = DEFAULT_CREATURE_DEXTERITY;
+   newcreature->attributes.intelligence = DEFAULT_CREATURE_INTELLIGENCE;
 
    /* initialize the creature's state */
    newcreature->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
-   newcreature->state.alive = 1;
-   newcreature->state.health = 0;
+   newcreature->state.alive = DEFAULT_CREATURE_ALIVE;
+   newcreature->state.health = DEFAULT_CREATURE_HEALTH;
    newcreature->state.seenByAPlayer = 0;
 
    /* initialize creature's inventory */
@@ -62,7 +65,7 @@ Creature *createCreature(int initMessages) {
    newcreature->allegiance = CREATURE_ALLEGIANCE_NEUTRAL;
 
    /* by default, creature is attackable */
-   newcreature->attackable = 1;
+   newcreature->attackable = DEFAULT_CREATURE_ATTACKABLE;
 
    /* event handlers */
    newcreature->events = createEventsList();

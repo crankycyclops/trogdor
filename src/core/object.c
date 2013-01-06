@@ -65,8 +65,8 @@ Object *createObject(int initMessages) {
    newobject->state.takenByPlayer = 0;
    newobject->state.droppedByPlayer = 0;
 
-   newobject->weapon = 0;
-   newobject->damage = 1;
+   newobject->weapon = DEFAULT_OBJECT_IS_WEAPON;
+   newobject->damage = DEFAULT_OBJECT_DAMAGE;
 
    /* event handlers */
    newobject->L = NULL;
