@@ -43,6 +43,9 @@ static void parseInventorySettings(xmlTextReaderPtr reader);
 /* parse the inventory's weight (if setting exists) */
 static void parseInventoryWeight(xmlTextReaderPtr reader);
 
+/* parse player and creature attributes section */
+static Attributes parseAttributes(xmlTextReaderPtr reader, int depth);
+
 /* opens the XML file and prepares it for parsing */
 static xmlTextReaderPtr readXML(const char *filename);
 
@@ -261,15 +264,14 @@ static EventHandlerParsed *parseEventTag(xmlTextReaderPtr reader) {
 static void parsePlayerSection(xmlTextReaderPtr reader) {
 
    int parseStatus;
+   Attributes attrs = {DEFAULT_PLAYER_STRENGTH,
+                       DEFAULT_PLAYER_DEXTERITY,
+                       DEFAULT_PLAYER_INTELLIGENCE};
 
    /* default values */
    int health = DEFAULT_PLAYER_HEALTH;
    int maxHealth = DEFAULT_PLAYER_MAXHEALTH;
    int alive = DEFAULT_PLAYER_ALIVE;
-
-   int strength = DEFAULT_PLAYER_STRENGTH;
-   int dexterity = DEFAULT_PLAYER_DEXTERITY;
-   int intelligence = DEFAULT_PLAYER_INTELLIGENCE;
 
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
    xmlTextReaderDepth(reader) > 1
@@ -296,6 +298,10 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
          parseInventorySettings(reader);
       }
 
+      else if (0 == strcmp("attributes", xmlTextReaderConstName(reader))) {
+         attrs = parseAttributes(reader, 2);
+      }
+
       else {
          g_outputError("error: invalid <%s> tag in <player> section\n",
             xmlTextReaderConstName(reader));
@@ -311,12 +317,95 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
    g_playerConfig.state.health = health;
    g_playerConfig.state.alive = alive;
    g_playerConfig.maxHealth = maxHealth;
-
-   g_playerConfig.attributes.strength = strength;
-   g_playerConfig.attributes.dexterity = dexterity;
-   g_playerConfig.attributes.intelligence = intelligence;
+   g_playerConfig.attributes = attrs;
 
    return;
+}
+
+/******************************************************************************/
+
+static Attributes parseAttributes(xmlTextReaderPtr reader, int depth) {
+
+   int parseStatus;        /* whether or not parser could extract another node */
+   Attributes attrs = {0, 0, 0};
+
+   /* parse all of the object's elements */
+   while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
+   xmlTextReaderDepth(reader) > depth
+   ) {
+      int        tagtype  = xmlTextReaderNodeType(reader);
+      const char *tagname = xmlTextReaderConstName(reader);
+
+      /* ignore XML comment */
+      if (XML_COMMENT_NODE == tagtype) {
+         continue;
+      }
+
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("strength", tagname)) {
+
+         char *str = (char *)getNodeValue(reader);
+         if (!isInt(str)) {
+            g_outputError("strength must be an integer >= 0\n");
+            exit(EXIT_FAILURE);
+         }
+
+         attrs.strength = atoi(str);
+         if (attrs.strength < 0) {
+            g_outputError("strength must be an integer >= 0\n");
+            exit(EXIT_FAILURE);
+         }
+
+         checkClosingTag("strength", reader);
+      }
+
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("dexterity", tagname)) {
+
+         char *str = (char *)getNodeValue(reader);
+         if (!isInt(str)) {
+            g_outputError("dexterity must be an integer >= 0\n");
+            exit(EXIT_FAILURE);
+         }
+
+         attrs.dexterity = atoi(str);
+         if (attrs.dexterity < 0) {
+            g_outputError("dexterity must be an integer >= 0\n");
+            exit(EXIT_FAILURE);
+         }
+
+         checkClosingTag("dexterity", reader);
+      }
+
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("intelligence", tagname)) {
+
+         char *str = (char *)getNodeValue(reader);
+         if (!isInt(str)) {
+            g_outputError("intelligence must be an integer >= 0\n");
+            exit(EXIT_FAILURE);
+         }
+
+         attrs.intelligence = atoi(str);
+         if (attrs.intelligence < 0) {
+            g_outputError("intelligence must be an integer >= 0\n");
+            exit(EXIT_FAILURE);
+         }
+
+         checkClosingTag("intelligence", reader);
+      }
+
+      /* an unknown tag was found */
+      else {
+         g_outputError("Illegal tag <%s> found in attributes section",
+            xmlTextReaderConstName(reader));
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   if (parseStatus < 0) {
+      g_outputError("There was an error parsing game XML file\n");
+      exit(EXIT_FAILURE);
+   }
+
+   return attrs;
 }
 
 /******************************************************************************/

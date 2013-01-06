@@ -37,6 +37,15 @@
 
       </inventory>
 
+      <!-- By default, player attributes are distributed evenly (10 given to
+           each attribute.)  Here, you can optionally set your own values, which
+           will be assigned by default to all new players. -->
+      <attributes>
+         <strength>10</strength>
+         <dexterity>10</dexterity>
+         <intelligence>10</intelligence>
+      </attributes>
+
       <!-- whether or not creature starts out alive or dead (optional:
            default is 1 for alive) -->
       <alive>1</alive>
