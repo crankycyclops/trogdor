@@ -14,6 +14,7 @@
 #include "include/messages.h"
 #include "include/data.h"
 #include "include/health.h"
+#include "include/utility.h"
 
 
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
@@ -89,7 +90,8 @@ void *defender, enum EntityType defenderType) {
    woundRate = defenderType == entity_player ? ((Player *)defender)->woundRate :
       ((Creature *)defender)->woundRate;
 
-   p = STRENGTH_FACTOR(aggressorAttrs) * (woundRate / 2) + (woundRate / 2);
+   p = CLIP(STRENGTH_FACTOR(aggressorAttrs) * (woundRate / 2) + (woundRate / 2),
+      0.0, woundRate);
 
    if (dice < p) {
       return TRUE;

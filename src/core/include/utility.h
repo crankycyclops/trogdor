@@ -11,6 +11,9 @@ extern int isDouble(char *str);
 /* allocate a new dstring_t object */
 extern dstring_t createDstring();
 
+/* macro to clip a value within a given range */
+#define CLIP(V, MIN, MAX)  (((V) > (MAX)) ? (MAX) : (((V) < (MIN)) ? (MIN) : (V)))
+
 
 #endif
 
