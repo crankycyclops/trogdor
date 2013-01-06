@@ -8,6 +8,12 @@
 
 #include "messages.h"
 
+/* by default, objects are not weapons */
+#define DEFAULT_OBJECT_IS_WEAPON  0
+
+/* by default, objects (if they are weapons only) will do 1 point of damage */
+#define DEFAULT_OBJECT_DAMAGE     1
+
 
 /* represents the state of a game object */
 typedef struct objectState {

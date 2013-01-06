@@ -15,6 +15,8 @@
 #include "include/player.h"
 #include "include/messages.h"
 #include "include/attributes.h"
+#include "include/health.h"
+#include "include/combat.h"
 
 
 /* returns true if the document was parsed successfully and false otherwise */
@@ -261,13 +263,13 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
    int parseStatus;
 
    /* default values */
-   int health = 0;
-   int maxHealth = 0;
-   int alive = 1;
+   int health = DEFAULT_PLAYER_HEALTH;
+   int maxHealth = DEFAULT_PLAYER_MAXHEALTH;
+   int alive = DEFAULT_PLAYER_ALIVE;
 
-   int strength = DEFAULT_STRENGTH;
-   int dexterity = DEFAULT_DEXTERITY;
-   int intelligence = DEFAULT_INTELLIGENCE;
+   int strength = DEFAULT_PLAYER_STRENGTH;
+   int dexterity = DEFAULT_PLAYER_DEXTERITY;
+   int intelligence = DEFAULT_PLAYER_INTELLIGENCE;
 
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
    xmlTextReaderDepth(reader) > 1
@@ -496,8 +498,8 @@ static void parseObject(xmlTextReaderPtr reader) {
    object->used = 0;
 
    /* default combat-related properties */
-   object->weapon = 0;
-   object->damage = 1;
+   object->weapon = DEFAULT_OBJECT_IS_WEAPON;
+   object->damage = DEFAULT_OBJECT_DAMAGE;
 
    /* by default, an object has no weight */
    cstrtodstr(object->weight, "0");
@@ -769,20 +771,20 @@ static void parseCreature(xmlTextReaderPtr reader) {
    creature->used = 0;
 
    /* default attributes (an even spread) */
-   creature->attributes.strength = 10;
-   creature->attributes.dexterity = 10;
-   creature->attributes.intelligence = 10;
+   creature->attributes.strength = DEFAULT_CREATURE_STRENGTH;
+   creature->attributes.dexterity = DEFAULT_CREATURE_DEXTERITY;
+   creature->attributes.intelligence = DEFAULT_CREATURE_INTELLIGENCE;
 
    /* by default, a creature is neutral */
    creature->allegiance = NULL;
 
    /* by default, we can attack a creature */
-   creature->attackable = 1;
+   creature->attackable = DEFAULT_CREATURE_ATTACKABLE;
 
    /* default values for creature's health */
-   creature->alive = 1;
-   creature->health = 0;
-   creature->maxHealth = 0;
+   creature->alive = DEFAULT_CREATURE_ALIVE;
+   creature->health = DEFAULT_CREATURE_HEALTH;
+   creature->maxHealth = DEFAULT_CREATURE_MAXHEALTH;
 
    creature->objects = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 2);
    creature->scripts = NULL;

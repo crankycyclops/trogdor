@@ -8,6 +8,14 @@
 #include "creature.h"
 #include "player.h"
 
+#define DEFAULT_PLAYER_HEALTH       0
+#define DEFAULT_PLAYER_MAXHEALTH    0
+#define DEFAULT_PLAYER_ALIVE        1
+
+#define DEFAULT_CREATURE_HEALTH     0
+#define DEFAULT_CREATURE_MAXHEALTH  0
+#define DEFAULT_CREATURE_ALIVE      1
+
 /* Adds health to a player or creature.  Up is the amount of health to add.
    If allowOverflow is true, up will always be added to the current health,
    even if it means going over maxHealth.  If this is false, the health
