@@ -8,6 +8,11 @@ typedef struct {
    int intelligence;
 } Attributes;
 
+/* if no configured values, these are the defaults (an even spread) */
+#define DEFAULT_STRENGTH      10
+#define DEFAULT_DEXTERITY     10
+#define DEFAULT_INTELLIGENCE  10
+
 /* macros to calculate commonly needed data about attributes */
 #define ATTRIBUTES_TOTAL(X) (X.strength + X.dexterity + X.intelligence)
 #define STRENGTH_FACTOR(X) (X.strength / (double)ATTRIBUTES_TOTAL(X))

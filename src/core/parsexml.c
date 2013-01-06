@@ -14,6 +14,7 @@
 #include "include/room.h"
 #include "include/player.h"
 #include "include/messages.h"
+#include "include/attributes.h"
 
 
 /* returns true if the document was parsed successfully and false otherwise */
@@ -264,10 +265,9 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
    int maxHealth = 0;
    int alive = 1;
 
-   /* default attributes (an even spread) */
-   int strength = 10;
-   int dexterity = 10;
-   int intelligence = 10;
+   int strength = DEFAULT_STRENGTH;
+   int dexterity = DEFAULT_DEXTERITY;
+   int intelligence = DEFAULT_INTELLIGENCE;
 
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
    xmlTextReaderDepth(reader) > 1
