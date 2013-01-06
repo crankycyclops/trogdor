@@ -43,6 +43,11 @@ Creature *createCreature(int initMessages) {
    newcreature->L = NULL;
    newcreature->maxHealth = 0;
 
+   /* creature attributes */
+   newcreature->attributes.strength = 0;
+   newcreature->attributes.dexterity = 0;
+   newcreature->attributes.intelligence = 0;
+
    /* initialize the creature's state */
    newcreature->state.seenByPlayers = g_hash_table_new(g_str_hash, g_str_equal);
    newcreature->state.alive = 1;

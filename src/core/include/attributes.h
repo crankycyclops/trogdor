@@ -10,9 +10,9 @@ typedef struct {
 
 /* macros to calculate commonly needed data about attributes */
 #define ATTRIBUTES_TOTAL(X) (X.strength + X.dexterity + X.intelligence)
-#define STRENGTH_FACTOR(X) (X.strength / ATTRIBUTES_TOTAL(X))
-#define DEXTERITY_FACTOR(X) (X.dexterity / ATTRIBUTES_TOTAL(X))
-#define INTELLIGENCE_FACTOR(X) (X.intelligence / ATTRIBUTES_TOTAL(X))
+#define STRENGTH_FACTOR(X) (X.strength / (double)ATTRIBUTES_TOTAL(X))
+#define DEXTERITY_FACTOR(X) (X.dexterity / (double)ATTRIBUTES_TOTAL(X))
+#define INTELLIGENCE_FACTOR(X) (X.intelligence / (double)ATTRIBUTES_TOTAL(X))
 
 
 #endif

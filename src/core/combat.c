@@ -89,7 +89,7 @@ void *defender, enum EntityType defenderType) {
 
    else {
       return FALSE;
-   }   
+   }
 }
 
 /******************************************************************************/
@@ -97,14 +97,18 @@ void *defender, enum EntityType defenderType) {
 static int calcDamage(void *aggressor, enum EntityType aggressorType,
 void *defender, enum EntityType defenderType, Object *weapon) {
 
-   // TODO: also take attributes into account
+   // TODO: make this configurable
+   /* damage done without a weapon */
+   int bareHands = 5;
+   Attributes attributes = entity_player == aggressorType ?
+      ((Player *)aggressor)->attributes : ((Creature *)aggressor)->attributes;
+   int damage = (int)(bareHands * STRENGTH_FACTOR(attributes)) < 1 ?
+         1 : (int)(bareHands * STRENGTH_FACTOR(attributes));
 
-   if (NULL == weapon) {
-      return 1;
+   if (NULL != weapon) {
+      damage += weapon->damage;
    }
 
-   else {
-      return weapon->damage;
-   }
+   return damage;
 }
 
