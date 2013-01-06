@@ -2,6 +2,8 @@
 
 <game>
 
+
+
    <!-- Section 0. Global Event Handlers and Scripts (optional) -->
    <events>
 
@@ -12,6 +14,8 @@
       <event name="beforeDropObject">sampleDropObject</event>
 
    </events>
+
+
 
    <!-- Section I. Player Configuration -->
    <player>
@@ -45,6 +49,8 @@
       <maxHealth>10</maxHealth>
 
    </player>
+
+
 
    <!-- Section II. Objects -->
    <objects>
@@ -132,6 +138,8 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
 
    </objects>
 
+
+
    <!-- Section III. Creatures -->
 
    <creatures>
@@ -155,7 +163,7 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
          <alive>1</alive>
 
          <!-- default starting health (optional: default is 0) -->
-         <health>2</health>
+         <health>20</health>
 
          <!-- a max health of 0 means the creature is immortal (optional:
               default is 0 for immortal) -->
@@ -170,6 +178,8 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
       </creature>
 
    </creatures>
+
+
 
    <!-- Section IV. Rooms -->
 
@@ -248,6 +258,7 @@ things waiting for you here!
       </room>
 
    </rooms>
+
 
 </game>
 
