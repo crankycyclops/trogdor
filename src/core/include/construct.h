@@ -51,9 +51,11 @@ typedef struct {
 
    dstring_t name;
    dstring_t description;
-   dstring_t weight;
-   dstring_t takeable;
-   dstring_t droppable;
+
+   int weight;
+
+   int takeable;
+   int droppable;
 
    /* how many times the object was placed in a room or inventory */
    int used;

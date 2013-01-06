@@ -14,6 +14,15 @@
 /* by default, objects (if they are weapons only) will do 1 point of damage */
 #define DEFAULT_OBJECT_DAMAGE     1
 
+/* by default, an object doesn't have any weight */
+#define DEFAULT_OBJECT_WEIGHT     0
+
+/* by default, you can take an object */
+#define DEFAULT_OBJECT_TAKEABLE   1
+
+/* by default, you can drop an object */
+#define DEFAULT_OBJECT_DROPPABLE  1
+
 
 /* represents the state of a game object */
 typedef struct objectState {

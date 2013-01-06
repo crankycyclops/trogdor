@@ -331,9 +331,9 @@ static Object *initObject(ObjectParsed *objectParsed) {
 
    object->name = objectParsed->name;
    object->description = objectParsed->description;
-   object->weight = atoi(dstrview(objectParsed->weight));
-   object->takeable = atoi(dstrview(objectParsed->takeable));
-   object->droppable = atoi(dstrview(objectParsed->droppable));
+   object->weight = objectParsed->weight;
+   object->takeable = objectParsed->takeable;
+   object->droppable = objectParsed->droppable;
    object->messages = objectParsed->messages;
 
    object->weapon = objectParsed->weapon;

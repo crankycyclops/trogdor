@@ -580,9 +580,6 @@ static void parseObject(xmlTextReaderPtr reader) {
 
    object->name = createDstring();
    object->description = NULL;
-   object->weight = createDstring();
-   object->takeable = createDstring();
-   object->droppable = createDstring();
    object->messages = NULL;
    object->used = 0;
 
@@ -590,14 +587,10 @@ static void parseObject(xmlTextReaderPtr reader) {
    object->weapon = DEFAULT_OBJECT_IS_WEAPON;
    object->damage = DEFAULT_OBJECT_DAMAGE;
 
-   /* by default, an object has no weight */
-   cstrtodstr(object->weight, "0");
-
-   /* by default, an object is takeable */
-   cstrtodstr(object->takeable, "1");
-
-   /* by default, an object is droppable */
-   cstrtodstr(object->droppable, "1");
+   /* default inventory-related properties */
+   object->weight = DEFAULT_OBJECT_WEIGHT;
+   object->takeable = DEFAULT_OBJECT_TAKEABLE;
+   object->droppable = DEFAULT_OBJECT_DROPPABLE;
 
    object->synonyms = g_array_sized_new(FALSE, FALSE, sizeof(dstring_t), 5);
    object->scripts = NULL;
@@ -659,35 +652,59 @@ static void parseObject(xmlTextReaderPtr reader) {
 
       /* we're parsing the object's weight (optional) */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("weight", tagname)) {
-         GET_XML_TAG(weight, object)
-         dstrtrim(object->weight);
-         if (!isInt((char *)dstrview(object->weight))) {
-            g_outputError("error: %s is not a valid weight\n",
-               dstrview(object->weight));
+
+         char *str = (char *)getNodeValue(reader);
+
+         if (!isInt(str)) {
+            g_outputError("error: %s is not a valid weight\n", str);
             exit(EXIT_FAILURE);
          }
+
+         object->weight = atoi(str);
+         if (object->weight < 0) {
+            g_outputError("error: object weight must be >= 0\n");
+            exit(EXIT_FAILURE);
+         }
+
+         checkClosingTag("weight", reader);
       }
 
       /* we're parsing the object's "takeability" (optional) */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("takeable", tagname)) {
-         GET_XML_TAG(takeable, object)
-         dstrtrim(object->takeable);
-         if (strcmp(dstrview(object->takeable), "0") &&
-         strcmp(dstrview(object->takeable), "1")) {
-            g_outputError("error: takeable should be set to 1 (true) or 0 (false)\n");
+
+         char *str = (char *)getNodeValue(reader);
+
+         if (!isInt(str)) {
+            g_outputError("takeable should be set to 1 (true) or 0 (false)\n");
             exit(EXIT_FAILURE);
          }
+
+         object->takeable = atoi(str);
+         if (object->takeable < 0 || object->takeable > 1) {
+            g_outputError("takeable should be set to 1 (true) or 0 (false)\n");
+            exit(EXIT_FAILURE);
+         }
+
+         checkClosingTag("takeable", reader);
       }
 
       /* we're parsing the object's "droppability" (optional) */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("droppable", tagname)) {
-         GET_XML_TAG(droppable, object)
-         dstrtrim(object->droppable);
-         if (0 != strcmp(dstrview(object->droppable), "0") &&
-         0 != strcmp(dstrview(object->droppable), "1")) {
-            g_outputError("error: droppable should be set to 1 (true) or 0 (false)\n");
+
+         char *str = (char *)getNodeValue(reader);
+
+         if (!isInt(str)) {
+            g_outputError("droppable should be set to 1 (true) or 0 (false)\n");
             exit(EXIT_FAILURE);
          }
+
+         object->droppable = atoi(str);
+         if (object->droppable < 0 || object->droppable > 1) {
+            g_outputError("droppable should be set to 1 (true) or 0 (false)\n");
+            exit(EXIT_FAILURE);
+         }
+
+         checkClosingTag("droppable", reader);
       }
 
       /* we're parsing whether or not an object is a weapon */
