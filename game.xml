@@ -178,6 +178,15 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
               default is 0 for immortal) -->
          <maxHealth>25</maxHealth>
 
+         <!-- Creatures can also be given attributes that affect their behavior
+              (by default, creatures are given an even spread of 10 points
+              each.)  This setting is optional. -->
+         <attributes>
+            <strength>10</strength>
+            <dexterity>10</dexterity>
+            <intelligence>10</intelligence>
+         </attributes>
+
          <messages>
             <message name="dead">Trogdor is very much dead.</message>
          </messages>

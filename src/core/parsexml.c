@@ -996,6 +996,10 @@ static void parseCreature(xmlTextReaderPtr reader) {
          checkClosingTag("object", reader);
       }
 
+      else if (0 == strcmp("attributes", xmlTextReaderConstName(reader))) {
+         creature->attributes = parseAttributes(reader, 3);
+      }
+
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("script", tagname)) {
          dstring_t scriptfile = parseScriptTag(reader);
          if (NULL != scriptfile) {
