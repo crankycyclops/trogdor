@@ -176,6 +176,8 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    creature->attributes.strength = creatureParsed->attributes.strength;
    creature->attributes.dexterity = creatureParsed->attributes.dexterity;
    creature->attributes.intelligence = creatureParsed->attributes.intelligence;
+   creature->attributes.initialTotal = creature->attributes.strength +
+      creature->attributes.dexterity + creature->attributes.intelligence;
 
    /* health settings */
    creature->maxHealth = creatureParsed->maxHealth;

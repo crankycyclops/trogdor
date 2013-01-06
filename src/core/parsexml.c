@@ -324,6 +324,8 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
       exit(EXIT_FAILURE);
    }
 
+   attrs.initialTotal = attrs.strength + attrs.dexterity + attrs.intelligence;
+
    g_playerConfig.state.health = health;
    g_playerConfig.state.alive = alive;
    g_playerConfig.maxHealth = maxHealth;

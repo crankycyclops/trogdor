@@ -14,6 +14,7 @@
 #include "include/messages.h"
 #include "include/data.h"
 #include "include/health.h"
+#include "include/attributes.h"
 #include "include/utility.h"
 
 
@@ -90,7 +91,7 @@ void *defender, enum EntityType defenderType) {
    woundRate = defenderType == entity_player ? ((Player *)defender)->woundRate :
       ((Creature *)defender)->woundRate;
 
-   p = CLIP(STRENGTH_FACTOR(aggressorAttrs) * (woundRate / 2) + (woundRate / 2),
+   p = CLIP(calcStrengthFactor(aggressorAttrs) * (woundRate / 2) + (woundRate / 2),
       0.0, woundRate);
 
    if (dice < p) {
@@ -112,8 +113,8 @@ void *defender, enum EntityType defenderType, Object *weapon) {
    int bareHands = 5;
    Attributes attributes = entity_player == aggressorType ?
       ((Player *)aggressor)->attributes : ((Creature *)aggressor)->attributes;
-   int damage = (int)(bareHands * STRENGTH_FACTOR(attributes)) < 1 ?
-         1 : (int)(bareHands * STRENGTH_FACTOR(attributes));
+   int damage = (int)(bareHands * calcStrengthFactor(attributes)) < 1 ?
+         1 : (int)(bareHands * calcStrengthFactor(attributes));
 
    if (NULL != weapon) {
       damage += weapon->damage;

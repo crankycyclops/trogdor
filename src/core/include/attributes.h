@@ -3,9 +3,14 @@
 
 
 typedef struct {
+
    int strength;
    int dexterity;
    int intelligence;
+
+   /* total number of attributes when first initialized */
+   int initialTotal;
+
 } Attributes;
 
 /* if no configured values, these are the defaults (an even spread) */
@@ -16,11 +21,18 @@ typedef struct {
 #define DEFAULT_CREATURE_DEXTERITY     10
 #define DEFAULT_CREATURE_INTELLIGENCE  10
 
-/* macros to calculate commonly needed data about attributes */
-#define ATTRIBUTES_TOTAL(X) (X.strength + X.dexterity + X.intelligence)
-#define STRENGTH_FACTOR(X) (X.strength / (double)ATTRIBUTES_TOTAL(X))
-#define DEXTERITY_FACTOR(X) (X.dexterity / (double)ATTRIBUTES_TOTAL(X))
-#define INTELLIGENCE_FACTOR(X) (X.intelligence / (double)ATTRIBUTES_TOTAL(X))
+#ifndef ATTRIBUTES_C
+
+/* calculates normalized strength relative to initial values */
+extern double calcStrengthFactor(Attributes attributes);
+
+/* calculates normalized dexterity relative to initial values */
+extern double calcDexterityFactor(Attributes attributes);
+
+/* calculates normalized intelligence relative to initial values */
+extern double calcIntelligenceFactor(Attributes attributes);
+
+#endif
 
 
 #endif

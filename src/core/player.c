@@ -54,6 +54,7 @@ Player *createPlayer(char *name) {
    newplayer->attributes.strength = g_playerConfig.attributes.strength;
    newplayer->attributes.dexterity = g_playerConfig.attributes.dexterity;
    newplayer->attributes.intelligence = g_playerConfig.attributes.intelligence;
+   newplayer->attributes.initialTotal = g_playerConfig.attributes.initialTotal;
 
    newplayer->state.health = g_playerConfig.state.health;
    newplayer->state.alive = g_playerConfig.state.alive;
