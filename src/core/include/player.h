@@ -8,6 +8,9 @@
 #include "attributes.h"
 #include "state.h"
 
+/* by default, a player is hit during combat no more than 50% of the time */
+#define DEFAULT_PLAYER_WOUNDRATE 0.5
+
 typedef struct {
    int health;  /* how many health points the player has */
    int alive;   /* true if the player is alive and false if dead */
@@ -25,6 +28,9 @@ typedef struct player {
 
    /* 0 means the player is immortal (unless die() is called manually...) */
    int maxHealth;
+
+   /* maximum probability of being hit when attacked */
+   double woundRate;
 
    /* event handlers */
    GHashTable     *events;

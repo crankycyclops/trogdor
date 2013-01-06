@@ -14,6 +14,10 @@
 #define CREATURE_ALLEGIANCE_ENEMY   1
 #define CREATURE_ALLEGIANCE_NEUTRAL 2
 
+/* by default, a creature will be successfully hit when attacked no more than
+   50% of the time */
+#define DEFAULT_CREATURE_WOUNDRATE  0.5
+
 /* represents the state of a creature */
 typedef struct creatureState {
 
@@ -35,8 +39,11 @@ typedef struct creature {
    Attributes attributes;  /* strength, dexterity, intelligence, etc. */
    CreatureState state;    /* creature's state */
    Inventory inventory;    /* objects owned by the creature */
-   int allegiance;         /* whether the creature is a friend, enemy or neutral */
-   int attackable;         /* whether or not creature can be attacked */
+
+   int    allegiance;      /* whether the creature is a friend, enemy or neutral */
+   int    attackable;      /* whether or not creature can be attacked */
+   double woundRate;       /* maximum probability of being hit during combat */
+
    int maxHealth;          /* max health points (0 means immortal) */
 
    /* event handlers */

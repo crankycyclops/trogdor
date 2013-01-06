@@ -57,6 +57,10 @@
            default is 0 for immortal) -->
       <maxHealth>10</maxHealth>
 
+      <!-- default maximum probability of being hit during combat
+           (optional: default is 0.5) -->
+      <woundrate>0.5</woundrate>
+
    </player>
 
 
@@ -166,6 +170,10 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
          <!-- even if a creature is an enemy, we may or may not be allowed to
               attack it (optional) -->
          <attackable>1</attackable>
+
+         <!-- creature's maximum probability of being hit during combat
+              (optional: default is 0.5) -->
+         <woundrate>0.35</woundrate>
 
          <!-- whether or not creature starts out alive or dead (optional:
               default is 1 for alive) -->

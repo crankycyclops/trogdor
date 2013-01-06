@@ -1,4 +1,5 @@
 
+#include <stdlib.h>
 #include <string.h>
 #include <libxml/xmlreader.h>
 
@@ -27,6 +28,9 @@ static void parseEventSection(xmlTextReaderPtr reader);
 
 /* parse the player configuration section */
 static void parsePlayerSection(xmlTextReaderPtr reader);
+
+/* parse wound rate for a player or creature */
+static double parseWoundRate(xmlTextReaderPtr reader);
 
 /* parse player's initial health setting */
 static int parseHealth(xmlTextReaderPtr reader);
@@ -273,6 +277,8 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
    int maxHealth = DEFAULT_PLAYER_MAXHEALTH;
    int alive = DEFAULT_PLAYER_ALIVE;
 
+   int woundRate = DEFAULT_PLAYER_WOUNDRATE;
+
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
    xmlTextReaderDepth(reader) > 1
    ) {
@@ -302,6 +308,10 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
          attrs = parseAttributes(reader, 2);
       }
 
+      else if (0 == strcmp("woundrate", xmlTextReaderConstName(reader))) {
+         woundRate = parseWoundRate(reader);
+      }
+
       else {
          g_outputError("error: invalid <%s> tag in <player> section\n",
             xmlTextReaderConstName(reader));
@@ -318,8 +328,34 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
    g_playerConfig.state.alive = alive;
    g_playerConfig.maxHealth = maxHealth;
    g_playerConfig.attributes = attrs;
+   g_playerConfig.woundRate = woundRate;
 
    return;
+}
+
+/******************************************************************************/
+
+static double parseWoundRate(xmlTextReaderPtr reader) {
+
+   double woundRate;
+   char *str = (char *)getNodeValue(reader);
+
+   if (!isDouble(str)) {
+      g_outputError("wound rate must be a probability between 0 and 1\n");
+      exit(EXIT_FAILURE);
+   }
+
+   woundRate = strtod(str, NULL);
+
+   if (woundRate < 0.0 || woundRate > 1.0) {
+      g_outputError("wound rate must be a probability between 0 and 1\n");
+      exit(EXIT_FAILURE);
+   }
+
+   /* make sure we have a valid closing tag */
+   checkClosingTag("woundrate", reader);
+
+   return woundRate;
 }
 
 /******************************************************************************/
@@ -881,11 +917,9 @@ static void parseCreature(xmlTextReaderPtr reader) {
    creature->attributes.dexterity = DEFAULT_CREATURE_DEXTERITY;
    creature->attributes.intelligence = DEFAULT_CREATURE_INTELLIGENCE;
 
-   /* by default, a creature is neutral */
    creature->allegiance = NULL;
-
-   /* by default, we can attack a creature */
    creature->attackable = DEFAULT_CREATURE_ATTACKABLE;
+   creature->woundRate = DEFAULT_CREATURE_WOUNDRATE;
 
    /* default values for creature's health */
    creature->alive = DEFAULT_CREATURE_ALIVE;
@@ -974,6 +1008,10 @@ static void parseCreature(xmlTextReaderPtr reader) {
 
          /* make sure we have a valid closing tag */
          checkClosingTag("attackable", reader);
+      }
+
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("woundrate", tagname)) {
+         creature->woundRate = parseWoundRate(reader);
       }
 
       /* whether or not creature starts out alive or dead */

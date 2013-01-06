@@ -59,6 +59,8 @@ Player *createPlayer(char *name) {
    newplayer->state.alive = g_playerConfig.state.alive;
    newplayer->maxHealth = g_playerConfig.maxHealth;
 
+   newplayer->woundRate = g_playerConfig.woundRate;
+
    /* event handlers */
    newplayer->events = createEventsList();
 
