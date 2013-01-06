@@ -77,13 +77,19 @@ enum EntityType defenderType, Object *weapon) {
 static int attackSuccess(void *aggressor, enum EntityType aggressorType,
 void *defender, enum EntityType defenderType) {
 
-   double p;              /* probability of success */   
+   double p;              /* probability of success */
+   double woundRate;      /* max probability of defender being hit by anyone */
    double dice;           /* random number */
+
+   Attributes aggressorAttrs = entity_player == aggressorType ?
+      ((Player *)aggressor)->attributes : ((Creature *)aggressor)->attributes;
 
    dice = (double)rand() / RAND_MAX;
 
-   // TODO
-   p = 0.5;
+   woundRate = defenderType == entity_player ? ((Player *)defender)->woundRate :
+      ((Creature *)defender)->woundRate;
+
+   p = STRENGTH_FACTOR(aggressorAttrs) * (woundRate / 2) + (woundRate / 2);
 
    if (dice < p) {
       return TRUE;
