@@ -67,6 +67,12 @@ static void parseRoomSection(xmlTextReaderPtr reader);
 /* parses an object */
 static void parseObject(xmlTextReaderPtr reader);
 
+/* parses integer damage property */
+static int parseDamageProperty(xmlTextReaderPtr reader);
+
+/* parses boolean weapon property */
+static int parseWeaponProperty(xmlTextReaderPtr reader);
+
 /* parses a creature */
 static void parseCreature(xmlTextReaderPtr reader);
 
@@ -480,6 +486,10 @@ static void parseObject(xmlTextReaderPtr reader) {
    object->messages = NULL;
    object->used = 0;
 
+   /* default combat-related properties */
+   object->weapon = 0;
+   object->damage = 1;
+
    /* by default, an object has no weight */
    cstrtodstr(object->weight, "0");
 
@@ -580,6 +590,16 @@ static void parseObject(xmlTextReaderPtr reader) {
          }
       }
 
+      /* we're parsing whether or not an object is a weapon */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("weapon", tagname)) {
+         object->weapon = parseWeaponProperty(reader);
+      }
+
+      /* we're parsing how much damage the object does as a weapon */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("damage", tagname)) {
+         object->damage = parseDamageProperty(reader);
+      }
+
       /* we're parsing a synonym */
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("synonym", tagname)) {
 
@@ -636,6 +656,56 @@ static void parseObject(xmlTextReaderPtr reader) {
       object);
 
    return;
+}
+
+/******************************************************************************/
+
+static int parseDamageProperty(xmlTextReaderPtr reader) {
+
+   int damage;
+   char *damageStr = (char *)getNodeValue(reader);
+
+   if (!isInt(damageStr)) {
+      g_outputError("damage (in health points) must be >= 0!\n");
+      exit(EXIT_FAILURE);
+   }
+
+   damage = atoi(damageStr);
+
+   if (damage < 0) {
+      g_outputError("damage (in health points) must be >= 0!\n");
+      exit(EXIT_FAILURE);
+   }
+
+   /* make sure we have a valid closing tag */
+   checkClosingTag("damage", reader);
+
+   return damage;
+}
+
+/******************************************************************************/
+
+static int parseWeaponProperty(xmlTextReaderPtr reader) {
+
+   int weapon;
+   char *weaponStr = (char *)getNodeValue(reader);
+
+   if (!isInt(weaponStr)) {
+      g_outputError("weapon property must be 0 (for false) or 1 (for true)\n");
+      exit(EXIT_FAILURE);
+   }
+
+   weapon = atoi(weaponStr);
+
+   if (weapon < 0 || weapon > 1) {
+      g_outputError("weapon property must be 0 (for false) or 1 (for true)\n");
+      exit(EXIT_FAILURE);
+   }
+
+   /* make sure we have a valid closing tag */
+   checkClosingTag("weapon", reader);
+
+   return weapon;
 }
 
 /******************************************************************************/

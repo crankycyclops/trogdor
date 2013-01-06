@@ -120,9 +120,16 @@ int showLongDescription) {
    }
 
    else {
-      /* TODO: distinguish between alive and dead */
-      g_outputString("\nYou see %s.\n",
-         dstrview(creature->title));
+
+      if (!creature->state.alive) {
+         g_outputString("\nYou see the body of %s.\n",
+            dstrview(creature->title));
+      }
+
+      else {
+         g_outputString("\nYou see %s.\n",
+            dstrview(creature->title));
+      }
    }
 
    event("afterDisplayCreature", player, creature, entity_creature, 0);

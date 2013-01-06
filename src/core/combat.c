@@ -97,7 +97,14 @@ void *defender, enum EntityType defenderType) {
 static int calcDamage(void *aggressor, enum EntityType aggressorType,
 void *defender, enum EntityType defenderType, Object *weapon) {
 
-   // TODO
-   return 1;
+   // TODO: also take attributes into account
+
+   if (NULL == weapon) {
+      return 1;
+   }
+
+   else {
+      return weapon->damage;
+   }
 }
 

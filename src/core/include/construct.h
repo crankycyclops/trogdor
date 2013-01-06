@@ -57,6 +57,10 @@ typedef struct {
    /* how many times the object was placed in a room or inventory */
    int used;
 
+   /* combat-related properties */
+   int weapon;
+   int damage;
+
    /* hash table of custom messages */
    Messages messages;
 

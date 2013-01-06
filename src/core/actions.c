@@ -444,7 +444,10 @@ int actionAttack(Player *player, Command command) {
          return 1;
       }
 
-      // TODO: if object isn't a weapon, another error
+      else if (!weapon->weapon) {
+         g_outputString("A %s is not a weapon!\n", dstrview(command.indirectObject));
+         return 1;
+      }
    }
 
    target = getCreature(player, command.directObject);

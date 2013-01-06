@@ -331,6 +331,9 @@ static Object *initObject(ObjectParsed *objectParsed) {
    object->droppable = atoi(dstrview(objectParsed->droppable));
    object->messages = objectParsed->messages;
 
+   object->weapon = objectParsed->weapon;
+   object->damage = objectParsed->damage;
+
    object->synonyms = objectParsed->synonyms;
 
    /* initialize lua state for object */

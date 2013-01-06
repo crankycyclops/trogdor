@@ -32,6 +32,10 @@ typedef struct object {
    int takeable;           /* whether or not object can be taken */
    int droppable;          /* whether or not object can be dropped */
 
+   /* combat-related properties */
+   int weapon;             /* true if the object is a weapon */
+   int damage;             /* if object is a weapon, how much damage it does */
+
    Messages messages;      /* hash table of custom messages */
    ObjectState state;
 
