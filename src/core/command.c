@@ -45,6 +45,11 @@ static int isFillerWord(const char *word);
 
 /******************************************************************************/
 
+/* maintain a buffer containing the last command */
+static Command lastCommand;
+
+/******************************************************************************/
+
 static void initCommand(Command *command) {
 
       command->verb = NULL;
@@ -107,13 +112,29 @@ void executeCommand(Player *player) {
 
    command = parseCommand(commandStr);
 
+   /* allow re-execution of the last command */
+   if (0 != strcmp("again", dstrview(command.verb)) &&
+   0 != strcmp("a", dstrview(command.verb))) {
+      destroyCommand(&lastCommand);
+      lastCommand = command;
+   }
+
+   else if (NULL == lastCommand.verb) {
+      g_outputString("You haven't entered any commands yet!\n");
+      return;
+   }
+
+   else {
+      destroyCommand(&command);
+      command = lastCommand;
+   }
+
    if (!callAction(player, command)) {
       g_outputString("Sorry, I don't understand you.\n");
    }
 
    // TODO: This should work and is a memory leak!
    // dstrfree(commandStr);
-   destroyCommand(&command);
 
    return;
 }

@@ -119,7 +119,7 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
 
       <object name="sword">
          <description>
-A smooth metallic sheen covers the blade, which looks to be of recent make and in good repair.
+A smooth metallic sheen covers its surface, which looks to be of recent make and in good repair.
          </description>
 
          <!-- If set to 1, the object is a weapon (optional: default 0) -->
