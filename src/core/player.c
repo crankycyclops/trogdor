@@ -22,7 +22,7 @@ void destroyPlayer(Player *player);
 
 
 /* contains the default configuration for all newly initialized players */
-Player g_playerConfig = {
+volatile Player g_playerConfig = {
    NULL,                /* player's name */
    NULL,                /* current location */
    {NULL, NULL, 0, 0}   /* player's inventory */
