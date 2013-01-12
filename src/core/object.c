@@ -65,6 +65,9 @@ Object *createObject(int initMessages) {
    newobject->state.takenByPlayer = 0;
    newobject->state.droppedByPlayer = 0;
 
+   /* object will start out being owned by nobody */
+   newobject->state.owner.entity = NULL;
+
    newobject->weapon = DEFAULT_OBJECT_IS_WEAPON;
    newobject->damage = DEFAULT_OBJECT_DAMAGE;
 
@@ -170,6 +173,9 @@ void takeObject(Player *player, Object *object) {
          (char *)dstrview(player->name), player);
       object->state.takenByPlayer = 1;
 
+      object->state.owner.entity = player;
+      object->state.owner.type = entity_player;
+
       dstring_t message = getMessage(object->messages, "take");
 
       if (NULL != message) {
@@ -212,6 +218,9 @@ void dropObject(Player *player, Object *object) {
    g_hash_table_insert(object->state.droppedByPlayers,
       (char *)dstrview(player->name), player);
    object->state.droppedByPlayer = 1;
+
+   object->state.owner.entity = player->location;
+   object->state.owner.type = entity_room;
 
    dstring_t message = getMessage(object->messages, "drop");
 

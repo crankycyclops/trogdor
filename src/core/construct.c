@@ -220,8 +220,13 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
 
    /* add objects to the creature's inventory */
    for (i = 0; i < objects->len; i++) {
+
+      Object *object = g_array_index(objects, dstring_t, i);
+
       creature->inventory.list = addObject(creature->inventory.list,
-         creature->inventory.byName, g_array_index(objects, dstring_t, i));
+         creature->inventory.byName, object);
+      object->state.owner.entity = creature;
+      object->state.owner.type = entity_creature;
    }
 
    return creature;
@@ -290,8 +295,12 @@ static Room *initRoom(RoomParsed *roomParsed) {
 
    /* add objects to the room */
    for (i = 0; i < objectNames->len; i++) {
-      room->objectList = addObject(room->objectList, room->objectByName,
-         g_array_index(objectNames, dstring_t, i));
+   
+      Object *object = g_array_index(objectNames, dstring_t, i);
+
+      room->objectList = addObject(room->objectList, room->objectByName, object);
+      object->state.owner.entity = room;
+      object->state.owner.type = entity_room;
    }
 
    /* initialize lua state for room */

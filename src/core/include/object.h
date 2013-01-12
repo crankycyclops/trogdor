@@ -6,6 +6,7 @@
 #include <dstring.h>
 #include <lua.h>
 
+#include "trogdor.h"
 #include "messages.h"
 
 /* by default, objects are not weapons */
@@ -34,6 +35,14 @@ typedef struct objectState {
    int seenByPlayer;    /* whether object has been seen by any player */
    int takenByPlayer;   /* whether object has been taken by any player */
    int droppedByPlayer; /* whether object has been dropped by any player */
+
+   /* Object can be owned by a player, creature or room.  If entity is NULL,
+      that means that the object exists but doesn't belong to anyone and isn't
+      contained in any room. */
+   struct {
+      void            *entity;
+      enum EntityType  type;
+   } owner;
 
 } ObjectState;
 
