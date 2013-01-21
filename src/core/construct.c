@@ -163,7 +163,7 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    int i;
    GList *nextEventHandler;
    Creature *creature = createCreature(FALSE);
-   GArray *objects = creatureParsed->objects;
+   GArray *objectNames = creatureParsed->objects;
 
    creature->name = creatureParsed->name;
    creature->title = creatureParsed->title;
@@ -219,12 +219,13 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    }
 
    /* add objects to the creature's inventory */
-   for (i = 0; i < objects->len; i++) {
+   for (i = 0; i < objectNames->len; i++) {
 
-      Object *object = g_array_index(objects, dstring_t, i);
+      dstring_t *objectName = g_array_index(objectNames, dstring_t, i);
+      Object *object = g_hash_table_lookup(g_objects, (char *)dstrview(objectName));
 
       creature->inventory.list = addObject(creature->inventory.list,
-         creature->inventory.byName, object);
+         creature->inventory.byName, objectName);
       object->state.owner.entity = creature;
       object->state.owner.type = entity_creature;
    }
