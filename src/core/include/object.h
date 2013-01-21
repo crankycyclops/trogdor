@@ -40,8 +40,8 @@ typedef struct objectState {
       that means that the object exists but doesn't belong to anyone and isn't
       contained in any room. */
    struct {
-      void            *entity;
       enum EntityType  type;
+      void             *entity;
    } owner;
 
 } ObjectState;
