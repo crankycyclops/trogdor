@@ -295,10 +295,11 @@ static Room *initRoom(RoomParsed *roomParsed) {
 
    /* add objects to the room */
    for (i = 0; i < objectNames->len; i++) {
-   
-      Object *object = g_array_index(objectNames, dstring_t, i);
 
-      room->objectList = addObject(room->objectList, room->objectByName, object);
+      dstring_t *objectName = g_array_index(objectNames, dstring_t, i);
+      Object *object = g_hash_table_lookup(g_objects, (char *)dstrview(objectName));
+
+      room->objectList = addObject(room->objectList, room->objectByName, objectName);
       object->state.owner.entity = room;
       object->state.owner.type = entity_room;
    }
