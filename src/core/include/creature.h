@@ -18,6 +18,10 @@
    50% of the time */
 #define DEFAULT_CREATURE_WOUNDRATE  0.5
 
+/* by default, enemy creatures will fight back when attacked */
+// TODO: should friendly,neutral creatures attack back by default?
+#define DEFAULT_CREATURE_COUNTERATTACK 1
+
 /* represents the state of a creature */
 typedef struct creatureState {
 
@@ -42,6 +46,7 @@ typedef struct creature {
 
    int    allegiance;      /* whether the creature is a friend, enemy or neutral */
    int    attackable;      /* whether or not creature can be attacked */
+   int    counterattack;   /* whether or not creature will respond to attacks */
    double woundRate;       /* maximum probability of being hit during combat */
 
    int maxHealth;          /* max health points (0 means immortal) */

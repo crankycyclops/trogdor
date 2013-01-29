@@ -64,6 +64,7 @@ Creature *createCreature(int initMessages) {
    newcreature->allegiance = CREATURE_ALLEGIANCE_NEUTRAL;
    newcreature->attackable = DEFAULT_CREATURE_ATTACKABLE;
    newcreature->woundRate = DEFAULT_CREATURE_WOUNDRATE;
+   newcreature->counterattack = DEFAULT_CREATURE_COUNTERATTACK;
 
    /* event handlers */
    newcreature->events = createEventsList();

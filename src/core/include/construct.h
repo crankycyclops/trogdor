@@ -94,6 +94,7 @@ typedef struct {
 
    /* whether or not we can attack the creature */
    int attackable;
+   int counterattack;
    double woundRate;
 
    /* how many times the creature was placed in a room */

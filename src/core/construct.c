@@ -171,6 +171,7 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    creature->messages = creatureParsed->messages;
    creature->attackable = creatureParsed->attackable;
    creature->woundRate = creatureParsed->woundRate;
+   creature->counterattack = creatureParsed->counterattack;
 
    /* creature's attributes */
    creature->attributes.strength = creatureParsed->attributes.strength;

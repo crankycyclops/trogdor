@@ -47,6 +47,9 @@ static void parseInventorySettings(xmlTextReaderPtr reader);
 /* parse the inventory's weight (if setting exists) */
 static void parseInventoryWeight(xmlTextReaderPtr reader);
 
+/* parse boolean value */
+static int parseBoolean(xmlTextReaderPtr reader, char *tag, int depth);
+
 /* parse player and creature attributes section */
 static Attributes parseAttributes(xmlTextReaderPtr reader, int depth);
 
@@ -572,6 +575,31 @@ static void parseInventoryWeight(xmlTextReaderPtr reader) {
 
 /******************************************************************************/
 
+static int parseBoolean(xmlTextReaderPtr reader, char *tag, int depth) {
+
+   int value;
+   char *valueStr = (char *)getNodeValue(reader);
+
+   if (!isInt(valueStr)) {
+      g_outputError("%s must be 0 (for false) or 1 (for true)\n", tag);
+      exit(EXIT_FAILURE);
+   }
+
+   value = atoi(valueStr);
+
+   if (value < 0 || value > 1) {
+      g_outputError("%s must be 0 (for false) or 1 (for true)\n", tag);
+      exit(EXIT_FAILURE);
+   }
+
+   /* make sure we have a valid closing tag */
+   checkClosingTag(tag, reader);
+
+   return value;
+}
+
+/******************************************************************************/
+
 static void parseObjectSection(xmlTextReaderPtr reader) {
 
    int parseStatus;
@@ -922,6 +950,7 @@ static void parseCreature(xmlTextReaderPtr reader) {
    creature->allegiance = NULL;
    creature->attackable = DEFAULT_CREATURE_ATTACKABLE;
    creature->woundRate = DEFAULT_CREATURE_WOUNDRATE;
+   creature->counterattack = DEFAULT_CREATURE_COUNTERATTACK;
 
    /* default values for creature's health */
    creature->alive = DEFAULT_CREATURE_ALIVE;
@@ -1014,6 +1043,11 @@ static void parseCreature(xmlTextReaderPtr reader) {
 
       else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("woundrate", tagname)) {
          creature->woundRate = parseWoundRate(reader);
+      }
+
+      /* whether or not creature will fight back by default */
+      else if (XML_ELEMENT_NODE == tagtype && 0 == strcmp("counterattack", tagname)) {
+         creature->counterattack = parseBoolean(reader, "counterattack", 1);
       }
 
       /* whether or not creature starts out alive or dead */
