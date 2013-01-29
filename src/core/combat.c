@@ -71,6 +71,22 @@ enum EntityType defenderType, Object *weapon) {
 
    // TODO: afterAttack event
 
+   // TODO: check return value of afterAttack and ONLY execute what comes after
+   // this line if it returns a status saying it's ok to continue
+
+   /* if the entity being attacked is a creature, and it's configured to
+      fight back, then for each attempted attack, the creature should counter
+      with an attack of its own */
+   if (entity_creature == defenderType && ((Creature *)defender)->counterattack) {
+      // TODO: creature weapon selection?  Random?  Hmm...
+      // TODO: should this be timed?
+      if (((Creature *)defender)->state.alive) {
+         g_outputString("\n%s fights back.\n",
+            dstrview(((Creature *)defender)->name));
+         attack(defender, defenderType, aggressor, aggressorType, NULL);
+      }
+   }
+
    return;
 }
 
