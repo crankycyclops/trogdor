@@ -173,7 +173,7 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
 
          <!-- whether or not the creature will return each attack against it
               with one of its own.  (optional: default is 1 for true) -->
-        <counterattack>1</counterattack>
+         <counterattack>1</counterattack>
 
          <!-- creature's maximum probability of being hit during combat
               (optional: default is 0.5) -->

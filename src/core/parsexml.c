@@ -280,7 +280,7 @@ static void parsePlayerSection(xmlTextReaderPtr reader) {
    int maxHealth = DEFAULT_PLAYER_MAXHEALTH;
    int alive = DEFAULT_PLAYER_ALIVE;
 
-   int woundRate = DEFAULT_PLAYER_WOUNDRATE;
+   double woundRate = DEFAULT_PLAYER_WOUNDRATE;
 
    while ((parseStatus = xmlTextReaderRead(reader)) > 0 &&
    xmlTextReaderDepth(reader) > 1

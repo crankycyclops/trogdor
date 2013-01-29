@@ -78,11 +78,11 @@ enum EntityType defenderType, Object *weapon) {
       fight back, then for each attempted attack, the creature should counter
       with an attack of its own */
    if (entity_creature == defenderType && ((Creature *)defender)->counterattack) {
-      // TODO: creature weapon selection?  Random?  Hmm...
       // TODO: should this be timed?
       if (((Creature *)defender)->state.alive) {
          g_outputString("\n%s fights back.\n",
             dstrview(((Creature *)defender)->name));
+         // TODO: creature weapon selection?  Random?  Hmm...
          attack(defender, defenderType, aggressor, aggressorType, NULL);
       }
    }
