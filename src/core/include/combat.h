@@ -11,7 +11,8 @@
 #define DEFAULT_CREATURE_ATTACKABLE  1
 
 extern void attack(void *aggressor, enum EntityType aggressorType,
-void *defender, enum EntityType defenderType, Object *weapon);
+void *defender, enum EntityType defenderType, Object *weapon,
+int counterAttack);
 
 
 #endif

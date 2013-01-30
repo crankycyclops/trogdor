@@ -19,7 +19,7 @@
 
 
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
-enum EntityType defenderType, Object *weapon);
+enum EntityType defenderType, Object *weapon, int counterAttack);
 
 /******************************************************************************/
 
@@ -33,7 +33,7 @@ void *defender, enum EntityType defenderType, Object *weapon);
 
 // TODO: don't allow if creature already dead
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
-enum EntityType defenderType, Object *weapon) {
+enum EntityType defenderType, Object *weapon, int counterAttack) {
 
    // TODO: beforeAttack event
 
@@ -53,7 +53,9 @@ enum EntityType defenderType, Object *weapon) {
          int damage = calcDamage(aggressor, aggressorType, defender,
             defenderType, weapon);
 
-         g_outputString("You dealt a blow to %s!\n",
+         g_outputString("%s dealt a blow to %s!\n",
+            dstrview(aggressorType == entity_player ? ((Player *)aggressor)->name
+            : ((Creature *)aggressor)->name),
             dstrview(defenderType == entity_player ? ((Player *)defender)->name
             : ((Creature *)defender)->name));
 
@@ -77,13 +79,15 @@ enum EntityType defenderType, Object *weapon) {
    /* if the entity being attacked is a creature, and it's configured to
       fight back, then for each attempted attack, the creature should counter
       with an attack of its own */
-   if (entity_creature == defenderType && ((Creature *)defender)->counterattack) {
-      // TODO: should this be timed?
-      if (((Creature *)defender)->state.alive) {
-         g_outputString("\n%s fights back.\n",
-            dstrview(((Creature *)defender)->name));
-         // TODO: creature weapon selection?  Random?  Hmm...
-         attack(defender, defenderType, aggressor, aggressorType, NULL);
+   if (counterAttack) {
+      if (entity_creature == defenderType && ((Creature *)defender)->counterattack) {
+         // TODO: should this be timed?
+         if (((Creature *)defender)->state.alive) {
+            g_outputString("\n%s fights back.\n",
+               dstrview(((Creature *)defender)->name));
+            // TODO: creature weapon selection?  Random?  Hmm...
+            attack(defender, defenderType, aggressor, aggressorType, NULL, FALSE);
+         }
       }
    }
 

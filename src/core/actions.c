@@ -461,7 +461,7 @@ int actionAttack(Player *player, Command command) {
    }
 
    else {
-      attack(player, entity_player, target, entity_creature, weapon);
+      attack(player, entity_player, target, entity_creature, weapon, TRUE);
    }
 
    return 1;
