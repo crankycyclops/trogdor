@@ -6,7 +6,13 @@
 
 #include "include/lua.h"
 #include "include/trogdor.h"
+#include "include/object.h"
+#include "include/room.h"
+#include "include/creature.h"
+#include "include/state.h"
+#include "include/player.h"
 #include "include/event.h"
+#include "include/data.h"
 
 
 /* constructor for the event handling mechanism */
@@ -67,6 +73,9 @@ va_list args);
 /* executes an event handler written in Lua.  Called by executeEvent. */
 static int executeLuaHandler(const char *function, lua_State *L, int numArgs,
 va_list args);
+
+/* passes an argument to a Lua event handler */
+static void eventPassArgument(lua_State *L, EventArgument *arg);
 
 /******************************************************************************/
 
@@ -206,12 +215,14 @@ int event(const char *event, int numArgs, ...) {
       return TRUE;
    }
 
-   va_start(args, numArgs);
-
    while (NULL != nextHandler) {
 
-      EventHandler *handler = (EventHandler *)nextHandler->data;
-      int status = executeEvent(handler, numArgs, args);
+      EventHandler *handler;
+      int status;
+
+      va_start(args, numArgs);
+      handler = (EventHandler *)nextHandler->data;
+      status = executeEvent(handler, numArgs, args);
 
       allowAction = EVENT_ALLOW_ACTION & status;
 
@@ -259,8 +270,84 @@ va_list args) {
 static int executeLuaHandler(const char *function, lua_State *L, int numArgs,
 va_list args) {
 
-   // TODO
-   return EVENT_CONTINUE_HANDLERS | EVENT_ALLOW_ACTION;
+   int i;
+
+   /* default return values */
+   int status = EVENT_CONTINUE_HANDLERS | EVENT_ALLOW_ACTION;
+
+   if (NULL != L) {
+
+      lua_getglobal(L, function);
+
+      /* only call function if it exists */
+      if (lua_isfunction(L, lua_gettop(L))) {
+
+         /* pass arguments */
+         for (i = 0; i < numArgs; i++) {
+
+            EventArgument *arg = va_arg(args, EventArgument *);
+            eventPassArgument(L, arg);
+         }
+
+         /* function should return two arguments, EVENT_CONTINUE_HANDLERS and
+            EVENT_ALLOW_ACTION */
+         if (lua_pcall(L, numArgs, 2, 0)) {
+            g_outputError("Script error: %s\n", lua_tostring(L, -1));
+         }
+
+         else {
+
+            if (!lua_isboolean(L, -1) || !lua_isboolean(L, -2)) {
+               g_outputError("Script error: %s must return booleans!\n", function);
+            }
+
+            status = lua_toboolean(L, -2) ? status | EVENT_CONTINUE_HANDLERS :
+               status & ~EVENT_CONTINUE_HANDLERS;
+            status = lua_toboolean(L, -1) ? status | EVENT_ALLOW_ACTION :
+               status & ~EVENT_ALLOW_ACTION;
+         }
+      }
+   }
+
+   return status;
+}
+
+/******************************************************************************/
+
+static void eventPassArgument(lua_State *L, EventArgument *arg) {
+
+   switch (arg->type) {
+
+      case scriptval_number:
+         lua_pushnumber(L, arg->value.number);
+         break;
+
+      case scriptval_string:
+         lua_pushstring(L, arg->value.string);
+         break;
+
+      case scriptval_player:
+         lua_pushstring(L, arg->value.player->name);
+         break;
+
+      case scriptval_room:
+         lua_pushstring(L, arg->value.room->name);
+         break;
+
+      case scriptval_object:
+         lua_pushstring(L, arg->value.object->name);
+         break;
+
+      case scriptval_creature:
+         lua_pushstring(L, arg->value.creature->name);
+         break;
+
+      default:
+         g_outputString("Invalid type for EventArgument.  This is a bug.\n");
+         break;
+   }
+
+   return;
 }
 
 /******************************************************************************/
