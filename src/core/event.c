@@ -24,17 +24,26 @@ void destroyEvents();
 
 /* Binds an event handler written in C to an event.  The order in which event
    handlers are added is the order in which event handlers are executed. */
-unsigned long addEventHandler(const char *event, EventFunctionPtr function);
+unsigned long addEventHandler(const char *event, EventHandlerList *handlerList,
+EventFunctionPtr function);
 
 /* Binds an event handler written in Lua to an event. */
-unsigned long addLuaEventHandler(const char *event, const char *function,
+unsigned long addLuaEventHandler(const char *event, EventHandlerList *handlerList,
+const char *function, lua_State *L);
+
+/* Binds a global event handler written in C to an event. */
+unsigned long addGlobalEventHandler(const char *event, EventFunctionPtr function);
+
+/* Binds a global event handler written in Lua to an event. */
+unsigned long addGlobalLuaEventHandler(const char *event, const char *function,
 lua_State *L);
 
 /* Unbinds an existing event handler from a specific event.  Takes as input
    the event the handler is bound to and the event handler's id (returned by
    addEventHandler and addLuaEventHandler.) Returns TRUE if the handler exists
    and is removed and FALSE if it doesn't exist. */
-int removeEventHandler(const char *event, unsigned long id);
+int removeEventHandler(const char *event, EventHandlerList *handlerList,
+unsigned long id);
 
 /* Triggers an event.  numArgs should be set to the number of EventArgument
    parameters that are passed when the event is triggered. */
@@ -84,7 +93,7 @@ static void eventPassArgument(lua_State *L, EventArgument *arg);
 lua_State *globalL = NULL;
 
 /* structure that maps event names to event handlers */
-static EventHandlerList *handlerList = NULL;
+static EventHandlerList *g_handlerList = NULL;
 
 /******************************************************************************/
 
@@ -110,14 +119,14 @@ static void destroyEventHandler(EventHandler *handler) {
 
 void initEvents() {
 
-   handlerList = initEventHandlerList();
+   g_handlerList = initEventHandlerList();
 }
 
 /******************************************************************************/
 
 void destroyEvents() {
 
-   destroyEventHandlerList(handlerList);
+   destroyEventHandlerList(g_handlerList);
 
    if (NULL != globalL) {
       lua_close(globalL);
@@ -126,7 +135,8 @@ void destroyEvents() {
 
 /******************************************************************************/
 
-unsigned long addEventHandler(const char *event, EventFunctionPtr function) {
+unsigned long addEventHandler(const char *event, EventHandlerList *handlerList,
+EventFunctionPtr function) {
 
    GList *handlers = g_hash_table_lookup(handlerList->eventHandlers, event);
    EventHandler *handler = createEventHandler();
@@ -143,8 +153,8 @@ unsigned long addEventHandler(const char *event, EventFunctionPtr function) {
 
 /******************************************************************************/
 
-unsigned long addLuaEventHandler(const char *event, const char *function,
-lua_State *L) {
+unsigned long addLuaEventHandler(const char *event, EventHandlerList *handlerList,
+const char *function, lua_State *L) {
 
    GList *handlers = g_hash_table_lookup(handlerList->eventHandlers, event);
    EventHandler *handler = createEventHandler();
@@ -162,7 +172,8 @@ lua_State *L) {
 
 /******************************************************************************/
 
-int removeEventHandler(const char *event, unsigned long id) {
+int removeEventHandler(const char *event, EventHandlerList *handlerList,
+unsigned long id) {
 
    GList *handlers = g_hash_table_lookup(handlerList->eventHandlers, event);
    GList *nextHandler = handlers;
@@ -186,12 +197,27 @@ int removeEventHandler(const char *event, unsigned long id) {
 
 /******************************************************************************/
 
+unsigned long addGlobalEventHandler(const char *event, EventFunctionPtr function) {
+
+   return addEventHandler(event, g_handlerList, function);
+}
+
+/******************************************************************************/
+
+unsigned long addGlobalLuaEventHandler(const char *event, const char *function,
+lua_State *L) {
+
+   return addLuaEventHandler(event, g_handlerList, function, L);
+}
+
+/******************************************************************************/
+
 int event(const char *event, int numArgs, ...) {
 
    int i;
    va_list args;
 
-   GList *handlers = g_hash_table_lookup(handlerList->eventHandlers, event);
+   GList *handlers = g_hash_table_lookup(g_handlerList->eventHandlers, event);
    GList *nextHandler = handlers;
 
    int allowAction = TRUE;

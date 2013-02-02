@@ -135,7 +135,8 @@ static void initGlobalEvents() {
 
    while (nextEventHandler != NULL) {
       EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
-      addLuaEventHandler(dstrview(handler->event), dstrview(handler->function), globalL);
+      addGlobalLuaEventHandler(dstrview(handler->event),
+         dstrview(handler->function), globalL);
       nextEventHandler = g_list_next(nextEventHandler);
    }
 }
@@ -214,7 +215,8 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    nextEventHandler = creatureParsed->eventHandlers;
    while (NULL != nextEventHandler) {
       EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
-      addLuaEventHandler(dstrview(handler->event), dstrview(handler->function), creature->L);
+      addLuaEventHandler(dstrview(handler->event), creature->events,
+         dstrview(handler->function), creature->L);
       nextEventHandler = g_list_next(nextEventHandler);
    }
 
@@ -312,7 +314,8 @@ static Room *initRoom(RoomParsed *roomParsed) {
    nextEventHandler = roomParsed->eventHandlers;
    while (NULL != nextEventHandler) {
       EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
-      addLuaEventHandler(dstrview(handler->event), dstrview(handler->function), room->L);
+      addLuaEventHandler(dstrview(handler->event), room->events,
+         dstrview(handler->function), room->L);
       nextEventHandler = g_list_next(nextEventHandler);
    }
 
@@ -361,7 +364,8 @@ static Object *initObject(ObjectParsed *objectParsed) {
    nextEventHandler = objectParsed->eventHandlers;
    while (NULL != nextEventHandler) {
       EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
-      addLuaEventHandler(dstrview(handler->event), dstrview(handler->function), object->L);
+      addLuaEventHandler(dstrview(handler->event), object->events,
+         dstrview(handler->function), object->L);
       nextEventHandler = g_list_next(nextEventHandler);
    }
 

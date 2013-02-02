@@ -75,17 +75,26 @@ extern void destroyEventHandler();
 
 /* Binds an event handler written in C to an event.  The order in which event
    handlers are added is the order in which event handlers are executed. */
-extern unsigned long addEventHandler(const char *event, EventFunctionPtr function);
+extern unsigned long addEventHandler(const char *event,
+EventHandlerList *handlerList, EventFunctionPtr function);
 
 /* Binds an event handler written in Lua to an event. */
-extern unsigned long addLuaEventHandler(const char *event, const char *function,
-lua_State *L);
+extern unsigned long addLuaEventHandler(const char *event,
+EventHandlerList *handlerList, const char *function, lua_State *L);
 
 /* Unbinds an existing event handler from a specific event.  Takes as input
    the event the handler is bound to and the event handler's id (returned by
    addEventHandler and addLuaEventHandler.) Returns TRUE if the handler exists
    and is removed and FALSE if it doesn't exist. */
-extern int removeEventHandler(const char *event, unsigned long id);
+extern int removeEventHandler(const char *event, EventHandlerList handlerList,
+unsigned long id);
+
+/* Binds a global event handler written in C to an event. */
+extern unsigned long addGlobalEventHandler(const char *event, EventFunctionPtr function);
+
+/* Binds a global event handler written in Lua to an event. */
+extern unsigned long addGlobalLuaEventHandler(const char *event, const char *function,
+lua_State *L);
 
 /* Triggers an event.  numArgs should be set to the number of EventArgument
    parameters that are passed when the event is triggered. */
