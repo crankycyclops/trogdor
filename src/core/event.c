@@ -127,7 +127,17 @@ void removeEventHandler(const char *event, unsigned long id) {
 
 int event(const char *event, int numArgs, ...) {
 
+   int i;
+   va_list args;
+
    // TODO
+
+   /* free memory allocated for EventArguments */
+   va_start(args, numArgs);
+   for (i = 0; i < numArgs; i++) {
+      free(va_arg(args, EventArgument *));
+   }
+
    return TRUE;
 }
 
