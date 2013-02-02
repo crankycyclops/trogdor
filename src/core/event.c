@@ -32,8 +32,9 @@ lua_State *L);
 
 /* Unbinds an existing event handler from a specific event.  Takes as input
    the event the handler is bound to and the event handler's id (returned by
-   addEventHandler and addLuaEventHandler.) */
-void removeEventHandler(const char *event, unsigned long id);
+   addEventHandler and addLuaEventHandler.) Returns TRUE if the handler exists
+   and is removed and FALSE if it doesn't exist. */
+int removeEventHandler(const char *event, unsigned long id);
 
 /* Triggers an event.  numArgs should be set to the number of EventArgument
    parameters that are passed when the event is triggered. */
@@ -162,10 +163,26 @@ lua_State *L) {
 
 /******************************************************************************/
 
-void removeEventHandler(const char *event, unsigned long id) {
+int removeEventHandler(const char *event, unsigned long id) {
 
-   // TODO
-   return;
+   GList *handlers = g_hash_table_lookup(eventHandlers, event);
+   GList *nextHandler = handlers;
+
+   while (NULL != nextHandler) {
+
+      EventHandler *handler = (EventHandler *)nextHandler->data;
+
+      if (id == handler->id) {
+         free(handler);
+         handlers = g_list_remove(handlers, nextHandler);
+         g_hash_table_insert(eventHandlers, (char *)event, handlers);
+         return TRUE;
+      }
+
+      nextHandler = nextHandler->next;
+   }
+
+   return FALSE;
 }
 
 /******************************************************************************/

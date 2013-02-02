@@ -82,8 +82,9 @@ lua_State *L);
 
 /* Unbinds an existing event handler from a specific event.  Takes as input
    the event the handler is bound to and the event handler's id (returned by
-   addEventHandler and addLuaEventHandler.) */
-extern void removeEventHandler(const char *event, unsigned long id);
+   addEventHandler and addLuaEventHandler.) Returns TRUE if the handler exists
+   and is removed and FALSE if it doesn't exist. */
+extern int removeEventHandler(const char *event, unsigned long id);
 
 /* Triggers an event.  numArgs should be set to the number of EventArgument
    parameters that are passed when the event is triggered. */
