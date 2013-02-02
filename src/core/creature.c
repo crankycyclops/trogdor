@@ -66,9 +66,6 @@ Creature *createCreature(int initMessages) {
    newcreature->woundRate = DEFAULT_CREATURE_WOUNDRATE;
    newcreature->counterattack = DEFAULT_CREATURE_COUNTERATTACK;
 
-   /* event handlers */
-   newcreature->events = createEventsList();
-
    newcreature->messages = NULL;
    if (initMessages) {
       newcreature->messages = createMessages();
@@ -98,9 +95,6 @@ void destroyCreature(Creature *creature) {
       destroyMessages(creature->messages);
    }
 
-   /* event handlers */
-   destroyEventsList(creature->events);
-
    free(creature);
    return;
 }
@@ -110,7 +104,8 @@ void destroyCreature(Creature *creature) {
 void displayCreature(Player *player, Creature *creature,
 int showLongDescription) {
 
-   if (!event("beforeDisplayCreature", player, creature, entity_creature, 0)) {
+   if (!event("beforeDisplayCreature", 2, eventArgPlayer(player),
+   eventArgCreature(creature))) {
       return;
    }
 
@@ -139,7 +134,8 @@ int showLongDescription) {
       }
    }
 
-   event("afterDisplayCreature", player, creature, entity_creature, 0);
+   event("afterDisplayCreature", 2, eventArgPlayer(player),
+      eventArgCreature(creature));
 }
 
 /******************************************************************************/

@@ -51,9 +51,7 @@ typedef struct creature {
 
    int maxHealth;          /* max health points (0 means immortal) */
 
-   /* event handlers */
-   lua_State      *L;
-   GHashTable     *events;
+   lua_State *L;           /* creature's scripting environment */
 
 } Creature;
 

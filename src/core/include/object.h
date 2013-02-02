@@ -61,14 +61,12 @@ typedef struct object {
    int damage;             /* if object is a weapon, how much damage it does */
 
    Messages messages;      /* hash table of custom messages */
+   lua_State *L;           /* scripting environment for object */
+
    ObjectState state;
 
    /* an array of synonyms (dstring_t's) */
    GArray *synonyms;
-
-   /* event handlers */
-   lua_State      *L;
-   GHashTable     *events;
 
 } Object;
 

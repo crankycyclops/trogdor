@@ -38,8 +38,8 @@ void addHealth(void *entity, enum EntityType type, int up, int allowOverflow) {
       return;
    }
 
-   if (!event("beforeAddHealth", entity_player == type ? (Player *)entity : NULL,
-   entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0)) {
+   if (!event("beforeAddHealth", 1, entity_player == type ?
+   eventArgPlayer((Player *)entity) : eventArgCreature((Creature *)entity))) {
       return;
    }
 
@@ -63,8 +63,8 @@ void addHealth(void *entity, enum EntityType type, int up, int allowOverflow) {
       }
    }
 
-   event("afterAddHealth", entity_player == type ? (Player *)entity : NULL,
-      entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0);
+   event("afterAddHealth", 1, entity_player == type ?
+      eventArgPlayer((Player *)entity) : eventArgCreature((Creature *)entity));
 
    return;
 }
@@ -87,8 +87,8 @@ void removeHealth(void *entity, enum EntityType type, int down, int allowDeath) 
       return;
    }
 
-   if (!event("beforeRemoveHealth", entity_player == type ? (Player *)entity : NULL,
-   entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0)) {
+   if (!event("beforeRemoveHealth", 1, entity_player == type ?
+   eventArgPlayer((Player *)entity) : eventArgCreature((Creature *)entity))) {
       return;
    }
 
@@ -123,8 +123,8 @@ void removeHealth(void *entity, enum EntityType type, int down, int allowDeath) 
          health, maxHealth);
    }
 
-   event("afterRemoveHealth", entity_player == type ? (Player *)entity : NULL,
-      entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0);
+   event("afterRemoveHealth", 1, entity_player == type ?
+      eventArgPlayer((Player *)entity) : eventArgCreature((Creature *)entity));
 
    return;
 }
@@ -140,8 +140,8 @@ void die(void *entity, enum EntityType type) {
       return;
    }
 
-   if (!event("beforeDie", entity_player == type ? (Player *)entity : NULL,
-   entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0)) {
+   if (!event("beforeDie", 1, entity_player == type ?
+   eventArgPlayer((Player *)entity) : eventArgCreature((Creature *)entity))) {
       return;
    }
 
@@ -166,8 +166,8 @@ void die(void *entity, enum EntityType type) {
          ((Player *)entity)->name : ((Creature *)entity)->name));
    }
 
-   event("afterDie", entity_player == type ? (Player *)entity : NULL,
-      entity_creature == type ? (Creature *)entity : NULL, entity_creature, 0);
+   event("afterDie", 1, entity_player == type ?
+      eventArgPlayer((Player *)entity) : eventArgCreature((Creature *)entity));
 
    return;
 }

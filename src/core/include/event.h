@@ -19,10 +19,19 @@
 #define CONTINUE_ACTION   0x02
 
 
-/* every event handler consists of a Lua state and a function to call */
+/* pointer to a function an event handler can call */
+typedef int (*EventFunctionPtr)(int numArgs, ...);
+
+/* every event handler will contain an EventFunction, which will contain either
+   a pointer to a native C function or a lua state and function name. */
+typedef union {
+   LuaFunction       luaHandler;
+   EventFunctionPtr  nativeHandler;
+} EventFunction;
+
 typedef struct {
-   const char *function;
-   lua_State  *L;
+   enum {EVENT_HANDLER_LUA, EVENT_HANDLER_NATIVE} funcType;
+   EventFunction func;
 } EventHandler;
 
 /* all events take a variable number of arguments that can be passed to each
@@ -31,12 +40,12 @@ typedef struct {
 
    /* data type */
    enum {
-      scriptval_number,
-      scriptval_string,
-      scriptval_room,
-      scriptval_player,
-      scriptval_creature,
-      scriptval_object
+         scriptval_number,
+         scriptval_string,
+         scriptval_room,
+         scriptval_player,
+         scriptval_creature,
+         scriptval_object
    } type;
 
    /* actual value */
@@ -53,49 +62,44 @@ typedef struct {
 
 #ifndef EVENT_C
 
-
 /* lua state containing functions called by global events */
 extern lua_State *globalL;
 
+/* constructor for the event handler */
+extern void initEventHandler();
 
-/* initializes global event handlers */
-extern void initGlobalEvents();
+/* destructor for the event handler */
+extern void destroyEventHandler();
 
-/* frees memory associated with the global event handlers */
-extern void destroyGlobalEvents();
+/* Binds an event handler written in C to an event.  The order in which event
+   handlers are added is the order in which event handlers are executed. */
+extern unsigned long addEventHandler(const char *event, EventFunctionPtr function);
 
-/* allocates memory for a new event handlers list */
-extern GHashTable *createEventsList();
+/* Binds an event handler written in Lua to an event. */
+extern unsigned long addLuaEventHandler(const char *event, const char *function,
+lua_State *L);
 
-/* called by destroyEvents() to destroy a hash table of event-handler maps */
-extern void destroyEventsList(GHashTable *table);
+/* Unbinds an existing event handler from a specific event.  Takes as input
+   the event the handler is bound to and the event handler's id (returned by
+   addEventHandler and addLuaEventHandler.) */
+extern void removeEventHandler(const char *event, unsigned long id);
 
-/* binds an event handler to a global event */
-extern void addGlobalEventHandler(const char *event,
-const char *function);
+/* Triggers an event.  numArgs should be set to the number of EventArgument
+   parameters that are passed when the event is triggered. */
+extern int event(const char *event, int numArgs, ...);
 
-/* binds an event handler to a player-specific event */
-extern void addPlayerEventHandler(const char *event, Player *player,
-const char *function, lua_State *L);
-
-/* binds an event handler to an entity-specific event */
-extern void addEntityEventHandler(const char *event, void *entity,
-enum EntityType type, const char *function, lua_State *L);
-
-/* removes a global event handler */
-extern void removeGlobalEventHandler(const char *event, const char *function);
-
-/* removes a player-specific event handler */
-extern void removePlayerEventHandler(Player *player, const char *event,
-const char *function);
-
-/* removes an entity-specific event handler */
-extern void removeEntityEventHandler(enum EntityType type, void *entity,
-const char *event, const char *function);
-
-/* Triggers an event.  Accepts variable number of EventArgument parameters. */
-extern int event(const char *name, Player *player, void *entity,
-enum EntityType entityType, int numArgs, ...);
+/* Functions that create EventArgument structs for various types.  EventArgument
+   parameters that are passed to an event handler are freed by the event
+   handler, so you don't have to worry about memory management.  It's good
+   coding practice to always use these functions when passing arguments, and to
+   never free the return value yourself (which will probably cause nasty
+   bugs!) */ 
+extern EventArgument *eventArgNumber(double value);
+extern EventArgument *eventArgString(const char *value);
+extern EventArgument *eventArgRoom(Room *value);
+extern EventArgument *eventArgPlayer(Player *value);
+extern EventArgument *eventArgCreature(Creature *value);
+extern EventArgument *eventArgObject(Object *value);
 
 #endif
 

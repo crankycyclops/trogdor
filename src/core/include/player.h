@@ -17,6 +17,7 @@ typedef struct {
 } PlayerState;
 
 // TODO: add messaging to player structure?
+// TODO: add L lua state?  Not sure how to approach this yet...
 typedef struct player {
 
    dstring_t   name;
@@ -31,9 +32,6 @@ typedef struct player {
 
    /* maximum probability of being hit when attacked */
    double woundRate;
-
-   /* event handlers */
-   GHashTable     *events;
 
 } Player;
 

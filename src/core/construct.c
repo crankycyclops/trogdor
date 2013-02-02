@@ -20,7 +20,7 @@ int parseGame();
 static void initObjects();
 
 /* initialize global event handlers */
-static void initEvents();
+static void initGlobalEvents();
 
 /* builds creature structures */
 static void initCreatures();
@@ -93,7 +93,7 @@ int parseGame(const char *filename) {
       return 0;
    }
 
-   initEvents();
+   initGlobalEvents();
    initObjects();
    initCreatures();
    initRooms();
@@ -127,7 +127,7 @@ static void destroyParser() {
 
 /******************************************************************************/
 
-static void initEvents() {
+static void initGlobalEvents() {
 
    GList *nextEventHandler = globalEventHandlersParsed;
 
@@ -135,7 +135,7 @@ static void initEvents() {
 
    while (nextEventHandler != NULL) {
       EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
-      addGlobalEventHandler(dstrview(handler->event), dstrview(handler->function));
+      addLuaEventHandler(dstrview(handler->event), dstrview(handler->function), globalL);
       nextEventHandler = g_list_next(nextEventHandler);
    }
 }
@@ -214,8 +214,7 @@ static Creature *initCreature(CreatureParsed *creatureParsed) {
    nextEventHandler = creatureParsed->eventHandlers;
    while (NULL != nextEventHandler) {
       EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
-      addEntityEventHandler(dstrview(handler->event), creature, entity_creature,
-         dstrview(handler->function), creature->L);
+      addLuaEventHandler(dstrview(handler->event), dstrview(handler->function), creature->L);
       nextEventHandler = g_list_next(nextEventHandler);
    }
 
@@ -313,8 +312,7 @@ static Room *initRoom(RoomParsed *roomParsed) {
    nextEventHandler = roomParsed->eventHandlers;
    while (NULL != nextEventHandler) {
       EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
-      addEntityEventHandler(dstrview(handler->event), room, entity_room,
-         dstrview(handler->function), room->L);
+      addLuaEventHandler(dstrview(handler->event), dstrview(handler->function), room->L);
       nextEventHandler = g_list_next(nextEventHandler);
    }
 
@@ -363,8 +361,7 @@ static Object *initObject(ObjectParsed *objectParsed) {
    nextEventHandler = objectParsed->eventHandlers;
    while (NULL != nextEventHandler) {
       EventHandlerParsed *handler = (EventHandlerParsed *)nextEventHandler->data;
-      addEntityEventHandler(dstrview(handler->event), object, entity_object,
-         dstrview(handler->function), object->L);
+      addLuaEventHandler(dstrview(handler->event), dstrview(handler->function), object->L);
       nextEventHandler = g_list_next(nextEventHandler);
    }
 

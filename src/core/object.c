@@ -73,7 +73,6 @@ Object *createObject(int initMessages) {
 
    /* event handlers */
    newobject->L = NULL;
-   newobject->events = createEventsList();
 
    newobject->messages = NULL;
    if (initMessages) {
@@ -104,9 +103,6 @@ void destroyObject(Object *object) {
       destroyMessages(object->messages);
    }
 
-   /* event handlers */
-   destroyEventsList(object->events);
-
    free(object);
    return;
 }
@@ -115,7 +111,8 @@ void destroyObject(Object *object) {
 
 void displayObject(Player *player, Object *object, int showLongDescription) {
 
-   if (!event("beforeDisplayObject", player, object, entity_object, 0)) {
+   if (!event("beforeDisplayObject", 2, eventArgPlayer(player),
+   eventArgObject(object))) {
       return;
    }
 
@@ -137,7 +134,7 @@ void displayObject(Player *player, Object *object, int showLongDescription) {
          dstrview(object->name));
    }
 
-   event("afterDisplayObject", player, object, entity_object, 0);
+   event("afterDisplayObject", 2, eventArgPlayer(player), eventArgObject(object));
 }
 
 /******************************************************************************/
@@ -152,12 +149,12 @@ static void describeObject(Object *object) {
 
 void takeObject(Player *player, Object *object) {
 
-   if (!event("beforeTakeObject", player, object, entity_object, 0)) {
+   if (!event("beforeTakeObject", 2, eventArgPlayer(player), eventArgObject(object))) {
       return;
    }
 
    if (!object->takeable) {
-      event("takeObjectUntakeable", player, object, entity_object, 0);
+      event("takeObjectUntakeable", 2, eventArgPlayer(player), eventArgObject(object));
       g_outputString("You can't take the %s.\n", dstrview(object->name));
       return;
    }
@@ -186,14 +183,14 @@ void takeObject(Player *player, Object *object) {
          g_outputString("You take the %s.\n", dstrview(object->name));
       }
 
-      event("afterTakeObject", player, object, entity_object, 0);
+      event("afterTakeObject", 2, eventArgPlayer(player), eventArgObject(object));
    }
 
    else {
       g_outputString("%s weighs %d and you can only hold %d more.  Try "
          "dropping something first.\n", dstrview(object->name), object->weight,
          player->inventory.maxWeight - player->inventory.weight);
-      event("takeObjectTooHeavy", player, object, entity_object, 0);
+      event("takeObjectTooHeavy", 2, eventArgPlayer(player), eventArgObject(object));
    }
 }
 
@@ -201,12 +198,12 @@ void takeObject(Player *player, Object *object) {
 
 void dropObject(Player *player, Object *object) {
 
-   if (!event("beforeDropObject", player, object, entity_object, 0)) {
+   if (!event("beforeDropObject", 2, eventArgPlayer(player), eventArgObject(object))) {
       return;
    }
 
    if (!object->droppable) {
-      event("dropObjectUndroppable", player, object, entity_object, 0);
+      event("dropObjectUndroppable", 2, eventArgPlayer(player), eventArgObject(object));
       g_outputString("You can't drop the %s.\n", dstrview(object->name));
       return;
    }
@@ -232,7 +229,7 @@ void dropObject(Player *player, Object *object) {
       g_outputString("You drop the %s.\n", dstrview(object->name));
    }
 
-   event("afterDropObject", player, object, entity_object, 0);
+   event("afterDropObject", 2, eventArgPlayer(player), eventArgObject(object));
 }
 
 /******************************************************************************/

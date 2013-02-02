@@ -41,6 +41,7 @@ typedef struct room {
    struct room *down;
 
    Messages messages;      /* hash table of custom messages */
+   lua_State *L;           /* scripting environment for the room */
 
    RoomState state;
 
@@ -62,10 +63,6 @@ typedef struct room {
 
    /* Iterable list of all creatures in a room */
    GList *creatureList;
-
-   /* event handlers */
-   lua_State      *L;
-   GHashTable     *events;
 
 } Room;
 

@@ -60,7 +60,6 @@ Room *createRoom(int initMessages) {
 
    /* event handlers */
    newroom->L = NULL;
-   newroom->events = createEventsList();
 
    /* initialize the room's state */
    newroom->state.players = g_hash_table_new(g_str_hash, g_str_equal);
@@ -108,9 +107,6 @@ void destroyRoom(Room *room) {
       destroyMessages(room->messages);
    }
 
-   /* event handlers */
-   destroyEventsList(room->events);
-
    if (room->L != NULL) {
       lua_close(room->L);
    }
@@ -122,7 +118,7 @@ void destroyRoom(Room *room) {
 
 void setLocation(Player *player, Room *room, int triggerEvents) {
 
-   if (!event("beforeSetLocation", player, room, entity_room, 0)) {
+   if (!event("beforeSetLocation", 2, eventArgPlayer(player), eventArgRoom(room))) {
       return;
    }
 
@@ -136,7 +132,7 @@ void setLocation(Player *player, Room *room, int triggerEvents) {
    g_hash_table_insert(room->state.players, (char *)dstrview(player->name),
       player);
 
-   event("afterSetLocation", player, room, entity_room, 0);
+   event("afterSetLocation", 2, eventArgPlayer(player), eventArgRoom(room));
 }
 
 /******************************************************************************/
@@ -146,7 +142,7 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
    GList *creatureList = room->creatureList;
    GList *objectList = room->objectList;
 
-   if (!event("beforeRoomDisplay", player, room, entity_room, 0)) {
+   if (!event("beforeRoomDisplay", 2, eventArgPlayer(player), eventArgRoom(room))) {
       return;
    }
 
@@ -169,7 +165,7 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
       creatureList = g_list_next(creatureList);
    }
 
-   event("afterRoomDisplay", player, room, entity_room, 0);
+   event("afterRoomDisplay", 2, eventArgPlayer(player), eventArgRoom(room));
 }
 
 /******************************************************************************/
