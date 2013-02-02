@@ -67,6 +67,14 @@ static void destroyEventHandler(EventHandler *handler);
 /* executes an event handler */
 static int executeEvent(EventHandler *handler, int numArgs, va_list args);
 
+/* executes an event handler written in C.  Called by executeEvent */
+static int executeNativeHandler(EventFunctionPtr function, int numArgs,
+va_list args);
+
+/* executes an event handler written in Lua.  Called by executeEvent. */
+static int executeLuaHandler(const char *function, lua_State *L, int numArgs,
+va_list args);
+
 /******************************************************************************/
 
 /* lua state containing functions called by global events */
@@ -234,6 +242,29 @@ int event(const char *event, int numArgs, ...) {
 /******************************************************************************/
 
 static int executeEvent(EventHandler *handler, int numArgs, va_list args) {
+
+   if (EVENT_HANDLER_NATIVE == handler->funcType) {
+      return executeNativeHandler(handler->func.nativeHandler, numArgs, args);
+   }
+
+   else {
+      return executeLuaHandler(handler->func.luaHandler.function,
+         handler->func.luaHandler.L, numArgs, args);
+   }
+}
+
+/******************************************************************************/
+
+static int executeNativeHandler(EventFunctionPtr function, int numArgs,
+va_list args) {
+
+   return function(numArgs, args);
+}
+
+/******************************************************************************/
+
+static int executeLuaHandler(const char *function, lua_State *L, int numArgs,
+va_list args) {
 
    // TODO
    return EVENT_CONTINUE_HANDLERS | EVENT_ALLOW_ACTION;
