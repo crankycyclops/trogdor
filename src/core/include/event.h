@@ -30,6 +30,7 @@ typedef union {
 } EventFunction;
 
 typedef struct {
+   unsigned long id;
    enum {EVENT_HANDLER_LUA, EVENT_HANDLER_NATIVE} funcType;
    EventFunction func;
 } EventHandler;

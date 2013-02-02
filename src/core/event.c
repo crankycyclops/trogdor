@@ -16,15 +16,15 @@
 #include "include/data.h"
 
 
-/* constructor for the event handler */
-void initEventHandler();
+/* constructor for the event handling mechanism */
+void initEvents();
 
-/* destructor for the event handler */
-void destroyEventHandler();
+/* destructor for the event handling mechanism */
+void destroyEvents();
 
 /* Binds an event handler written in C to an event.  The order in which event
    handlers are added is the order in which event handlers are executed. */
-unsigned long addEventHandler(const char *event, EventFunction function);
+unsigned long addEventHandler(const char *event, EventFunctionPtr function);
 
 /* Binds an event handler written in Lua to an event. */
 unsigned long addLuaEventHandler(const char *event, const char *function,
@@ -57,6 +57,12 @@ EventArgument *eventArgObject(Object *value);
 /* allocates memory for an event handler argument */
 static EventArgument *makeEventArg();
 
+/* creates a new EventHandler struct */
+static EventHandler *createEventHandler();
+
+/* frees memory associated with EventHandler */
+static void destroyEventHandler(EventHandler *handler);
+
 /******************************************************************************/
 
 /* lua state containing functions called by global events */
@@ -70,7 +76,7 @@ static unsigned long nextId = 0;
 
 /******************************************************************************/
 
-void initEventHandler() {
+void initEvents() {
 
    eventHandlers = g_hash_table_new(g_str_hash, g_str_equal);
    return;
@@ -78,7 +84,7 @@ void initEventHandler() {
 
 /******************************************************************************/
 
-void destroyEventHandler() {
+void destroyEvents() {
 
    GList *events = g_hash_table_get_values(eventHandlers);
    GList *next = events;
@@ -100,9 +106,38 @@ void destroyEventHandler() {
 
 /******************************************************************************/
 
-unsigned long addEventHandler(const char *event, EventFunction function) {
+static EventHandler *createEventHandler() {
 
-   // TODO
+   EventHandler *newHandler = malloc(sizeof(EventHandler));
+
+   if (NULL == newHandler) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   return newHandler;
+}
+
+/******************************************************************************/
+
+static void destroyEventHandler(EventHandler *handler) {
+
+   free(handler);
+}
+
+/******************************************************************************/
+
+unsigned long addEventHandler(const char *event, EventFunctionPtr function) {
+
+   GList *handlers = g_hash_table_lookup(eventHandlers, event);
+   EventHandler *handler = createEventHandler();
+
+   handler->id = nextId;
+   handler->funcType = EVENT_HANDLER_NATIVE;
+   handler->func.nativeHandler = function;
+
+   handlers = g_list_append(handlers, handler);
+   g_hash_table_insert(eventHandlers, (char *)event, handlers);
+
    return nextId++;
 }
 
@@ -111,7 +146,17 @@ unsigned long addEventHandler(const char *event, EventFunction function) {
 unsigned long addLuaEventHandler(const char *event, const char *function,
 lua_State *L) {
 
-   // TODO
+   GList *handlers = g_hash_table_lookup(eventHandlers, event);
+   EventHandler *handler = createEventHandler();
+
+   handler->id = nextId;
+   handler->funcType = EVENT_HANDLER_LUA;
+   handler->func.luaHandler.function = function;
+   handler->func.luaHandler.L = L;
+
+   handlers = g_list_append(handlers, handler);
+   g_hash_table_insert(eventHandlers, (char *)event, handlers);
+
    return nextId++;
 }
 

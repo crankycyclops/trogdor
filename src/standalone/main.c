@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
    g_outputError = &consoleError;
 
    /* initialize our event handler */
-   initEventHandler();
+   initEvents();
 
    /* load assets and game related data, and initialize the game's state */
    initData();
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
    }
 
    destroyPlayer(player);
-   destroyEventHandler();
+   destroyEvents();
    printf("Goodbye!\n\n");
 
    return EXIT_SUCCESS;

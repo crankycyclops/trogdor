@@ -7,8 +7,8 @@
 #include <lauxlib.h>
 
 typedef struct {
-   char       *function;
-   lua_State  *L;
+   const char  *function;
+   lua_State   *L;
 } LuaFunction;
 
 
