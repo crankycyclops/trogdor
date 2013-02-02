@@ -10,6 +10,7 @@
 #include <lauxlib.h>
 
 #include "messages.h"
+#include "eventlist.h"
 
 
 /* Represents the state of a single room */
@@ -26,9 +27,9 @@ typedef struct roomState {
 */
 typedef struct room {
 
-   dstring_t name;         /* room's unique identifier */
-   dstring_t title;        /* what we display to tell the user where we are */
-   dstring_t description;  /* room's long description */
+   dstring_t name;           /* room's unique identifier */
+   dstring_t title;          /* what we display to tell the user where we are */
+   dstring_t description;    /* room's long description */
 
    struct room *north;
    struct room *south;
@@ -40,8 +41,10 @@ typedef struct room {
    struct room *up;
    struct room *down;
 
-   Messages messages;      /* hash table of custom messages */
-   lua_State *L;           /* scripting environment for the room */
+   Messages messages;        /* hash table of custom messages */
+
+   EventHandlerList *events; /* event handlers */
+   lua_State *L;             /* scripting environment for the room */
 
    RoomState state;
 

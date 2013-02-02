@@ -62,6 +62,8 @@ Player *createPlayer(char *name) {
 
    newplayer->woundRate = g_playerConfig.woundRate;
 
+   newplayer->events = initEventHandlerList();
+
    g_hash_table_insert(g_players, name, newplayer);
    return newplayer;
 }
@@ -70,6 +72,8 @@ Player *createPlayer(char *name) {
 
 void destroyPlayer(Player *player) {
 
+   destroyEventHandlerList(player->events);
    dstrfree(&player->name);
    free(player);
 }
+

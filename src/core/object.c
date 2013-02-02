@@ -79,6 +79,8 @@ Object *createObject(int initMessages) {
       newobject->messages = createMessages();
    }
 
+   newobject->events = initEventHandlerList();
+
    return newobject;
 }
 
@@ -102,6 +104,8 @@ void destroyObject(Object *object) {
    if (NULL != object->messages) {
       destroyMessages(object->messages);
    }
+
+   destroyEventHandlerList(object->events);
 
    free(object);
    return;

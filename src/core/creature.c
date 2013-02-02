@@ -71,6 +71,8 @@ Creature *createCreature(int initMessages) {
       newcreature->messages = createMessages();
    }
 
+   newcreature->events = initEventHandlerList();
+
    return newcreature;
 }
 
@@ -94,6 +96,8 @@ void destroyCreature(Creature *creature) {
    if (NULL != creature->messages) {
       destroyMessages(creature->messages);
    }
+
+   destroyEventHandlerList(creature->events);
 
    free(creature);
    return;

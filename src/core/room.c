@@ -70,6 +70,8 @@ Room *createRoom(int initMessages) {
       newroom->messages = createMessages();
    }
 
+   newroom->events = initEventHandlerList();
+
    return newroom;
 }
 
@@ -110,6 +112,8 @@ void destroyRoom(Room *room) {
    if (room->L != NULL) {
       lua_close(room->L);
    }
+
+   destroyEventHandlerList(room->events);
 
    free(room);
 }

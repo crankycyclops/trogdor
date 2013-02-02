@@ -8,6 +8,7 @@
 #include "object.h"
 #include "attributes.h"
 #include "messages.h"
+#include "eventlist.h"
 
 
 #define CREATURE_ALLEGIANCE_FRIEND  0
@@ -35,23 +36,24 @@ typedef struct creatureState {
 
 typedef struct creature {
 
-   dstring_t name;         /* unique identifier */
-   dstring_t title;        /* what the creature is called */
-   dstring_t description;  /* description of the creature */
+   dstring_t name;           /* unique identifier */
+   dstring_t title;          /* what the creature is called */
+   dstring_t description;    /* description of the creature */
 
-   Messages messages;      /* hash table of custom messages */
-   Attributes attributes;  /* strength, dexterity, intelligence, etc. */
-   CreatureState state;    /* creature's state */
-   Inventory inventory;    /* objects owned by the creature */
+   Messages messages;        /* hash table of custom messages */
+   Attributes attributes;    /* strength, dexterity, intelligence, etc. */
+   CreatureState state;      /* creature's state */
+   Inventory inventory;      /* objects owned by the creature */
 
-   int    allegiance;      /* whether the creature is a friend, enemy or neutral */
-   int    attackable;      /* whether or not creature can be attacked */
-   int    counterattack;   /* whether or not creature will respond to attacks */
-   double woundRate;       /* maximum probability of being hit during combat */
+   int    allegiance;        /* whether the creature is a friend, enemy or neutral */
+   int    attackable;        /* whether or not creature can be attacked */
+   int    counterattack;     /* whether or not creature will respond to attacks */
+   double woundRate;         /* maximum probability of being hit during combat */
 
-   int maxHealth;          /* max health points (0 means immortal) */
+   int maxHealth;            /* max health points (0 means immortal) */
 
-   lua_State *L;           /* creature's scripting environment */
+   EventHandlerList *events; /* event handlers */
+   lua_State *L;             /* creature's scripting environment */
 
 } Creature;
 

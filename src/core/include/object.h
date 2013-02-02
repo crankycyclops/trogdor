@@ -8,6 +8,7 @@
 
 #include "trogdor.h"
 #include "messages.h"
+#include "eventlist.h"
 
 /* by default, objects are not weapons */
 #define DEFAULT_OBJECT_IS_WEAPON  0
@@ -49,19 +50,21 @@ typedef struct objectState {
 /* Synonyms will be stored as keys in a hash table */
 typedef struct object {
 
-   dstring_t name;         /* name of the object */
-   dstring_t description;  /* the user reads this when seen the first time */
+   dstring_t name;           /* name of the object */
+   dstring_t description;    /* the user reads this when seen the first time */
 
-   int weight;             /* object's weight */
-   int takeable;           /* whether or not object can be taken */
-   int droppable;          /* whether or not object can be dropped */
+   int weight;               /* object's weight */
+   int takeable;             /* whether or not object can be taken */
+   int droppable;            /* whether or not object can be dropped */
 
    /* combat-related properties */
-   int weapon;             /* true if the object is a weapon */
-   int damage;             /* if object is a weapon, how much damage it does */
+   int weapon;               /* true if the object is a weapon */
+   int damage;               /* if object is a weapon, how much damage it does */
 
-   Messages messages;      /* hash table of custom messages */
-   lua_State *L;           /* scripting environment for object */
+   Messages messages;        /* hash table of custom messages */
+
+   EventHandlerList *events; /* event handlers */
+   lua_State *L;             /* scripting environment for object */
 
    ObjectState state;
 

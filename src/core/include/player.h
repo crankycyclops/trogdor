@@ -7,6 +7,7 @@
 #include "object.h"
 #include "attributes.h"
 #include "state.h"
+#include "eventlist.h"
 
 /* by default, a player is hit during combat no more than 50% of the time */
 #define DEFAULT_PLAYER_WOUNDRATE 0.5
@@ -32,6 +33,9 @@ typedef struct player {
 
    /* maximum probability of being hit when attacked */
    double woundRate;
+
+   /* event handlers */
+   EventHandlerList *events;
 
 } Player;
 
