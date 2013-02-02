@@ -3,10 +3,7 @@
 
 #include <glib.h>
 
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-
+#include "lua.h"
 #include "trogdor.h"
 #include "room.h"
 #include "object.h"
