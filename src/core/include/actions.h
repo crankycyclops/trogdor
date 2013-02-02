@@ -17,6 +17,9 @@ extern int actionLook(Player *player, Command command);
 /* list the items in the user's inventory */
 extern int actionList(Player *player, Command command);
 
+/* display's information about a player's health */
+extern int actionHealth(Player *player, Command command);
+
 /* allows the user to pick up an object (requires direct object) */
 extern int actionPickupObject(Player *player, Command command);
 

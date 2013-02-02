@@ -110,10 +110,11 @@ Verb *getVerbs() {
       {"maim",   &actionAttack},
       {"fight",  &actionAttack},
 
-      /* list items in the user's inventory */
+      /* player status */
       {"list",      &actionList},
       {"inv",       &actionList},
       {"inventory", &actionList},
+      {"health",    &actionHealth},
 
       /* misc actions */
       {"jump", &actionJump},

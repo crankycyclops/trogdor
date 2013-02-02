@@ -28,6 +28,9 @@ int actionLook(Player *player, Command command);
 /* list the items in the user's inventory */
 int actionList(Player *player, Command command);
 
+/* display's information about a player's health */
+int actionHealth(Player *player, Command command);
+
 /* moves the user in the specified direction */
 int actionMove(Player *player, Command command);
 
@@ -178,6 +181,30 @@ int actionList(Player *player, Command command) {
    }
 
    return 1;
+}
+
+/******************************************************************************/
+
+int actionHealth(Player *player, Command command) {
+
+   /* health should only be a one word command */
+   if (NULL != command.directObject || NULL != command.indirectObject) {
+      return 0;
+   }
+
+   if (player->maxHealth > 0) {
+
+      g_outputString("%d/%d\n", player->state.health,
+         player->maxHealth);
+
+      if (!player->state.alive) {
+         g_outputString("You are dead.\n");
+      }
+   }
+
+   else {
+      g_outputString("You are immortal.\n");
+   }
 }
 
 /******************************************************************************/
