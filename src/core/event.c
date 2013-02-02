@@ -64,6 +64,9 @@ static EventHandler *createEventHandler();
 /* frees memory associated with EventHandler */
 static void destroyEventHandler(EventHandler *handler);
 
+/* executes an event handler */
+static int executeEvent(EventHandler *handler, int numArgs, va_list args);
+
 /******************************************************************************/
 
 /* lua state containing functions called by global events */
@@ -192,7 +195,32 @@ int event(const char *event, int numArgs, ...) {
    int i;
    va_list args;
 
-   // TODO
+   GList *handlers = g_hash_table_lookup(eventHandlers, event);
+   GList *nextHandler = handlers;
+
+   int allowAction = TRUE;
+
+   /* do nothing if there are no handlers for this event */
+   if (!handlers) {
+      return TRUE;
+   }
+
+   va_start(args, numArgs);
+
+   while (NULL != nextHandler) {
+
+      EventHandler *handler = (EventHandler *)nextHandler->data;
+      int status = executeEvent(handler, numArgs, args);
+
+      allowAction = EVENT_ALLOW_ACTION & status;
+
+      /* handler may have overridden execution of any further handlers */
+      if (!(EVENT_CONTINUE_HANDLERS & status)) {
+         break;
+      }
+
+      nextHandler = nextHandler->next;
+   }
 
    /* free memory allocated for EventArguments */
    va_start(args, numArgs);
@@ -200,7 +228,15 @@ int event(const char *event, int numArgs, ...) {
       free(va_arg(args, EventArgument *));
    }
 
-   return TRUE;
+   return allowAction;
+}
+
+/******************************************************************************/
+
+static int executeEvent(EventHandler *handler, int numArgs, va_list args) {
+
+   // TODO
+   return EVENT_CONTINUE_HANDLERS | EVENT_ALLOW_ACTION;
 }
 
 /******************************************************************************/

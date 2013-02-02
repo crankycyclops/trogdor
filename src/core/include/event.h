@@ -15,8 +15,8 @@
    CONTINUE_HANDLERS - continue executing other event handlers
    CONTINUE_ACTION   - allow the action that triggered the event
 */
-#define CONTINUE_HANDLERS 0x01
-#define CONTINUE_ACTION   0x02
+#define EVENT_CONTINUE_HANDLERS 0x01
+#define EVENT_ALLOW_ACTION      0x02
 
 
 /* pointer to a function an event handler can call */
