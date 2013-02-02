@@ -6,14 +6,7 @@
 
 #include "include/lua.h"
 #include "include/trogdor.h"
-#include "include/object.h"
-#include "include/room.h"
-#include "include/creature.h"
-#include "include/state.h"
-#include "include/player.h"
 #include "include/event.h"
-#include "include/player.h"
-#include "include/data.h"
 
 
 /* constructor for the event handling mechanism */
