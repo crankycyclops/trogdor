@@ -96,6 +96,9 @@ extern unsigned long addGlobalEventHandler(const char *event, EventFunctionPtr f
 extern unsigned long addGlobalLuaEventHandler(const char *event, const char *function,
 lua_State *L);
 
+/* Unbinds an existing global event handler.  Calls removeEventHandler. */
+extern int removeGlobalEventHandler(const char *event, unsigned long id);
+
 /* Triggers an event.  numArgs should be set to the number of EventArgument
    parameters that are passed when the event is triggered. */
 extern int event(const char *event, int numArgs, ...);

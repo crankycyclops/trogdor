@@ -31,6 +31,13 @@ EventFunctionPtr function);
 unsigned long addLuaEventHandler(const char *event, EventHandlerList *handlerList,
 const char *function, lua_State *L);
 
+/* Unbinds an existing event handler from a specific event.  Takes as input
+   the event the handler is bound to and the event handler's id (returned by
+   addEventHandler and addLuaEventHandler.) Returns TRUE if the handler exists
+   and is removed and FALSE if it doesn't exist. */
+int removeEventHandler(const char *event, EventHandlerList *handlerList,
+unsigned long id);
+
 /* Binds a global event handler written in C to an event. */
 unsigned long addGlobalEventHandler(const char *event, EventFunctionPtr function);
 
@@ -38,12 +45,8 @@ unsigned long addGlobalEventHandler(const char *event, EventFunctionPtr function
 unsigned long addGlobalLuaEventHandler(const char *event, const char *function,
 lua_State *L);
 
-/* Unbinds an existing event handler from a specific event.  Takes as input
-   the event the handler is bound to and the event handler's id (returned by
-   addEventHandler and addLuaEventHandler.) Returns TRUE if the handler exists
-   and is removed and FALSE if it doesn't exist. */
-int removeEventHandler(const char *event, EventHandlerList *handlerList,
-unsigned long id);
+/* Unbinds an existing global event handler.  Calls removeEventHandler. */
+int removeGlobalEventHandler(const char *event, unsigned long id);
 
 /* Triggers an event.  numArgs should be set to the number of EventArgument
    parameters that are passed when the event is triggered. */
@@ -208,6 +211,13 @@ unsigned long addGlobalLuaEventHandler(const char *event, const char *function,
 lua_State *L) {
 
    return addLuaEventHandler(event, g_handlerList, function, L);
+}
+
+/******************************************************************************/
+
+int removeGlobalEventHandler(const char *event, unsigned long id) {
+
+   return removeEventHandler(event, g_handlerList, id);
 }
 
 /******************************************************************************/
