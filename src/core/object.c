@@ -115,6 +115,8 @@ void destroyObject(Object *object) {
 
 void displayObject(Player *player, Object *object, int showLongDescription) {
 
+   addEventListener(player->events);
+   addEventListener(object->events);
    if (!event("beforeDisplayObject", 2, eventArgPlayer(player),
    eventArgObject(object))) {
       return;
@@ -138,6 +140,8 @@ void displayObject(Player *player, Object *object, int showLongDescription) {
          dstrview(object->name));
    }
 
+   addEventListener(player->events);
+   addEventListener(object->events);
    event("afterDisplayObject", 2, eventArgPlayer(player), eventArgObject(object));
 }
 
@@ -153,11 +157,15 @@ static void describeObject(Object *object) {
 
 void takeObject(Player *player, Object *object) {
 
+   addEventListener(player->events);
+   addEventListener(object->events);
    if (!event("beforeTakeObject", 2, eventArgPlayer(player), eventArgObject(object))) {
       return;
    }
 
    if (!object->takeable) {
+      addEventListener(player->events);
+      addEventListener(object->events);
       event("takeObjectUntakeable", 2, eventArgPlayer(player), eventArgObject(object));
       g_outputString("You can't take the %s.\n", dstrview(object->name));
       return;
@@ -187,6 +195,8 @@ void takeObject(Player *player, Object *object) {
          g_outputString("You take the %s.\n", dstrview(object->name));
       }
 
+      addEventListener(player->events);
+      addEventListener(object->events);
       event("afterTakeObject", 2, eventArgPlayer(player), eventArgObject(object));
    }
 
@@ -194,6 +204,8 @@ void takeObject(Player *player, Object *object) {
       g_outputString("%s weighs %d and you can only hold %d more.  Try "
          "dropping something first.\n", dstrview(object->name), object->weight,
          player->inventory.maxWeight - player->inventory.weight);
+      addEventListener(player->events);
+      addEventListener(object->events);
       event("takeObjectTooHeavy", 2, eventArgPlayer(player), eventArgObject(object));
    }
 }
@@ -202,11 +214,15 @@ void takeObject(Player *player, Object *object) {
 
 void dropObject(Player *player, Object *object) {
 
+   addEventListener(player->events);
+   addEventListener(object->events);
    if (!event("beforeDropObject", 2, eventArgPlayer(player), eventArgObject(object))) {
       return;
    }
 
    if (!object->droppable) {
+      addEventListener(player->events);
+      addEventListener(object->events);
       event("dropObjectUndroppable", 2, eventArgPlayer(player), eventArgObject(object));
       g_outputString("You can't drop the %s.\n", dstrview(object->name));
       return;
@@ -233,6 +249,8 @@ void dropObject(Player *player, Object *object) {
       g_outputString("You drop the %s.\n", dstrview(object->name));
    }
 
+   addEventListener(player->events);
+   addEventListener(object->events);
    event("afterDropObject", 2, eventArgPlayer(player), eventArgObject(object));
 }
 

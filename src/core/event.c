@@ -48,6 +48,9 @@ lua_State *L);
 /* Unbinds an existing global event handler.  Calls removeEventHandler. */
 int removeGlobalEventHandler(const char *event, unsigned long id);
 
+/* Sets an entity up to listen for events */
+void addEventListener(EventHandlerList *handlers);
+
 /* Triggers an event.  numArgs should be set to the number of EventArgument
    parameters that are passed when the event is triggered. */
 int event(const char *event, int numArgs, ...);
@@ -97,6 +100,9 @@ lua_State *globalL = NULL;
 
 /* structure that maps event names to event handlers */
 static EventHandlerList *g_handlerList = NULL;
+
+/* GList of entities that are currently listening for events */
+static GList *listeners = NULL;
 
 /******************************************************************************/
 
@@ -222,45 +228,72 @@ int removeGlobalEventHandler(const char *event, unsigned long id) {
 
 /******************************************************************************/
 
+void addEventListener(EventHandlerList *handlers) {
+
+   listeners = g_list_append(listeners, handlers);
+}
+
+/******************************************************************************/
+
 int event(const char *event, int numArgs, ...) {
 
    int i;
    va_list args;
 
-   GList *handlers = g_hash_table_lookup(g_handlerList->eventHandlers, event);
-   GList *nextHandler = handlers;
-
    int allowAction = TRUE;
 
-   /* do nothing if there are no handlers for this event */
-   if (!handlers) {
-      return TRUE;
-   }
+   listeners = g_list_prepend(listeners, g_handlerList);
+   GList *nextListener = listeners;
 
-   while (NULL != nextHandler) {
+   /* loop through each list of event handlers */
+   while (NULL != nextListener) {
 
-      EventHandler *handler;
-      int status;
+      EventHandlerList *handlerList = (EventHandlerList *)nextListener->data;
+      GList *handlers = g_hash_table_lookup(handlerList->eventHandlers, event);
+      GList *nextHandler = handlers;
 
-      va_start(args, numArgs);
-      handler = (EventHandler *)nextHandler->data;
-      status = executeEvent(handler, numArgs, args);
+      /* call each event handler in the list */
+      while (NULL != nextHandler) {
 
-      allowAction = EVENT_ALLOW_ACTION & status;
+         EventHandler *handler;
+         int status;
 
-      /* handler may have overridden execution of any further handlers */
-      if (!(EVENT_CONTINUE_HANDLERS & status)) {
-         break;
+         va_start(args, numArgs);
+         handler = (EventHandler *)nextHandler->data;
+         status = executeEvent(handler, numArgs, args);
+
+         /* only set allowAction if another event handler hasn't already
+            changed it */
+         if (allowAction) {
+            allowAction = EVENT_ALLOW_ACTION & status;
+         }
+
+         /* handler may have overridden execution of any further handlers */
+         if (!(EVENT_CONTINUE_HANDLERS & status)) {
+            goto breakHandlers;
+         }
+
+         nextHandler = nextHandler->next;
       }
 
-      nextHandler = nextHandler->next;
+      nextListener = g_list_next(nextListener);
+
    }
+
+   /* goto this label to break out of the two loops above.  Note that I can't
+      factor out the inner-most loop into a separate function because of the
+      fact that it has to call va_start.  Alas, the goto was my only option... */
+   breakHandlers:
 
    /* free memory allocated for EventArguments */
    va_start(args, numArgs);
    for (i = 0; i < numArgs; i++) {
       free(va_arg(args, EventArgument *));
    }
+
+   g_list_free(listeners);
+   listeners = NULL;
+   va_end(args);
 
    return allowAction;
 }

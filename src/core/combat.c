@@ -34,6 +34,22 @@ void *defender, enum EntityType defenderType, Object *weapon);
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
 enum EntityType defenderType, Object *weapon, int counterAttack) {
 
+   if (entity_player == aggressorType) {
+      addEventListener(((Player *)aggressor)->events);
+   } else {
+      addEventListener(((Creature *)aggressor)->events);
+   }
+
+   if (entity_player == defenderType) {
+      addEventListener(((Player *)defender)->events);
+   } else {
+      addEventListener(((Creature *)defender)->events);
+   }
+
+   if (NULL != weapon) {
+      addEventListener(weapon->events);
+   }
+
    if (!event("beforeAttack", 3, entity_player == aggressorType ?
    eventArgPlayer(aggressor) : eventArgCreature(aggressor),
    entity_player == defenderType ? eventArgPlayer(defender) :
@@ -49,6 +65,22 @@ enum EntityType defenderType, Object *weapon, int counterAttack) {
    }
 
    else {
+
+      if (entity_player == aggressorType) {
+         addEventListener(((Player *)aggressor)->events);
+      } else {
+         addEventListener(((Creature *)aggressor)->events);
+      }
+
+      if (entity_player == defenderType) {
+         addEventListener(((Player *)defender)->events);
+      } else {
+         addEventListener(((Creature *)defender)->events);
+      }
+
+      if (NULL != weapon) {
+         addEventListener(weapon->events);
+      }
 
       if (attackSuccess(aggressor, aggressorType, defender, defenderType)) {
 
@@ -76,6 +108,22 @@ enum EntityType defenderType, Object *weapon, int counterAttack) {
             entity_player == defenderType ? eventArgPlayer(defender) :
             eventArgCreature(defender), eventArgObject(weapon));
       }
+   }
+
+   if (entity_player == aggressorType) {
+      addEventListener(((Player *)aggressor)->events);
+   } else {
+      addEventListener(((Creature *)aggressor)->events);
+   }
+
+   if (entity_player == defenderType) {
+      addEventListener(((Player *)defender)->events);
+   } else {
+      addEventListener(((Creature *)defender)->events);
+   }
+
+   if (NULL != weapon) {
+      addEventListener(weapon->events);
    }
 
    /* We won't continue on with the possibility of a counter attack unless

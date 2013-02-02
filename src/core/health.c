@@ -38,6 +38,12 @@ void addHealth(void *entity, enum EntityType type, int up, int allowOverflow) {
       return;
    }
 
+   if (entity_player == type) {
+      addEventListener(((Player *)entity)->events);
+   } else {
+      addEventListener(((Creature *)entity)->events);
+   }
+
    if (!event("beforeAddHealth", 1, entity_player == type ?
    eventArgPlayer((Player *)entity) : eventArgCreature((Creature *)entity))) {
       return;
@@ -63,6 +69,12 @@ void addHealth(void *entity, enum EntityType type, int up, int allowOverflow) {
       }
    }
 
+   if (entity_player == type) {
+      addEventListener(((Player *)entity)->events);
+   } else {
+      addEventListener(((Creature *)entity)->events);
+   }
+
    event("afterAddHealth", 1, entity_player == type ?
       eventArgPlayer((Player *)entity) : eventArgCreature((Creature *)entity));
 
@@ -85,6 +97,12 @@ void removeHealth(void *entity, enum EntityType type, int down, int allowDeath) 
    if (entity_player != type && entity_creature != type) {
       g_outputError("Unsupported entity type in removeHealth(). This is a bug.\n");
       return;
+   }
+
+   if (entity_player == type) {
+      addEventListener(((Player *)entity)->events);
+   } else {
+      addEventListener(((Creature *)entity)->events);
    }
 
    if (!event("beforeRemoveHealth", 1, entity_player == type ?
@@ -123,6 +141,12 @@ void removeHealth(void *entity, enum EntityType type, int down, int allowDeath) 
          health, maxHealth);
    }
 
+   if (entity_player == type) {
+      addEventListener(((Player *)entity)->events);
+   } else {
+      addEventListener(((Creature *)entity)->events);
+   }
+
    event("afterRemoveHealth", 1, entity_player == type ?
       eventArgPlayer((Player *)entity) : eventArgCreature((Creature *)entity));
 
@@ -138,6 +162,12 @@ void die(void *entity, enum EntityType type) {
    if (entity_player != type && entity_creature != type) {
       g_outputError("Unsupported entity type in die(). This is a bug.\n");
       return;
+   }
+
+   if (entity_player == type) {
+      addEventListener(((Player *)entity)->events);
+   } else {
+      addEventListener(((Creature *)entity)->events);
    }
 
    if (!event("beforeDie", 1, entity_player == type ?
@@ -164,6 +194,12 @@ void die(void *entity, enum EntityType type) {
    else {
       g_outputString("%s dies.\n", dstrview(type == entity_player ?
          ((Player *)entity)->name : ((Creature *)entity)->name));
+   }
+
+   if (entity_player == type) {
+      addEventListener(((Player *)entity)->events);
+   } else {
+      addEventListener(((Creature *)entity)->events);
    }
 
    event("afterDie", 1, entity_player == type ?

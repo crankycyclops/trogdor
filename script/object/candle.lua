@@ -12,7 +12,7 @@ function beforeDropCandle(player, entity)
 
    -- first value decides if we should continue executing event handlers
    -- second value decides if we should execute the action that triggered event
-   return false, true
+   return true, true
 
 end
 

@@ -99,6 +99,9 @@ lua_State *L);
 /* Unbinds an existing global event handler.  Calls removeEventHandler. */
 extern int removeGlobalEventHandler(const char *event, unsigned long id);
 
+/* Sets an entity up to listen for events */
+void addEventListener(EventHandlerList *handlers);
+
 /* Triggers an event.  numArgs should be set to the number of EventArgument
    parameters that are passed when the event is triggered. */
 extern int event(const char *event, int numArgs, ...);

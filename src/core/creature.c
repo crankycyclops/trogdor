@@ -108,6 +108,8 @@ void destroyCreature(Creature *creature) {
 void displayCreature(Player *player, Creature *creature,
 int showLongDescription) {
 
+   addEventListener(player->events);
+   addEventListener(creature->events);
    if (!event("beforeDisplayCreature", 2, eventArgPlayer(player),
    eventArgCreature(creature))) {
       return;
@@ -138,6 +140,8 @@ int showLongDescription) {
       }
    }
 
+   addEventListener(player->events);
+   addEventListener(creature->events);
    event("afterDisplayCreature", 2, eventArgPlayer(player),
       eventArgCreature(creature));
 }

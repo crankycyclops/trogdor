@@ -125,6 +125,8 @@ void setLocation(Player *player, Room *room, int triggerEvents) {
    Room *previous = player->location;
 
    if (triggerEvents) {
+      addEventListener(player->events);
+      addEventListener(room->events);
       if (!event("beforeSetLocation", 3, eventArgPlayer(player), eventArgRoom(room),
       eventArgRoom(previous))) {
          return;
@@ -142,6 +144,8 @@ void setLocation(Player *player, Room *room, int triggerEvents) {
       player);
 
    if (triggerEvents) {
+      addEventListener(player->events);
+      addEventListener(room->events);
       event("afterSetLocation", 3, eventArgPlayer(player), eventArgRoom(room),
          eventArgRoom(previous));
    }
@@ -154,6 +158,8 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
    GList *creatureList = room->creatureList;
    GList *objectList = room->objectList;
 
+   addEventListener(player->events);
+   addEventListener(room->events);
    if (!event("beforeRoomDisplay", 2, eventArgPlayer(player), eventArgRoom(room))) {
       return;
    }
@@ -177,6 +183,8 @@ void displayRoom(Player *player, Room *room, int showLongDescription) {
       creatureList = g_list_next(creatureList);
    }
 
+   addEventListener(player->events);
+   addEventListener(room->events);
    event("afterRoomDisplay", 2, eventArgPlayer(player), eventArgRoom(room));
 }
 
