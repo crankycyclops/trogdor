@@ -118,8 +118,13 @@ void destroyRoom(Room *room) {
 
 void setLocation(Player *player, Room *room, int triggerEvents) {
 
-   if (!event("beforeSetLocation", 2, eventArgPlayer(player), eventArgRoom(room))) {
-      return;
+   Room *previous = player->location;
+
+   if (triggerEvents) {
+      if (!event("beforeSetLocation", 3, eventArgPlayer(player), eventArgRoom(room),
+      eventArgRoom(previous))) {
+         return;
+      }
    }
 
    player->location = room;
@@ -132,7 +137,10 @@ void setLocation(Player *player, Room *room, int triggerEvents) {
    g_hash_table_insert(room->state.players, (char *)dstrview(player->name),
       player);
 
-   event("afterSetLocation", 2, eventArgPlayer(player), eventArgRoom(room));
+   if (triggerEvents) {
+      event("afterSetLocation", 3, eventArgPlayer(player), eventArgRoom(room),
+         eventArgRoom(previous));
+   }
 }
 
 /******************************************************************************/
