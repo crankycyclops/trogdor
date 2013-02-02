@@ -327,19 +327,51 @@ static void eventPassArgument(lua_State *L, EventArgument *arg) {
          break;
 
       case scriptval_player:
-         lua_pushstring(L, arg->value.player->name);
+
+         if (NULL != arg->value.player) {
+            lua_pushstring(L, arg->value.player->name);
+         }
+
+         else {
+            lua_pushboolean(L, FALSE);
+         }
+
          break;
 
       case scriptval_room:
-         lua_pushstring(L, arg->value.room->name);
+
+         if (NULL != arg->value.room) {
+            lua_pushstring(L, arg->value.room->name);
+         }
+
+         else {
+            lua_pushboolean(L, FALSE);
+         }
+
          break;
 
       case scriptval_object:
-         lua_pushstring(L, arg->value.object->name);
+
+         if (NULL != arg->value.object) {
+            lua_pushstring(L, arg->value.object->name);
+         }
+
+         else {
+            lua_pushboolean(L, FALSE);
+         }
+
          break;
 
       case scriptval_creature:
-         lua_pushstring(L, arg->value.creature->name);
+
+         if (NULL != arg->value.creature) {
+            lua_pushstring(L, arg->value.creature->name);
+         }
+
+         else {
+            lua_pushboolean(L, FALSE);
+         }
+
          break;
 
       default:
