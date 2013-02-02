@@ -31,11 +31,15 @@ void *defender, enum EntityType defenderType, Object *weapon);
 
 /******************************************************************************/
 
-// TODO: don't allow if creature already dead
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
 enum EntityType defenderType, Object *weapon, int counterAttack) {
 
-   // TODO: beforeAttack event
+   if (!event("beforeAttack", 3, entity_player == aggressorType ?
+   eventArgPlayer(aggressor) : eventArgCreature(aggressor),
+   entity_player == defenderType ? eventArgPlayer(defender) :
+   eventArgCreature(defender), eventArgObject(weapon))) {
+      return;
+   }
 
    if (defenderType == entity_player && !((Player *)defender)->state.alive ||
    defenderType == entity_creature && !((Creature *)defender)->state.alive) {
@@ -48,8 +52,6 @@ enum EntityType defenderType, Object *weapon, int counterAttack) {
 
       if (attackSuccess(aggressor, aggressorType, defender, defenderType)) {
 
-         // TODO: beforeAttackSuccess event
-
          int damage = calcDamage(aggressor, aggressorType, defender,
             defenderType, weapon);
 
@@ -61,24 +63,33 @@ enum EntityType defenderType, Object *weapon, int counterAttack) {
 
          removeHealth(defender, defenderType, damage, TRUE);
 
-         // TODO: afterAttackSuccess event
+         event("attackSuccess", 3, entity_player == aggressorType ?
+            eventArgPlayer(aggressor) : eventArgCreature(aggressor),
+            entity_player == defenderType ? eventArgPlayer(defender) :
+            eventArgCreature(defender), eventArgObject(weapon));
       }
 
       else {
-         // TODO: beforeAttackFailure event
          g_outputString("Attack failed!\n");
-         // TODO: afterAttackFailure event
+         event("attackFailure", 3, entity_player == aggressorType ?
+            eventArgPlayer(aggressor) : eventArgCreature(aggressor),
+            entity_player == defenderType ? eventArgPlayer(defender) :
+            eventArgCreature(defender), eventArgObject(weapon));
       }
    }
 
-   // TODO: afterAttack event
+   /* We won't continue on with the possibility of a counter attack unless
+      the event handler says it's ok to continue. */
+   if (!event("afterAttack", 3, entity_player == aggressorType ?
+   eventArgPlayer(aggressor) : eventArgCreature(aggressor),
+   entity_player == defenderType ? eventArgPlayer(defender) :
+   eventArgCreature(defender), eventArgObject(weapon))) {
+      return;
+   }
 
-   // TODO: check return value of afterAttack and ONLY execute what comes after
-   // this line if it returns a status saying it's ok to continue
-
-   /* if the entity being attacked is a creature, and it's configured to
+   /* If the entity being attacked is a creature, and it's configured to
       fight back, then for each attempted attack, the creature should counter
-      with an attack of its own */
+      with an attack of its own. */
    if (counterAttack) {
       if (entity_creature == defenderType && ((Creature *)defender)->counterattack) {
          // TODO: should this be timed?
