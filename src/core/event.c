@@ -21,6 +21,12 @@ void initEvents();
 /* destructor for the event handling mechanism */
 void destroyEvents();
 
+/* creates a new list of event handlers */
+EventHandlerList *initEventHandlerList();
+
+/* destroys a list of event handlers */
+void destroyEventHandlerList(EventHandlerList *list);
+
 /* Binds an event handler written in C to an event.  The order in which event
    handlers are added is the order in which event handlers are executed. */
 unsigned long addEventHandler(const char *event, EventFunctionPtr function);
@@ -82,25 +88,30 @@ static void eventPassArgument(lua_State *L, EventArgument *arg);
 /* lua state containing functions called by global events */
 lua_State *globalL = NULL;
 
-/* hash table that maps event names to event handlers */
-static GHashTable *eventHandlers = NULL;
-
-/* each event handler is assigned a unique id */
-static unsigned long nextId = 0;
+/* structure that maps event names to event handlers */
+static EventHandlerList *handlerList = NULL;
 
 /******************************************************************************/
 
-void initEvents() {
+EventHandlerList *initEventHandlerList() {
 
-   eventHandlers = g_hash_table_new(g_str_hash, g_str_equal);
-   return;
+   EventHandlerList *list = malloc(sizeof(EventHandler));
+
+   if (NULL == list) {
+      PRINT_OUT_OF_MEMORY_ERROR;
+   }
+
+   list->eventHandlers = g_hash_table_new(g_str_hash, g_str_equal);
+   list->nextId = 0;
+
+   return list;
 }
 
 /******************************************************************************/
 
-void destroyEvents() {
+void destroyEventHandlerList(EventHandlerList *list) {
 
-   GList *events = g_hash_table_get_values(eventHandlers);
+   GList *events = g_hash_table_get_values(list->eventHandlers);
    GList *next = events;
 
    while (next != NULL) {
@@ -109,13 +120,8 @@ void destroyEvents() {
    }
 
    g_list_free(events);
-   g_hash_table_destroy(eventHandlers);
-
-   if (NULL != globalL) {
-      lua_close(globalL);
-   }
-
-   return;
+   g_hash_table_destroy(list->eventHandlers);
+   free(list);
 }
 
 /******************************************************************************/
@@ -140,19 +146,37 @@ static void destroyEventHandler(EventHandler *handler) {
 
 /******************************************************************************/
 
+void initEvents() {
+
+   handlerList = initEventHandlerList();
+}
+
+/******************************************************************************/
+
+void destroyEvents() {
+
+   destroyEventHandlerList(handlerList);
+
+   if (NULL != globalL) {
+      lua_close(globalL);
+   }
+}
+
+/******************************************************************************/
+
 unsigned long addEventHandler(const char *event, EventFunctionPtr function) {
 
-   GList *handlers = g_hash_table_lookup(eventHandlers, event);
+   GList *handlers = g_hash_table_lookup(handlerList->eventHandlers, event);
    EventHandler *handler = createEventHandler();
 
-   handler->id = nextId;
+   handler->id = handlerList->nextId;
    handler->funcType = EVENT_HANDLER_NATIVE;
    handler->func.nativeHandler = function;
 
    handlers = g_list_append(handlers, handler);
-   g_hash_table_insert(eventHandlers, (char *)event, handlers);
+   g_hash_table_insert(handlerList->eventHandlers, (char *)event, handlers);
 
-   return nextId++;
+   return handlerList->nextId++;
 }
 
 /******************************************************************************/
@@ -160,25 +184,25 @@ unsigned long addEventHandler(const char *event, EventFunctionPtr function) {
 unsigned long addLuaEventHandler(const char *event, const char *function,
 lua_State *L) {
 
-   GList *handlers = g_hash_table_lookup(eventHandlers, event);
+   GList *handlers = g_hash_table_lookup(handlerList->eventHandlers, event);
    EventHandler *handler = createEventHandler();
 
-   handler->id = nextId;
+   handler->id = handlerList->nextId;
    handler->funcType = EVENT_HANDLER_LUA;
    handler->func.luaHandler.function = function;
    handler->func.luaHandler.L = L;
 
    handlers = g_list_append(handlers, handler);
-   g_hash_table_insert(eventHandlers, (char *)event, handlers);
+   g_hash_table_insert(handlerList->eventHandlers, (char *)event, handlers);
 
-   return nextId++;
+   return handlerList->nextId++;
 }
 
 /******************************************************************************/
 
 int removeEventHandler(const char *event, unsigned long id) {
 
-   GList *handlers = g_hash_table_lookup(eventHandlers, event);
+   GList *handlers = g_hash_table_lookup(handlerList->eventHandlers, event);
    GList *nextHandler = handlers;
 
    while (NULL != nextHandler) {
@@ -188,7 +212,7 @@ int removeEventHandler(const char *event, unsigned long id) {
       if (id == handler->id) {
          free(handler);
          handlers = g_list_remove(handlers, nextHandler);
-         g_hash_table_insert(eventHandlers, (char *)event, handlers);
+         g_hash_table_insert(handlerList->eventHandlers, (char *)event, handlers);
          return TRUE;
       }
 
@@ -205,7 +229,7 @@ int event(const char *event, int numArgs, ...) {
    int i;
    va_list args;
 
-   GList *handlers = g_hash_table_lookup(eventHandlers, event);
+   GList *handlers = g_hash_table_lookup(handlerList->eventHandlers, event);
    GList *nextHandler = handlers;
 
    int allowAction = TRUE;
