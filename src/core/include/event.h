@@ -19,12 +19,6 @@
 #define EVENT_ALLOW_ACTION      0x02
 
 
-/* A structure that maps event names to handlers */
-typedef struct {
-   GHashTable *eventHandlers;
-   unsigned long nextId;
-} EventHandlerList;
-
 /* pointer to a function an event handler can call */
 typedef int (*EventFunctionPtr)(int numArgs, ...);
 

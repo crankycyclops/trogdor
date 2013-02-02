@@ -13,6 +13,7 @@
 #include "include/player.h"
 #include "include/event.h"
 #include "include/data.h"
+#include "include/eventlist.h"
 
 
 /* constructor for the event handling mechanism */
@@ -20,12 +21,6 @@ void initEvents();
 
 /* destructor for the event handling mechanism */
 void destroyEvents();
-
-/* creates a new list of event handlers */
-EventHandlerList *initEventHandlerList();
-
-/* destroys a list of event handlers */
-void destroyEventHandlerList(EventHandlerList *list);
 
 /* Binds an event handler written in C to an event.  The order in which event
    handlers are added is the order in which event handlers are executed. */
@@ -90,39 +85,6 @@ lua_State *globalL = NULL;
 
 /* structure that maps event names to event handlers */
 static EventHandlerList *handlerList = NULL;
-
-/******************************************************************************/
-
-EventHandlerList *initEventHandlerList() {
-
-   EventHandlerList *list = malloc(sizeof(EventHandler));
-
-   if (NULL == list) {
-      PRINT_OUT_OF_MEMORY_ERROR;
-   }
-
-   list->eventHandlers = g_hash_table_new(g_str_hash, g_str_equal);
-   list->nextId = 0;
-
-   return list;
-}
-
-/******************************************************************************/
-
-void destroyEventHandlerList(EventHandlerList *list) {
-
-   GList *events = g_hash_table_get_values(list->eventHandlers);
-   GList *next = events;
-
-   while (next != NULL) {
-      g_list_free(next->data);
-      next = next->next;
-   }
-
-   g_list_free(events);
-   g_hash_table_destroy(list->eventHandlers);
-   free(list);
-}
 
 /******************************************************************************/
 
