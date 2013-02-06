@@ -8,7 +8,10 @@ typedef struct {
    int initTime;        /* time when job was registered in the timer queue */
    int startTime;       /* how long to wait before starting execution */
    int interval;        /* timer ticks between each call to job() */
-   void (*job)(void *); /* function to execute on each interval */
+
+   /* function to execute on each interval */
+   void (*job)(unsigned long id, void *arg);
+
    void *argument;      /* this argument is passed to job() */
 
    /* Number of times to execute the job before removing it from the queue.
@@ -43,8 +46,8 @@ extern unsigned long getTime();
    we want to execute, an argument to pass to that function, an interval and
    the number of times we want the job to execute before removing it from the
    queue. */
-extern unsigned long registerTimedJob(void (*job)(void *), void *argument,
-unsigned long start, unsigned long interval, int executions);
+extern unsigned long registerTimedJob(void (*job)(unsigned long id, void *arg),
+void *argument, unsigned long start, unsigned long interval, int executions);
 
 /* removes job with the specified id from the timer queue */
 extern int deregisterTimedJob(unsigned long id);

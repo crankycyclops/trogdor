@@ -23,8 +23,8 @@ unsigned long getTime();
    we want to execute, an argument to pass to that function, an interval and
    the number of times we want the job to execute before removing it from the
    queue. */
-unsigned long registerTimedJob(void (*job)(void *), void *argument,
-unsigned long start, unsigned long interval, int executions);
+unsigned long registerTimedJob(void (*job)(unsigned long id, void *arg),
+void *argument, unsigned long start, unsigned long interval, int executions);
 
 /* Removes job with the specified id from the timer queue.  Returns 1 if the
    job was successfully removed and 0 if it was not. */
@@ -102,8 +102,8 @@ unsigned long destroyTimer() {
 
 /******************************************************************************/
 
-unsigned long registerTimedJob(void (*job)(void *), void *argument,
-unsigned long start, unsigned long interval, int executions) {
+unsigned long registerTimedJob(void (*job)(unsigned long id, void *arg),
+void *argument, unsigned long start, unsigned long interval, int executions) {
 
    TimedJob *newjob;
 
@@ -191,7 +191,7 @@ static void tick() {
          (gameTime - job->initTime - job->startTime) % job->interval == 0) {
 
             pthread_mutex_lock(&resourceMutex);
-            job->job(job->argument);
+            job->job(job->id, job->argument);
             pthread_mutex_unlock(&resourceMutex);
 
             /* -1 is possible and refers to a job that doesn't expire */
