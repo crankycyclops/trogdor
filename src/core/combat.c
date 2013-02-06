@@ -19,8 +19,14 @@
 #include "include/combat.h"
 
 
+/* Make aggressor attack defender with the specified weapon.  If counterAttack
+   is true, the defender will respond with an attack of its own. */
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
 enum EntityType defenderType, Object *weapon, int counterAttack);
+
+/* A timer job that will call attack() with the arguments specified in arg. 
+   Id is the job's id. */
+void timedAttack(unsigned long id, TimedAttackArgument *arg);
 
 /******************************************************************************/
 
@@ -151,6 +157,14 @@ enum EntityType defenderType, Object *weapon, int counterAttack) {
       }
    }
 
+   return;
+}
+
+/******************************************************************************/
+
+void timedAttack(unsigned long id, TimedAttackArgument *arg) {
+
+   g_outputString("Timed attack stub!");
    return;
 }
 
