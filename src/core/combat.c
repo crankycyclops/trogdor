@@ -16,6 +16,7 @@
 #include "include/health.h"
 #include "include/attributes.h"
 #include "include/utility.h"
+#include "include/combat.h"
 
 
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
