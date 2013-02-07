@@ -20,7 +20,7 @@
 
 
 /* pointer to a function an event handler can call */
-typedef int (*EventFunctionPtr)(int numArgs, ...);
+typedef int (*EventFunctionPtr)(int numArgs, va_list args);
 
 /* every event handler will contain an EventFunction, which will contain either
    a pointer to a native C function or a lua state and function name. */

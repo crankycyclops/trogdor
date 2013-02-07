@@ -20,6 +20,8 @@ void timedAttack(unsigned long id, TimedAttackArgument *arg) {
    Room *attackerLocation;
    Room *defenderLocation;
 
+   g_outputString("Timed attack stub!\n");
+
    switch (params->attackerType) {
 
       case entity_player:
@@ -67,7 +69,7 @@ void timedAttack(unsigned long id, TimedAttackArgument *arg) {
    }
 
    else {
-      g_outputString("Timed attack stub!");
+      g_outputString("ATTACK!\n");
    }
 
    return;

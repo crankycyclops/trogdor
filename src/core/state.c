@@ -9,6 +9,8 @@
 #include "include/data.h"
 #include "include/player.h"
 #include "include/timer.h"
+#include "include/event.h"
+#include "include/eventhandlers.h"
 
 
 /* initialize the game's state */
@@ -37,6 +39,11 @@ int isInGame() {
 /******************************************************************************/
 
 void initGame() {
+
+   // TODO: should event handlers go in their own function?
+   /* trigger auto-attack against player by any creatures in the room that have
+      been configured to do so */
+   addGlobalEventHandler("afterSetLocation", &eventHandlerAutoAttack);
 
    pthread_mutex_init(&resourceMutex, NULL);
    g_players = g_hash_table_new(g_str_hash, g_str_equal);
