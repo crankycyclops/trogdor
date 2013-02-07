@@ -24,10 +24,6 @@
 void attack(void *aggressor, enum EntityType aggressorType, void *defender,
 enum EntityType defenderType, Object *weapon, int counterAttack);
 
-/* A timer job that will call attack() with the arguments specified in arg. 
-   Id is the job's id. */
-void timedAttack(unsigned long id, TimedAttackArgument *arg);
-
 /******************************************************************************/
 
 static int attackSuccess(void *aggressor, enum EntityType aggressorType,
@@ -157,14 +153,6 @@ enum EntityType defenderType, Object *weapon, int counterAttack) {
       }
    }
 
-   return;
-}
-
-/******************************************************************************/
-
-void timedAttack(unsigned long id, TimedAttackArgument *arg) {
-
-   g_outputString("Timed attack stub!");
    return;
 }
 

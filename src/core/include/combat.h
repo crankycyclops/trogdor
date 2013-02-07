@@ -11,14 +11,6 @@
 /* by default, creatures are attackable */
 #define DEFAULT_CREATURE_ATTACKABLE  1
 
-/* Passed to any timer job that must carry out an attack */
-typedef struct {
-   void *attacker;
-   void *defender;
-   Object *weapon;
-   enum EntityType attackerType;
-   enum EntityType defenderType;
-} TimedAttackArgument;
 
 #ifndef COMBAT_C
 
@@ -27,10 +19,6 @@ typedef struct {
 extern void attack(void *aggressor, enum EntityType aggressorType,
 void *defender, enum EntityType defenderType, Object *weapon,
 int counterAttack);
-
-/* A timer job that will call attack() with the arguments specified in arg. 
-   Id is the job's id. */
-extern void timedAttack(unsigned long id, TimedAttackArgument *arg);
 
 #endif
 
