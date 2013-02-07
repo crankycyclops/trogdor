@@ -40,6 +40,8 @@ typedef struct creature {
    dstring_t title;          /* what the creature is called */
    dstring_t description;    /* description of the creature */
 
+   Room *location;           /* creature's current location */
+
    Messages messages;        /* hash table of custom messages */
    Attributes attributes;    /* strength, dexterity, intelligence, etc. */
    CreatureState state;      /* creature's state */

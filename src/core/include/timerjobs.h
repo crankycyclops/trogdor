@@ -7,6 +7,8 @@
 #include "object.h"
 #include "creature.h"
 #include "player.h"
+#include "timer.h"
+
 
 /* Passed to any timer job that must carry out an attack */
 typedef struct {
